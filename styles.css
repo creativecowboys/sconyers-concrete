@@ -20,7 +20,7 @@
   --border-light: rgba(0,0,0,0.12);
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body: 'Lora', Georgia, serif;
-  --nav-h: 92px;
+  --nav-h: 112px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -155,7 +155,7 @@ address { font-style: normal; }
 .nav-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0.75rem 2rem;
+  padding: 1.25rem 2rem;
   height: 100%;
   display: flex;
   align-items: center;
