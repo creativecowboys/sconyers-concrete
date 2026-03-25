@@ -225,11 +225,19 @@ address { font-style: normal; }
 .nav-links a:not(.nav-cta):hover::after { transform: scaleX(1); }
 .nav-links a:hover { color: var(--warm-white); }
 .nav-cta {
-  background: var(--accent) !important;
+  background: var(--accent);
   color: white !important;
-  padding: 0.5rem 1.25rem !important;
+  padding: 0.5rem 1.25rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  flex-shrink: 0;
+  transition: background 0.2s;
 }
-.nav-cta:hover { background: var(--accent-light) !important; }
+.nav-cta:hover { background: var(--accent-light); }
 
 .nav-toggle {
   display: none;
