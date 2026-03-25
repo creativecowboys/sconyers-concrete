@@ -161,6 +161,12 @@ address { font-style: normal; }
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
+  position: relative;
+}
+.nav-links {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .logo {
