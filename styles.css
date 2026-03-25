@@ -177,8 +177,8 @@ address { font-style: normal; }
   flex-shrink: 0;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.logo:hover { transform: scale(1.08); }
-.logo:hover .logo-img { filter: drop-shadow(0 4px 12px rgba(204,20,20,0.5)); }
+.logo:hover { transform: scale(1.04); }
+.logo:hover .logo-img { filter: drop-shadow(0 3px 8px rgba(204,20,20,0.3)); }
 .logo-img {
   width: 84px;
   height: 84px;
