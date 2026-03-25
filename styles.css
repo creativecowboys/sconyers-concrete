@@ -143,14 +143,14 @@ address { font-style: normal; }
   top: 0; left: 0; right: 0;
   z-index: 100;
   height: var(--nav-h);
-  background: rgba(26, 23, 20, 0.95);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+  background: rgba(11, 13, 17, 0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   transition: all 0.3s;
 }
 .nav.scrolled {
-  background: rgba(26, 23, 20, 0.99);
-  box-shadow: 0 4px 32px rgba(0,0,0,0.4);
+  background: rgba(11, 13, 17, 1);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.6);
 }
 .nav-inner {
   max-width: 1200px;
@@ -441,11 +441,11 @@ address { font-style: normal; }
 }
 .trust-bar::before {
   left: 0;
-  background: linear-gradient(to right, var(--accent) 55%, transparent 100%);
+  background: linear-gradient(to right, var(--accent) 72%, transparent 100%);
 }
 .trust-bar::after {
   right: 0;
-  background: linear-gradient(to left, var(--accent) 55%, transparent 100%);
+  background: linear-gradient(to left, var(--accent) 72%, transparent 100%);
 }
 .trust-track {
   display: flex;
@@ -453,7 +453,7 @@ address { font-style: normal; }
   width: max-content;
   animation: trustScroll 28s linear infinite;
 }
-.trust-track:hover { animation-play-state: paused; }
+/* carousel keeps scrolling on hover */
 .trust-segment {
   display: flex;
   align-items: center;
