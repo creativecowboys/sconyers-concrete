@@ -3,21 +3,21 @@
    ============================================ */
 
 :root {
-  --concrete-dark: #1A1714;
-  --concrete-mid: #242018;
-  --concrete-surface: #2E2923;
-  --concrete-light: #3D3830;
-  --accent: #D4611A;
-  --accent-light: #E8742A;
-  --accent-glow: rgba(212, 97, 26, 0.15);
-  --warm-white: #F2EDE4;
-  --off-white: #E0D9CF;
-  --gray: #8A8278;
-  --gray-light: #B0A99E;
-  --light-bg: #F5F1EB;
-  --light-surface: #EDE8E0;
-  --border: rgba(255,255,255,0.07);
-  --border-light: rgba(0,0,0,0.1);
+  --concrete-dark: #0D0D0D;
+  --concrete-mid: #161616;
+  --concrete-surface: #202020;
+  --concrete-light: #2C2C2C;
+  --accent: #CC1414;
+  --accent-light: #E02020;
+  --accent-glow: rgba(204, 20, 20, 0.15);
+  --warm-white: #F4F4F4;
+  --off-white: #DCDCDC;
+  --gray: #888888;
+  --gray-light: #AAAAAA;
+  --light-bg: #F2F2F2;
+  --light-surface: #E4E4E4;
+  --border: rgba(255,255,255,0.08);
+  --border-light: rgba(0,0,0,0.12);
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body: 'Lora', Georgia, serif;
   --nav-h: 72px;
@@ -170,18 +170,12 @@ address { font-style: normal; }
   text-decoration: none;
   flex-shrink: 0;
 }
-.logo-mark {
-  width: 40px; height: 40px;
-  background: var(--accent);
-  color: white;
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
+.logo-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
   flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 .logo-text {
   font-family: var(--font-display);
