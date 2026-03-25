@@ -20,7 +20,7 @@
   --border-light: rgba(0,0,0,0.12);
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body: 'Lora', Georgia, serif;
-  --nav-h: 72px;
+  --nav-h: 92px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -155,7 +155,7 @@ address { font-style: normal; }
 .nav-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0.75rem 2rem;
   height: 100%;
   display: flex;
   align-items: center;
@@ -393,11 +393,42 @@ address { font-style: normal; }
 }
 
 /* ── TRUST BAR ── */
+.trust-bar-label {
+  background: var(--accent);
+  text-align: center;
+  padding: 0.5rem 2rem 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
+
 .trust-bar {
   background: var(--accent);
-  padding: 0.85rem 0;
+  padding: 0.5rem 0 0.85rem;
   overflow: hidden;
   position: relative;
+}
+
+/* Fade gradient masks on sides */
+.trust-bar::before,
+.trust-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 120px;
+  z-index: 2;
+  pointer-events: none;
+}
+.trust-bar::before {
+  left: 0;
+  background: linear-gradient(to right, var(--accent) 0%, transparent 100%);
+}
+.trust-bar::after {
+  right: 0;
+  background: linear-gradient(to left, var(--accent) 0%, transparent 100%);
 }
 .trust-track {
   display: flex;
@@ -637,7 +668,7 @@ blockquote cite {
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
 }
 
-.pillar { padding-top: 2rem; }
+.pillar { padding-top: 2rem; text-align: center; }
 .pillar-num {
   display: block;
   font-family: var(--font-display);
@@ -650,7 +681,7 @@ blockquote cite {
 }
 .pillar:hover .pillar-num { color: rgba(212,97,26,0.5); }
 .pillar h3 { color: var(--warm-white); margin-bottom: 0.75rem; }
-.pillar p { color: var(--gray-light); font-size: 0.95rem; }
+.pillar p { color: var(--gray-light); font-size: 0.95rem; max-width: 280px; margin: 0 auto; }
 
 /* ── CONTACT ── */
 .contact {
