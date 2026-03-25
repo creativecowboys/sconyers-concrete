@@ -576,6 +576,7 @@ address { font-style: normal; }
   grid-template-columns: 1fr 1fr;
   gap: 5rem;
   align-items: start;
+  margin-bottom: 2rem;
 }
 
 .about .section-tag { color: var(--accent); border-color: var(--accent); }
@@ -625,6 +626,7 @@ blockquote cite {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
+  width: 100%;
 }
 .stat-card {
   background: white;
