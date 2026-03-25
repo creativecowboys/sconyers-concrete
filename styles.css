@@ -623,7 +623,7 @@ blockquote cite {
 
 .about-stats {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
 .stat-card {
@@ -892,5 +892,5 @@ blockquote cite {
   .trust-items .dot { display: none; }
   .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
   .footer-brand { grid-column: unset; }
-  .about-stats { grid-template-columns: 1fr 1fr; }
+  .about-stats { grid-template-columns: repeat(2, 1fr); }
 }
