@@ -92,6 +92,62 @@
     }
     .contact-info-card-body a:hover { color: var(--accent); }
 
+    /* Team Contacts */
+    .team-contacts {
+      margin-bottom: 1.5rem;
+    }
+    .team-contacts h3 {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 0.75rem;
+    }
+    .team-card {
+      background: var(--concrete-mid);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      transition: border-color 0.2s;
+    }
+    .team-card:hover { border-color: var(--accent); }
+    .team-card-info {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+    .team-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--warm-white);
+    }
+    .team-title {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .team-card-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .team-card-links a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--gray-light);
+      font-size: 0.88rem;
+      transition: color 0.2s;
+    }
+    .team-card-links a:hover { color: var(--warm-white); }
+    .team-card-links svg { color: var(--accent); flex-shrink: 0; }
+
     /* Map */
     .map-container {
       border-radius: 4px;
@@ -230,6 +286,43 @@
                 <tr><td>Saturday</td><td>By Appointment</td></tr>
                 <tr><td>Sunday</td><td>Closed</td></tr>
               </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Contacts -->
+        <div class="team-contacts">
+          <h3>Contact Our Team</h3>
+          <div class="team-card">
+            <div class="team-card-info">
+              <span class="team-name">Brice Wiley</span>
+              <span class="team-title">Senior Management / Sales</span>
+            </div>
+            <div class="team-card-links">
+              <a href="tel:7066693089">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+                706-669-3089
+              </a>
+              <a href="mailto:brice.wiley@sconyersconcrete.com">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                brice.wiley@sconyersconcrete.com
+              </a>
+            </div>
+          </div>
+          <div class="team-card">
+            <div class="team-card-info">
+              <span class="team-name">Heather Gray</span>
+              <span class="team-title">Controller</span>
+            </div>
+            <div class="team-card-links">
+              <a href="tel:7703449002">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+                770-344-9002
+              </a>
+              <a href="mailto:heather.gray@sconyersconcrete.com">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                heather.gray@sconyersconcrete.com
+              </a>
             </div>
           </div>
         </div>
