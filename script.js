@@ -1,62 +1,47 @@
-// ── NAV: scrolled state ──
+// ── NAV SCROLL ──
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 40);
-}, { passive: true });
+});
 
 // ── MOBILE MENU ──
 const navToggle = document.getElementById('navToggle');
-const navLinksList = document.querySelector('.nav-links');
-
+const navLinks = document.querySelector('.nav-links');
 navToggle.addEventListener('click', () => {
-  const isOpen = navLinksList.classList.toggle('open');
-  navToggle.classList.toggle('open', isOpen);
-  navToggle.setAttribute('aria-expanded', isOpen);
+  navLinks.classList.toggle('open');
 });
-
 // Close menu on link click
-navLinksList.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    navLinksList.classList.remove('open');
-    navToggle.classList.remove('open');
-    navToggle.setAttribute('aria-expanded', 'false');
-  });
+navLinks.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => navLinks.classList.remove('open'));
 });
 
-// Close menu on outside click
-document.addEventListener('click', (e) => {
-  if (!nav.contains(e.target)) {
-    navLinksList.classList.remove('open');
-    navToggle.classList.remove('open');
-  }
-});
-
-// ── SCROLL REVEAL ──
+// ── REVEAL ON SCROLL ──
 const revealEls = document.querySelectorAll(
-  '.service-card, .stat-card, .pillar, .section-header, .about-text, .contact-info, .contact-form, .about-img, .footer-brand, .footer-links, .footer-contact'
+  '.service-card, .stat-card, .pillar, .section-header, .about-text, .about-stats, .contact-info, .contact-form'
 );
-
 revealEls.forEach(el => el.classList.add('reveal'));
 
-// Stagger siblings within grid containers
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, 80 * (entry.target.dataset.delay || 0));
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+// Stagger siblings
 document.querySelectorAll('.services-grid, .about-stats, .pillars').forEach(group => {
   group.querySelectorAll('.reveal').forEach((el, i) => {
-    el.style.transitionDelay = `${i * 0.09}s`;
+    el.style.transitionDelay = `${i * 0.08}s`;
   });
 });
 
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      revealObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => observer.observe(el));
 
-revealEls.forEach(el => revealObserver.observe(el));
-
-// ── SMOOTH SCROLL (fallback) ──
+// ── SMOOTH SCROLL (fallback for older browsers) ──
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', e => {
     const target = document.querySelector(anchor.getAttribute('href'));
@@ -69,24 +54,13 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-// ── HERO SCROLL INDICATOR: fade on scroll ──
-const heroScroll = document.querySelector('.hero-scroll');
-if (heroScroll) {
-  window.addEventListener('scroll', () => {
-    const opacity = Math.max(0, 1 - window.scrollY / 200);
-    heroScroll.style.opacity = opacity;
-  }, { passive: true });
-}
-
-// ── CONTACT FORM: submit feedback ──
+// ── CONTACT FORM (basic) ──
 const form = document.querySelector('.contact-form');
 if (form) {
-  form.addEventListener('submit', () => {
+  form.addEventListener('submit', async (e) => {
     const btn = form.querySelector('button[type="submit"]');
-    if (btn) {
-      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Sending...`;
-      btn.disabled = true;
-      btn.style.opacity = '0.8';
-    }
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+    // Netlify handles it — just a UX touch
   });
 }
