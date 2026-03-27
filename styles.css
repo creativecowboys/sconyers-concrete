@@ -152,14 +152,20 @@ address { font-style: normal; }
   top: 0; left: 0; right: 0;
   z-index: 100;
   height: var(--nav-h);
-  background: rgba(14, 14, 14, 0.97);
-  backdrop-filter: blur(16px);
+  background: #0E0E0E;
   border-bottom: 1px solid rgba(255,255,255,0.06);
-  transition: all 0.3s;
-  padding-top: env(safe-area-inset-top);
+  transition: box-shadow 0.3s;
+}
+/* Covers status bar / safe area on iOS */
+.nav::before {
+  content: '';
+  position: absolute;
+  top: calc(-1 * env(safe-area-inset-top, 0px));
+  left: 0; right: 0;
+  height: env(safe-area-inset-top, 0px);
+  background: #0E0E0E;
 }
 .nav.scrolled {
-  background: rgba(14, 14, 14, 1);
   box-shadow: 0 4px 40px rgba(0,0,0,0.6);
 }
 .nav-inner {
@@ -893,7 +899,6 @@ blockquote cite {
   :root { --nav-h: 80px; }
 
   /* Nav */
-  .nav { background: rgba(14,14,14,1) !important; }
   .nav-links { display: none; position: static; transform: none; }
   .nav-links.open {
     display: flex;
