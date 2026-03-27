@@ -907,8 +907,7 @@ blockquote cite {
   .hero-sub { font-size: 0.95rem; }
   .hero-actions { flex-direction: column; align-items: center; }
   .hero-actions .btn { width: min(100%, 340px); justify-content: center; padding: 1rem 2rem; font-size: 1rem; }
-  .hero-badge { position: static; margin-top: 2rem; display: flex; gap: 1rem; align-items: center; justify-content: center; }
-  .badge-number { font-size: 2.5rem; }
+  .hero-badge { display: none; }
   .section-tag { margin-left: auto; margin-right: auto; }
 
   /* Trust bar — narrower gradient so it doesn't eat the middle */
