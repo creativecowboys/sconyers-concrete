@@ -156,15 +156,6 @@ address { font-style: normal; }
   border-bottom: 1px solid rgba(255,255,255,0.06);
   transition: box-shadow 0.3s;
 }
-/* Covers status bar / safe area on iOS */
-.nav::before {
-  content: '';
-  position: absolute;
-  top: calc(-1 * env(safe-area-inset-top, 0px));
-  left: 0; right: 0;
-  height: env(safe-area-inset-top, 0px);
-  background: #0E0E0E;
-}
 .nav.scrolled {
   box-shadow: 0 4px 40px rgba(0,0,0,0.6);
 }
@@ -896,7 +887,8 @@ blockquote cite {
 
 /* ── MOBILE ── */
 @media (max-width: 768px) {
-  :root { --nav-h: 80px; }
+  :root { --nav-h: 70px; }
+  .nav { top: 0 !important; }
 
   /* Nav */
   .nav-links { display: none; position: static; transform: none; }
