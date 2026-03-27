@@ -883,6 +883,7 @@ blockquote cite {
   :root { --nav-h: 80px; }
 
   /* Nav */
+  .nav { background: rgba(14,14,14,1) !important; }
   .nav-links { display: none; position: static; transform: none; }
   .nav-links.open {
     display: flex;
