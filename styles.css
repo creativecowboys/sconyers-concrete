@@ -266,7 +266,7 @@ address { font-style: normal; }
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding: calc(var(--nav-h) + 4rem) 2rem 6rem;
+  padding: calc(var(--nav-h) + 4rem) 2rem 6rem 6rem;
   overflow: hidden;
   background: var(--concrete-dark);
   background-size: cover;
@@ -322,10 +322,12 @@ address { font-style: normal; }
 }
 
 .hero-inner {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 1200px;
+  margin: 0;
   position: relative;
   z-index: 2;
+  padding-left: 2rem;
+  max-width: 640px;
 }
 
 .hero-eyebrow {
