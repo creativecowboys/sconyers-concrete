@@ -25,7 +25,16 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; font-size: 16px; }
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  background: #0E0E0E;
+}
+
+body {
+  background: #0E0E0E;
+  overscroll-behavior-y: none;
+}
 
 body {
   font-family: var(--font-body);
@@ -147,6 +156,7 @@ address { font-style: normal; }
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   transition: all 0.3s;
+  padding-top: env(safe-area-inset-top);
 }
 .nav.scrolled {
   background: rgba(14, 14, 14, 1);
