@@ -901,14 +901,15 @@ blockquote cite {
   .logo-text { font-size: 0.75rem; }
 
   /* Hero */
-  .hero { padding: calc(var(--nav-h) + 2rem) 1.5rem 4rem 1.5rem; }
+  .hero { padding: calc(var(--nav-h) + 2rem) 1.5rem 4rem 1.5rem; text-align: center; }
   .hero-inner { max-width: 100%; }
   .hero-title { font-size: clamp(3rem, 13vw, 5rem); }
   .hero-sub { font-size: 0.95rem; }
-  .hero-actions { flex-direction: column; }
+  .hero-actions { flex-direction: column; align-items: center; }
   .hero-actions .btn { width: 100%; justify-content: center; }
-  .hero-badge { position: static; margin-top: 2rem; display: flex; gap: 1rem; align-items: center; }
+  .hero-badge { position: static; margin-top: 2rem; display: flex; gap: 1rem; align-items: center; justify-content: center; }
   .badge-number { font-size: 2.5rem; }
+  .section-tag { margin-left: auto; margin-right: auto; }
 
   /* Trust bar */
   .trust-bar-label { font-size: 0.65rem; }
