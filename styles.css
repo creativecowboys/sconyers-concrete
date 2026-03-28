@@ -933,7 +933,6 @@ blockquote cite {
 /* ── MOBILE ── */
 @media (max-width: 768px) {
   :root { --nav-h: 70px; }
-  .nav { top: 0 !important; }
 
   /* Nav */
   .nav-links { display: none; position: static; transform: none; }
