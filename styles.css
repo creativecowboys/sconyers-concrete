@@ -932,7 +932,7 @@ blockquote cite {
 
 /* ── MOBILE ── */
 @media (max-width: 768px) {
-  :root { --nav-h: 70px; }
+  :root { --nav-h: 88px; }
 
   /* Nav */
   .nav-links { display: none; position: static; transform: none; }
@@ -942,15 +942,25 @@ blockquote cite {
     position: absolute;
     top: var(--nav-h);
     left: 0; right: 0;
-    background: rgba(14,14,14,0.99);
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border);
-    gap: 0.25rem;
+    background: #0E0E0E;
+    padding: 1.5rem 1.5rem 2rem;
+    border-bottom: 2px solid var(--accent);
+    gap: 0;
   }
+  .nav-links.open li a {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: 700;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    letter-spacing: 0.05em;
+  }
+  .nav-links.open li:last-child a { border-bottom: none; }
   .nav-cta { display: none; }
-  .nav-toggle { display: flex; }
-  .logo-img { width: 56px; height: 56px; }
-  .logo-text { font-size: 0.75rem; }
+  .nav-toggle { display: flex; width: 44px; height: 44px; }
+  .nav-toggle span { width: 30px; height: 3px; }
+  .logo-img { width: 72px; height: 72px; }
+  .logo-text { font-size: 0.9rem; }
 
   /* Top bar */
   .top-bar { height: 32px; }
