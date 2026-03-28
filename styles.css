@@ -935,27 +935,42 @@ blockquote cite {
   :root { --nav-h: 88px; }
 
   /* Nav */
-  .nav-links { display: none; position: static; transform: none; }
-  .nav-links.open {
+  /* Mobile dropdown — animate down/up */
+  .nav-links {
     display: flex;
     flex-direction: column;
     position: absolute;
     top: var(--nav-h);
     left: 0; right: 0;
     background: #0E0E0E;
-    padding: 1.5rem 1.5rem 2rem;
+    padding: 0 1.5rem;
     border-bottom: 2px solid var(--accent);
     gap: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: max-height 0.35s ease, opacity 0.3s ease, transform 0.3s ease, padding 0.3s ease;
   }
-  .nav-links.open li a {
+  .nav-links.open {
+    max-height: 400px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    padding: 1rem 1.5rem 2rem;
+  }
+  .nav-links li a {
     display: block;
     font-size: 1.4rem;
     font-weight: 700;
+    color: #ffffff !important;
     padding: 0.85rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
     letter-spacing: 0.05em;
   }
-  .nav-links.open li:last-child a { border-bottom: none; }
+  .nav-links li:last-child a { border-bottom: none; }
+  .nav-links li a:hover { color: var(--accent) !important; }
   .nav-cta { display: none; }
   .nav-toggle { display: flex; width: 44px; height: 44px; }
   .nav-toggle span { width: 30px; height: 3px; }
