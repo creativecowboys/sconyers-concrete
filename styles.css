@@ -151,10 +151,13 @@ address { font-style: normal; }
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 100;
-  height: var(--nav-h);
+  height: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
   background: #0E0E0E;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   transition: box-shadow 0.3s;
+}
+.nav-inner {
+  padding-top: calc(1.25rem + env(safe-area-inset-top, 0px));
 }
 .nav.scrolled {
   box-shadow: 0 4px 40px rgba(0,0,0,0.6);
@@ -909,7 +912,7 @@ blockquote cite {
   .logo-text { font-size: 0.75rem; }
 
   /* Hero */
-  .hero { padding: calc(var(--nav-h) + 2rem) 1.5rem 4rem 1.5rem; text-align: center; }
+  .hero { padding: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 2rem) 1.5rem 4rem 1.5rem; text-align: center; }
   .hero-inner { max-width: 100%; }
   .hero-title { font-size: clamp(3rem, 13vw, 5rem); }
   .hero-sub { font-size: 0.95rem; }
