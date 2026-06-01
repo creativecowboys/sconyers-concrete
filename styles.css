@@ -854,7 +854,7 @@ blockquote cite {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 2fr 1fr 1.5fr;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
   gap: 3rem;
   padding-bottom: 3rem;
   border-bottom: 1px solid var(--border);
@@ -1046,3 +1046,179 @@ blockquote cite {
   .section-inner { padding: 0 1.5rem; }
   h2 { font-size: clamp(1.8rem, 8vw, 2.8rem); }
 }
+
+/* ── FAQ ACCORDION STYLE ── */
+.faq-section {
+  padding: 7rem 2rem;
+  background: var(--concrete-mid);
+  border-top: 1px solid var(--border);
+}
+.faq-grid {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.faq-item {
+  background: var(--concrete-surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.faq-item[open] {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+.faq-item summary {
+  padding: 1.25rem 1.75rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--warm-white);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  outline: none;
+}
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+.faq-item summary::after {
+  content: '+';
+  font-size: 1.5rem;
+  color: var(--accent);
+  transition: transform 0.3s ease;
+  font-weight: 400;
+}
+.faq-item[open] summary::after {
+  transform: rotate(45deg);
+  color: var(--warm-white);
+}
+.faq-content {
+  padding: 0 1.75rem 1.75rem;
+  color: var(--gray-light);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+.faq-content p {
+  margin-bottom: 0.75rem;
+}
+.faq-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── COMPARISON TABLE STYLE ── */
+.comparison-table-wrap {
+  overflow-x: auto;
+  margin: 2.5rem auto;
+  max-width: 900px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--concrete-mid);
+}
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.comparison-table th,
+.comparison-table td {
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.comparison-table th {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--concrete-surface);
+}
+.comparison-table tr:last-child td {
+  border-bottom: none;
+}
+.comparison-table td {
+  font-size: 0.95rem;
+  color: var(--gray-light);
+}
+.comparison-table td:first-child {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--warm-white);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ── LOCAL PROOF / REFERENCE SECTIONS ── */
+.local-proof {
+  padding: 7rem 2rem;
+  background: var(--concrete-surface);
+  border-top: 1px solid var(--border);
+}
+.local-proof-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.local-proof h2 {
+  margin-bottom: 1.5rem;
+}
+.local-proof p {
+  font-size: 1.1rem;
+  color: var(--gray-light);
+  line-height: 1.75;
+  margin-bottom: 2rem;
+}
+
+/* ── COMPLIANCE HIGHLIGHT BLOCK ── */
+.compliance-block {
+  background: var(--concrete-mid);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 4px;
+  padding: 2rem;
+  margin: 2.5rem auto;
+  max-width: 800px;
+  text-align: left;
+}
+.compliance-block h4 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  color: var(--warm-white);
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+}
+.compliance-block ul {
+  list-style: none;
+  padding-left: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+.compliance-block li {
+  font-size: 0.92rem;
+  color: var(--gray-light);
+  position: relative;
+  padding-left: 1.25rem;
+}
+.compliance-block li::before {
+  content: "•";
+  color: var(--accent);
+  font-size: 1.2rem;
+  position: absolute;
+  left: 0;
+  top: -2px;
+}
+
