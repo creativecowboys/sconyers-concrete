@@ -125,12 +125,19 @@ export default async function LandingPageRoute(props: PageProps<'/[slug]'>) {
             {page.services.cards.map((card, i) => (
               <div
                 key={card.title}
-                className="service-card reveal"
+                className={`service-card reveal${card.image ? '' : ' service-card--text'}`}
                 style={{ transitionDelay: `${i * 0.08}s` }}
               >
-                <div className="service-img">
-                  <Image src={card.image} alt={card.alt} width={1408} height={768} />
-                </div>
+                {card.image && (
+                  <div className="service-img">
+                    <Image
+                      src={card.image}
+                      alt={card.alt ?? ''}
+                      width={1408}
+                      height={768}
+                    />
+                  </div>
+                )}
                 <div className="service-body">
                   <h3>{card.title}</h3>
                   <p>{card.body}</p>

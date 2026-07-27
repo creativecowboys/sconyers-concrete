@@ -31,19 +31,21 @@ export const parkingLotPaving: LandingPage = {
     cards: [
       {
         image: '/images/concrete-paving.jpg',
-        alt: 'New construction parking lots Douglasville GA',
+        alt: 'Slipform paver placing a commercial concrete lane',
         title: 'New Construction Parking Lots',
         body: 'Full scope: subgrade prep, base prep, forming, rebar/mesh, pour, finish, joint sawing, and striping coordination. Engineered for new retail, hospitality, medical, and office developments.',
       },
       {
-        image: '/images/about-team.jpg',
-        alt: 'Asphalt to concrete conversions Douglasville GA',
+        // was about-team.jpg — a posed crew photo, and the truck in it is
+        // branded "Atlanta Concrete Services".
+        image: '/images/hero.jpg',
+        alt: 'Crew placing and finishing a large exterior concrete pour',
         title: 'Asphalt-to-Concrete Conversions',
         body: 'Tear-out the failing asphalt, repair and compact the base, and pour a new concrete parking structure designed to last 30+ years. Phased to keep your business operating during the conversion.',
       },
       {
-        image: '/images/concrete-slabs.jpg',
-        alt: 'Concrete parking lot repairs Douglasville GA',
+        // was concrete-slabs.jpg, which is an interior warehouse floor.
+        // Nothing in the library shows parking-lot repair, so no image.
         title: 'Parking Lot Repair & Replacement',
         body: 'Sectional tear-out and replacement for damaged slabs, joint repairs, spall and crack remediation, and ADA-compliant restriping coordination.',
       },

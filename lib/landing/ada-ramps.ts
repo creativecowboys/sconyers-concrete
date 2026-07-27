@@ -31,25 +31,24 @@ export const adaRamps: LandingPage = {
     cards: [
       {
         image: '/images/ada-ramps.jpg',
-        alt: 'New ADA concrete ramps West Georgia',
+        alt: 'New accessible route poured with yellow detectable warning panels set',
         title: 'New ADA Ramps for Commercial Builds',
         body: 'Built directly into the original site plan: entrance ramps, accessible parking-lot paths, and transition ramps. Poured strictly to standard ADA constraints (1:12 max slope, 60" landings, 36" clear width).',
       },
       {
-        image: '/images/about-team.jpg',
-        alt: 'ADA concrete ramp retrofits West Georgia',
+        // was about-team.jpg — posed crew shot with a competitor-branded truck.
         title: 'ADA Ramp Retrofits & Remediation',
         body: 'Tear-out and replacement of non-compliant ramps on existing properties. Common after property sales, tenant changeovers, or code assessments.',
       },
       {
         image: '/images/curbs-gutters.jpg',
-        alt: 'Curb ramps and detectable warnings West Georgia',
+        alt: 'Forming and finishing curb and gutter along a commercial lot',
         title: 'Curb Ramps & Detectable Warnings',
         body: 'Sidewalk-to-street transitions at parking areas, crosswalks, and drop-off zones. High-visibility truncated dome warning surfaces installed to spec.',
       },
       {
         image: '/images/stairs.jpg',
-        alt: 'Handrail coordination West Georgia',
+        alt: 'Finished commercial concrete stairs with handrail mounted',
         title: 'Handrail Coordination',
         body: 'We pour structural concrete ramp paths and coordinate with handrail subcontractors (or your steel contractors) for compliant mounting bolt patterns.',
       },

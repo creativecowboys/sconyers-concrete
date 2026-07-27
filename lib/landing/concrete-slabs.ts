@@ -31,25 +31,23 @@ export const concreteSlabs: LandingPage = {
     cards: [
       {
         image: '/images/concrete-slabs.jpg',
-        alt: 'Slab-on-grade pouring Newnan GA',
+        alt: 'Power-trowelling an interior warehouse slab',
         title: 'Slab-on-Grade',
         body: 'Warehouse floors, retail buildouts, restaurant kitchens, and light industrial. Full scopes: subgrade prep, vapor barrier, reinforcement, pour, finish, joint sawing, and curing. 4,000–5,000 PSI standard.',
       },
       {
         image: '/images/hero.jpg',
-        alt: 'Structural slabs Newnan GA',
+        alt: 'Crew screeding a structural concrete pour on a steel-frame build',
         title: 'Structural Slabs',
         body: 'Elevated slabs, slab decks over occupied space, and parking-deck-adjacent structural pours. Coordinated tightly with structural engineers and GCs to hit critical structural load demands.',
       },
       {
-        image: '/images/stairs.jpg',
-        alt: 'Equipment pads Newnan GA',
+        // was stairs.jpg — a finished plaza staircase, nothing to do with pads.
         title: 'Equipment Pads',
         body: "Rooftop HVAC pads, generator pads, transformer pads, and dumpster pads. Reinforced to load spec, leveled to equipment manufacturers' tight tolerances.",
       },
       {
-        image: '/images/about-team.jpg',
-        alt: 'Slab repair and replacement Newnan GA',
+        // was about-team.jpg — posed crew shot with a competitor-branded truck.
         title: 'Slab Repair & Replacement',
         body: 'Demolition and replacement for settled, cracked, or improperly draining slabs. We tear out, evaluate subgrade failure reasons, repair base compaction, and re-pour to spec.',
       },

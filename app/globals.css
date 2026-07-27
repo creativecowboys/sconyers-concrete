@@ -1413,6 +1413,22 @@ blockquote cite {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
+/* Cards with no matching photo. A red rule stands in for the image strip so
+   the card reads as a deliberate variant rather than a failed image load. */
+.service-card--text .service-body {
+  padding-top: 2.25rem;
+  position: relative;
+}
+.service-card--text .service-body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 1.75rem;
+  width: 40px;
+  height: 3px;
+  background: var(--accent);
+}
+
 /* Map + service-area block */
 .lp-map {
   padding: 5rem 2rem;

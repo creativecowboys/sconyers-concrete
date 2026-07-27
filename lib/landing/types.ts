@@ -10,8 +10,13 @@
  */
 
 export type ServiceCard = {
-  image: string
-  alt: string
+  /**
+   * Omit when no photo in the library actually depicts this service — the card
+   * renders as text only. A photo that contradicts its caption costs more
+   * credibility than a missing one, so don't pad these with near-misses.
+   */
+  image?: string
+  alt?: string
   title: string
   body: string
 }
