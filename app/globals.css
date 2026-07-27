@@ -73,6 +73,22 @@ a { color: inherit; text-decoration: none; }
 
 address { font-style: normal; }
 
+/* ── KEYBOARD FOCUS ──
+   Mouse users see nothing; keyboard users get a ring on every interactive
+   element. --accent-light clears 3:1 against both the dark surfaces and the
+   light About section, so one rule covers the whole site. */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--accent-light);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 /* ── UTILITIES ── */
 .section-inner {
   max-width: 1200px;
@@ -483,7 +499,8 @@ address { font-style: normal; }
   font-size: 0.7rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.6);
+  /* was rgba(255,255,255,0.6) — only 2.76:1 on the red bar */
+  color: rgba(255,255,255,0.88);
 }
 
 .trust-bar {
@@ -725,7 +742,8 @@ blockquote cite {
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--gray);
+  /* --gray (#888) is only 3.54:1 on the white stat cards */
+  color: #6E6E6E;
   line-height: 1.3;
 }
 .stat-card.highlight .stat-label { color: rgba(255,255,255,0.8); }
@@ -923,6 +941,39 @@ blockquote cite {
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* ── REDUCED MOTION ──
+   The hero and .reveal elements start at opacity:0 and are revealed BY the
+   animation, so these rules must assert the end state — simply switching the
+   animations off would leave the page blank. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html { scroll-behavior: auto; }
+
+  /* !important is deliberate: these elements sit at opacity:0 and are revealed
+     by a filling animation, which outranks a normal declaration in the cascade.
+     Without it, anything that stops the animation running leaves them blank. */
+  .hero-eyebrow,
+  .hero-title .line-1,
+  .hero-title .line-2,
+  .hero-title .line-3,
+  .hero-sub,
+  .hero-actions,
+  .hero-badge,
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Stop the marquee outright; both segments stay legible unscrolled. */
+  .trust-track { animation: none; }
 }
 
 /* ── RESPONSIVE ── */
