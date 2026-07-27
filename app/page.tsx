@@ -9,52 +9,40 @@ import { site } from '@/lib/site'
 export const metadata: Metadata = {
   title: 'Sconyers Concrete, Inc. | Commercial Concrete — Greater Atlanta, GA',
   description:
-    'Sconyers Concrete Inc. — 30+ years of commercial concrete work in Greater Atlanta. Slabs, paving, sidewalks, ADA ramps & more. Free estimates. Call 706-669-3089.',
+    'Sconyers Concrete Inc. — 30+ years of large-scale commercial concrete in Greater Atlanta. Warehouse floors, structural foundations, parking lots & truck courts. Free estimates: 706-669-3089.',
   alternates: { canonical: '/' },
 }
 
 const services = [
   {
     image: '/images/concrete-slabs.jpg',
-    alt: 'Commercial concrete slab work',
-    title: 'Concrete Slabs',
-    body: 'Industrial-grade slabs for any commercial application. Engineered to handle the loads your business demands.',
+    alt: 'Power-trowelling an interior warehouse floor',
+    title: 'Warehouse & Industrial Floors',
+    body: "Slab-on-grade floors for distribution, manufacturing, and light industrial buildings — poured to your engineer's reinforcement, joint layout, and flatness spec.",
+  },
+  {
+    image: '/images/foundation-pour.jpg',
+    alt: 'Boom pump placing a large formed and reinforced building foundation',
+    title: 'Structural Slabs & Foundations',
+    body: 'Formed and reinforced footings, grade beams, and structural pours placed by boom pump, sequenced around your steel erector and site trades.',
   },
   {
     image: '/images/concrete-paving.jpg',
-    alt: 'Commercial concrete paving',
-    title: 'Concrete Paving',
-    body: 'Parking lots, driveways, and commercial surfaces built to endure Atlanta weather and heavy traffic.',
+    alt: 'Slipform paver placing a commercial concrete lane',
+    title: 'Parking Lots & Site Paving',
+    body: 'Full-depth concrete parking fields, drive aisles, and access roads for shopping centers, medical campuses, and office parks. Built for decades of traffic.',
   },
   {
-    image: '/images/curbs-gutters.jpg',
-    alt: 'Concrete curbs and gutters',
-    title: 'Curbs & Gutters',
-    body: 'Proper drainage and edge control for parking areas, roads, and commercial properties.',
-  },
-  {
-    image: '/images/sidewalks.jpg',
-    alt: 'Commercial concrete sidewalks',
-    title: 'Sidewalks',
-    body: 'Code-compliant, smooth sidewalks for commercial properties that welcome customers and tenants.',
-  },
-  {
-    image: '/images/ada-ramps.jpg',
-    alt: 'ADA handicap concrete ramps',
-    title: 'ADA Handicap Ramps',
-    body: 'ADA-compliant ramps installed to spec, keeping your property accessible and up to code.',
-  },
-  {
-    image: '/images/stairs.jpg',
-    alt: 'Commercial concrete stairs',
-    title: 'Stairs',
-    body: 'Durable, precisely formed concrete stairs for commercial buildings, entrances, and exterior applications.',
+    image: '/images/finishing-crew.jpg',
+    alt: 'Crew screeding and finishing a large commercial pour',
+    title: 'Truck Courts & Loading Docks',
+    body: 'Heavy-duty pavement where the loads are worst — dock aprons, trailer parking, refuse pads, and fire lanes. Thicker sections, higher PSI, engineered jointing.',
   },
 ]
 
 const stats = [
   { num: '30', sup: '+', label: 'Years of Combined Experience' },
-  { num: '6', label: 'Core Services Offered' },
+  { num: '100', sup: '%', label: 'Self-Performed — No Subcontracted Crews' },
   { num: '7', label: 'Commercial Sectors Served' },
   { num: 'FREE', label: 'On-Site or Phone Estimates', highlight: true },
 ]
@@ -97,8 +85,9 @@ export default function HomePage() {
             </span>
           </h1>
           <p className="hero-sub">
-            30+ years of commercial concrete work across Greater Atlanta. Hospitals.
-            Shopping centers. Municipal facilities. Anywhere concrete needs to last.
+            30+ years of large-scale commercial concrete across Greater Atlanta.
+            Hospitals. Shopping centers. Municipal facilities. The slabs and paving the
+            whole build sits on.
           </p>
           <div className="hero-actions">
             <a href={site.phoneHref} className="btn btn-primary">
@@ -124,14 +113,16 @@ export default function HomePage() {
       <section className="services" id="services">
         <div className="section-inner">
           <div className="section-header reveal">
-            <span className="section-tag">What We Do</span>
-            <h2>Commercial Concrete Services</h2>
+            <span className="section-tag">What We Pour</span>
+            <h2>Commercial Concrete at Scale</h2>
             <p>
-              From quick place-and-finish jobs to full form, place, and finish — we have
-              the tools, crew, and expertise to handle any scale or complexity.
+              Slabs and paving for ground-up commercial construction — self-performed
+              from subgrade to final finish. Sidewalks, stairs, and ADA work come with
+              the contract.
             </p>
           </div>
-          <div className="services-grid">
+          {/* auto-fit: four cards sit in one row on desktop rather than 3 + 1 */}
+          <div className="services-grid services-grid--auto">
             {services.map((service, i) => (
               <div
                 key={service.title}
@@ -168,8 +159,8 @@ export default function HomePage() {
               <h2>30 Years of Concrete You Can Count On</h2>
               <p className="lead">
                 Sconyers Concrete Inc. has been laying the foundation for Greater Atlanta
-                businesses since 1994. We&apos;re not a big-box contractor — we&apos;re a
-                hands-on crew that treats every pour like it has our name on it.
+                businesses since 1994. Strictly commercial, strictly self-performed —
+                our own crews run every pour, start to finish.
               </p>
               <p>
                 From hospitals and churches to restaurants and shopping centers,
@@ -185,9 +176,9 @@ export default function HomePage() {
             </div>
             <div className="about-img">
               <Image
-                src="/images/about-team.jpg"
-                alt="Sconyers Concrete crew at a job site"
-                width={1408}
+                src="/images/slab-crew.jpg"
+                alt="Sconyers Concrete crew screeding a commercial slab beside a company truck"
+                width={1376}
                 height={768}
               />
             </div>

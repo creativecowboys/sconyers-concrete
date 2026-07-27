@@ -36,20 +36,22 @@ export const concreteSlabs: LandingPage = {
         body: 'Warehouse floors, retail buildouts, restaurant kitchens, and light industrial. Full scopes: subgrade prep, vapor barrier, reinforcement, pour, finish, joint sawing, and curing. 4,000–5,000 PSI standard.',
       },
       {
-        image: '/images/hero.jpg',
-        alt: 'Crew screeding a structural concrete pour on a steel-frame build',
-        title: 'Structural Slabs',
-        body: 'Elevated slabs, slab decks over occupied space, and parking-deck-adjacent structural pours. Coordinated tightly with structural engineers and GCs to hit critical structural load demands.',
+        image: '/images/foundation-pour.jpg',
+        alt: 'Boom pump placing a large formed and reinforced building foundation',
+        title: 'Structural Slabs & Foundations',
+        body: 'Footings, grade beams, elevated slabs, and slab decks over occupied space. Coordinated tightly with structural engineers and GCs to hit critical structural load demands.',
       },
       {
-        // was stairs.jpg — a finished plaza staircase, nothing to do with pads.
+        image: '/images/pump-placement.jpg',
+        alt: 'Placing concrete by pump hose into a dense mat of reinforcing steel',
         title: 'Equipment Pads',
-        body: "Rooftop HVAC pads, generator pads, transformer pads, and dumpster pads. Reinforced to load spec, leveled to equipment manufacturers' tight tolerances.",
+        body: "Rooftop HVAC pads, generator pads, transformer pads, and dock equipment pads. Reinforced to load spec, leveled to the equipment manufacturer's tolerances.",
       },
       {
-        // was about-team.jpg — posed crew shot with a competitor-branded truck.
+        image: '/images/power-screed.jpg',
+        alt: 'Power screed levelling a fresh slab pour beside a mixer chute',
         title: 'Slab Repair & Replacement',
-        body: 'Demolition and replacement for settled, cracked, or improperly draining slabs. We tear out, evaluate subgrade failure reasons, repair base compaction, and re-pour to spec.',
+        body: 'Demolition and replacement for settled, cracked, or improperly draining floors. We tear out, diagnose why the subgrade failed, repair base compaction, and re-pour to spec.',
       },
     ],
   },

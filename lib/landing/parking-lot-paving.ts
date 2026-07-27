@@ -44,16 +44,16 @@ export const parkingLotPaving: LandingPage = {
         body: 'Tear-out the failing asphalt, repair and compact the base, and pour a new concrete parking structure designed to last 30+ years. Phased to keep your business operating during the conversion.',
       },
       {
-        // was concrete-slabs.jpg, which is an interior warehouse floor.
-        // Nothing in the library shows parking-lot repair, so no image.
-        title: 'Parking Lot Repair & Replacement',
-        body: 'Sectional tear-out and replacement for damaged slabs, joint repairs, spall and crack remediation, and ADA-compliant restriping coordination.',
+        image: '/images/power-screed.jpg',
+        alt: 'Power screed levelling a fresh pour beside a mixer chute',
+        title: 'Pavement Repair & Replacement',
+        body: 'Sectional tear-out and replacement for failed panels, joint repairs, spall and crack remediation, and restriping coordination — phased so the lot keeps working.',
       },
       {
-        image: '/images/curbs-gutters.jpg',
-        alt: 'Curb, gutter, and drainage Douglasville GA',
-        title: 'Curb, Gutter, and Drainage',
-        body: 'Most parking lot failures are drainage failures. We pour curbs, gutters, and drainage structures to GDOT and municipal specs as part of the parking lot scope to prevent pooling water.',
+        image: '/images/finishing-crew.jpg',
+        alt: 'Crew screeding and finishing a large commercial pour',
+        title: 'Truck Courts & Loading Docks',
+        body: 'The part of the lot that fails first. Dock aprons, trailer parking, refuse pads, and fire lanes poured in thicker sections at higher PSI, with jointing laid out for the turning loads they actually carry.',
       },
     ],
   },
@@ -195,6 +195,6 @@ export const parkingLotPaving: LandingPage = {
     areaServed: 'Douglasville',
     serviceType: 'Commercial Parking Lot Paving',
     description:
-      'Full-depth concrete parking lot paving, asphalt-to-concrete conversions, repairs, curb, gutter, and drainage solutions in Douglasville, GA.',
+      'Full-depth concrete parking lot paving, asphalt-to-concrete conversions, pavement replacement, and truck court construction in Douglasville, GA.',
   },
 }

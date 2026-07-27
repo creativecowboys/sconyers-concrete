@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: '%s | Sconyers Concrete',
   },
   description:
-    'Sconyers Concrete Inc. — 30+ years of commercial concrete work in Greater Atlanta. Slabs, paving, sidewalks, ADA ramps & more. Free estimates. Call 706-669-3089.',
+    'Sconyers Concrete Inc. — 30+ years of large-scale commercial concrete in Greater Atlanta. Warehouse floors, structural foundations, parking lots & truck courts. Free estimates: 706-669-3089.',
 }
 
 export const viewport: Viewport = {

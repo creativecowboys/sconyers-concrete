@@ -4,12 +4,12 @@ export const villaRica: LandingPage = {
   slug: 'commercial-concrete-contractor-villa-rica-ga',
   title: 'Commercial Concrete Contractor in Villa Rica, GA | Sconyers Concrete',
   description:
-    'Villa Rica is growing 3.4% per year — and every new shopping center, medical office, and restaurant pad needs concrete. 30+ years of West GA commercial concrete. 706-669-3089.',
+    'Villa Rica is growing 3.4% per year — and every new shopping center, medical campus, and industrial pad needs concrete. 30+ years of large-scale West GA commercial concrete. 706-669-3089.',
 
   hero: {
     eyebrow: 'Serving Villa Rica Since 1994',
     lines: ['Commercial', 'Concrete', 'Villa Rica, GA'],
-    sub: "Villa Rica grew 24.77% since 2020 — and the commercial build-out is just catching up. Slabs, parking lots, ADA ramps, sidewalks. Same crew that's been pouring West Georgia concrete since 1994.",
+    sub: "Villa Rica grew 24.77% since 2020 — and the commercial build-out is just catching up. Warehouse floors, structural foundations, parking fields. Same crew that's been pouring West Georgia concrete since 1994.",
     trustStrip:
       '30+ years · Bonded & insured · Free on-site estimates · Same-week response',
   },
@@ -28,42 +28,31 @@ export const villaRica: LandingPage = {
     tag: 'What We Pour',
     heading: 'Commercial Services In Villa Rica',
     sub: 'Industrial-grade standards and precise compliance for every commercial concrete scope.',
+    autoColumns: true,
     cards: [
       {
         image: '/images/concrete-slabs.jpg',
-        alt: 'Commercial concrete slabs Villa Rica GA',
-        title: 'Commercial Concrete Slabs',
-        body: 'Industrial-grade slabs for warehouses, retail buildouts, light industrial, and institutional builds. Form, place, and finish to spec.',
+        alt: 'Power-trowelling an interior warehouse floor',
+        title: 'Warehouse & Industrial Floors',
+        body: 'Slab-on-grade floors for warehouse, light industrial, and institutional builds on both sides of I-20. Form, place, and finish to spec.',
+      },
+      {
+        image: '/images/foundation-pour.jpg',
+        alt: 'Boom pump placing a large formed and reinforced building foundation',
+        title: 'Structural Slabs & Foundations',
+        body: "Footings, grade beams, and structural pours for Villa Rica's greenfield developments — placed by boom pump, coordinated with your engineer on reinforcement and mix design.",
       },
       {
         image: '/images/concrete-paving.jpg',
-        alt: 'Commercial parking lot paving Villa Rica GA',
-        title: 'Parking Lot Paving',
-        body: 'Full-depth concrete parking lots for shopping centers, medical offices, churches, and office parks. Built to handle heavy delivery traffic and freeze-thaw cycles.',
+        alt: 'Slipform paver placing a commercial concrete lane',
+        title: 'Parking Lots & Site Paving',
+        body: 'Full-depth concrete parking fields for shopping centers, medical campuses, churches, and office parks. Built to handle heavy delivery traffic and freeze-thaw cycles.',
       },
       {
-        image: '/images/curbs-gutters.jpg',
-        alt: 'Concrete curbs and gutters Villa Rica GA',
-        title: 'Curbs & Gutters',
-        body: "Extruded or formed curbs and gutters that meet GDOT and municipal specs. Proper drainage is crucial for Villa Rica's new greenfield developments. Keep drainage controlled and liability low.",
-      },
-      {
-        image: '/images/sidewalks.jpg',
-        alt: 'Commercial concrete sidewalks Villa Rica GA',
-        title: 'Commercial Sidewalks',
-        body: 'Wide, durable sidewalk networks connecting new Villa Rica retail and hospitality builds. Code-compliant, broom-finished, and tooled to spec.',
-      },
-      {
-        image: '/images/ada-ramps.jpg',
-        alt: 'ADA handicap concrete ramps Villa Rica GA',
-        title: 'ADA Handicap Ramps',
-        body: 'Compliant ramps installed to current ADA standards — slope, width, landing, detectable warning surfaces, and handrail mounting. Built right so your inspector signs off the first time.',
-      },
-      {
-        image: '/images/stairs.jpg',
-        alt: 'Commercial concrete stairs Villa Rica GA',
-        title: 'Commercial Concrete Stairs',
-        body: 'Precisely formed exterior stairs for storefronts, entrances, loading docks, and amphitheater seating. Reinforced and finished to last.',
+        image: '/images/finishing-crew.jpg',
+        alt: 'Crew screeding and finishing a large commercial pour',
+        title: 'Truck Courts & Loading Docks',
+        body: 'Heavy-duty pavement for dock aprons, trailer parking, refuse pads, and fire lanes. Thicker sections, higher PSI, engineered jointing.',
       },
     ],
   },
@@ -142,13 +131,13 @@ export const villaRica: LandingPage = {
       {
         question: 'Do you only do new construction, or also concrete repair and replacement?',
         answer: [
-          'We do both. New pours for ground-up commercial builds, plus tear-out and replacement for failed slabs, broken sidewalks, deteriorated parking lots, and non-compliant ADA ramps.',
+          'We do both. New pours for ground-up commercial builds, plus tear-out and replacement for failed warehouse floors, deteriorated parking fields, and dock aprons that have started to break up under trailer traffic.',
         ],
       },
       {
-        question: "What's the minimum project size you'll quote?",
+        question: 'What size projects do you take on?',
         answer: [
-          "We focus on commercial scopes — there's no hard square-footage minimum, but our pricing makes the most sense for jobs in the 500 sq ft + range. ADA ramp replacements, small slab tear-outs, and sidewalk sections are all in scope.",
+          'Commercial only, and the bigger the better — building pads, warehouse floors, full parking fields, and truck courts. We are not set up for residential driveways or patios. Sidewalks, stairs, and ADA work get self-performed as part of a larger site package rather than quoted on their own.',
         ],
       },
       {
@@ -207,6 +196,6 @@ export const villaRica: LandingPage = {
     areaServed: 'Villa Rica',
     serviceType: 'Commercial Concrete Contracting',
     description:
-      'Commercial concrete slab pouring, parking lot paving, sidewalk construction, curbs and gutters, ADA ramps, and stairs for Villa Rica, GA businesses.',
+      'Warehouse and industrial floors, structural slabs and foundations, parking lot paving, and truck court pavement for Villa Rica, GA commercial construction.',
   },
 }

@@ -12,12 +12,10 @@ const SERVICE_AREA_CITIES = [
 ]
 
 const OFFER_CATALOG_SERVICES = [
-  'Commercial Concrete Slabs',
-  'Commercial Concrete Paving',
-  'Curbs and Gutters',
-  'Commercial Sidewalks',
-  'ADA Handicap Ramps',
-  'Commercial Concrete Stairs',
+  'Warehouse and Industrial Concrete Floors',
+  'Structural Concrete Slabs and Foundations',
+  'Commercial Parking Lot and Site Paving',
+  'Truck Courts and Loading Dock Pavement',
 ]
 
 /** The GeneralContractor block — identical on every landing page. */

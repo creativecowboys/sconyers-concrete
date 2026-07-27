@@ -4,12 +4,12 @@ export const douglasville: LandingPage = {
   slug: 'commercial-concrete-contractor-douglasville-ga',
   title: 'Commercial Concrete Contractor in Douglasville, GA | Sconyers Concrete',
   description:
-    'Commercial concrete contractor based 10 minutes from Douglasville. 30+ years pouring slabs, parking lots, sidewalks, ADA ramps & curbs for GA businesses. Free estimates: 706-669-3089.',
+    'Commercial concrete contractor based 10 minutes from Douglasville. 30+ years pouring warehouse floors, structural foundations, parking fields & truck courts across Douglas County. Free estimates: 706-669-3089.',
 
   hero: {
     eyebrow: 'Based 10 Minutes from Douglasville',
     lines: ['Commercial', 'Concrete', 'Douglasville, GA'],
-    sub: 'Based 10 minutes from downtown Douglasville. Pouring commercial slabs, parking lots, sidewalks, curbs, ADA ramps, and stairs for Douglas County businesses since 1994.',
+    sub: 'Based 10 minutes from downtown Douglasville. Pouring warehouse floors, structural foundations, parking fields, and truck courts for Douglas County commercial builds since 1994.',
     trustStrip:
       '30+ years · Bonded & insured · Free on-site estimates · Same-week response',
   },
@@ -18,7 +18,7 @@ export const douglasville: LandingPage = {
     tag: 'The Contractor That Shows Up',
     heading: 'Douglasville Commercial Concrete Work',
     paragraphs: [
-      "Douglasville businesses don't have time for the contractor that ghosts. You've got a slab to pour before drywall, a parking lot that needs to be open by the grand opening, or an ADA ramp that has to pass inspection before your CO. Sconyers Concrete is the West Georgia commercial concrete contractor that <strong>actually shows up</strong> — on the day we said, with the crew we promised, doing the job the way the specs called for.",
+      "Douglasville developers don't have time for the contractor that ghosts. You've got a slab to pour before the steel goes up, a parking field that has to be open for the grand opening, or a dock apron that has to carry loaded trailers on day one. Sconyers Concrete is the West Georgia commercial concrete contractor that <strong>actually shows up</strong> — on the day we said, with the crew we promised, doing the job the way the specs called for.",
       "We're headquartered in Winston, GA — about 10 minutes from Arbor Place Mall and right off the I-20 corridor. That means our trucks roll into Douglasville job sites first thing in the morning, not after a 90-minute commute from north Atlanta. For 30+ years, we've poured for hospitals, shopping centers, churches, office parks, country clubs, restaurants, and municipal facilities across Douglas County and the broader Greater Atlanta region.",
       "If you're a GC, developer, property manager, or facility director with a commercial concrete scope in Douglasville, you're looking at the right crew. Call <strong>706-669-3089</strong> for a free estimate, or use the form below — we respond same-week, often same-day.",
     ],
@@ -28,42 +28,31 @@ export const douglasville: LandingPage = {
     tag: 'What We Pour',
     heading: 'Commercial Services In Douglasville',
     sub: 'Industrial-grade standards and precise compliance for every commercial concrete scope.',
+    autoColumns: true,
     cards: [
       {
         image: '/images/concrete-slabs.jpg',
-        alt: 'Commercial concrete slabs Douglasville GA',
-        title: 'Commercial Concrete Slabs',
-        body: 'Industrial-grade slabs for warehouses, retail buildouts, light industrial, and institutional builds. Form, place, and finish — or place-and-finish on prepped subgrade. Engineered for the loads your tenants will throw at it.',
+        alt: 'Power-trowelling an interior warehouse floor',
+        title: 'Warehouse & Industrial Floors',
+        body: 'Slab-on-grade floors for distribution, manufacturing, and light industrial buildings along the I-20 corridor. Form, place, and finish — or place-and-finish on prepped subgrade. Engineered for the loads your tenants will throw at it.',
+      },
+      {
+        image: '/images/foundation-pour.jpg',
+        alt: 'Boom pump placing a large formed and reinforced building foundation',
+        title: 'Structural Slabs & Foundations',
+        body: 'Footings, grade beams, and structural pours placed by boom pump and sequenced around your steel erector. We coordinate with the engineer of record on reinforcement and mix design before a truck rolls.',
       },
       {
         image: '/images/concrete-paving.jpg',
-        alt: 'Commercial parking lot paving Douglasville GA',
-        title: 'Parking Lot Paving',
-        body: "Full-depth concrete parking lots for shopping centers, medical offices, churches, and office parks. Built to handle Douglasville's freeze-thaw cycles and the heavy delivery traffic that destroys cheaper asphalt within 5 years.",
+        alt: 'Slipform paver placing a commercial concrete lane',
+        title: 'Parking Lots & Site Paving',
+        body: "Full-depth concrete parking fields and drive aisles for shopping centers, medical campuses, and office parks. Built to handle Douglasville's freeze-thaw cycles and the heavy delivery traffic that destroys cheaper asphalt within 5 years.",
       },
       {
-        image: '/images/curbs-gutters.jpg',
-        alt: 'Concrete curbs and gutters Douglasville GA',
-        title: 'Curbs & Gutters',
-        body: "Extruded or formed curbs and gutters that meet GDOT and municipal specs. Proper drainage means your parking lot doesn't pond, your landscape beds don't wash out, and your liability stays low.",
-      },
-      {
-        image: '/images/sidewalks.jpg',
-        alt: 'Commercial concrete sidewalks Douglasville GA',
-        title: 'Commercial Sidewalks',
-        body: 'ADA-width sidewalks, walkways between buildings, and pedestrian connections. Code-compliant, broom-finished, and tooled to spec.',
-      },
-      {
-        image: '/images/ada-ramps.jpg',
-        alt: 'ADA handicap concrete ramps Douglasville GA',
-        title: 'ADA Handicap Ramps',
-        body: 'Compliant ramps installed to current ADA standards — slope, width, landing, detectable warning surfaces, and handrail mounting. Built right so your inspector signs off the first time.',
-      },
-      {
-        image: '/images/stairs.jpg',
-        alt: 'Commercial concrete stairs Douglasville GA',
-        title: 'Commercial Concrete Stairs',
-        body: 'Precisely formed exterior stairs for storefronts, entrances, loading docks, and amphitheater seating. Reinforced and finished to last.',
+        image: '/images/finishing-crew.jpg',
+        alt: 'Crew screeding and finishing a large commercial pour',
+        title: 'Truck Courts & Loading Docks',
+        body: 'Heavy-duty pavement where the loads are worst — dock aprons, trailer parking, refuse pads, and fire lanes poured to GDOT and municipal specs. Thicker sections, higher PSI, engineered jointing.',
       },
     ],
   },
@@ -72,7 +61,7 @@ export const douglasville: LandingPage = {
     tag: 'Local Proof',
     heading: 'Douglas County Jobs We Know How to Handle',
     paragraphs: [
-      "We've poured concrete from Lithia Springs to Villa Rica, from the Douglas Boulevard retail corridor to the office parks along Bright Star Road. Whatever your site looks like — tight urban infill near downtown Douglasville, sprawling pad sites along I-20, or a hillside church property off Highway 5 — we've handled it. Recent Douglas County project types include retail strip pads, hospital outparcel slabs, church campus expansions, restaurant patios, and municipal sidewalk replacements.",
+      "We've poured concrete from Lithia Springs to Villa Rica, from the Douglas Boulevard retail corridor to the office parks along Bright Star Road. Whatever your site looks like — tight urban infill near downtown Douglasville, sprawling pad sites along I-20, or a hillside church property off Highway 5 — we've handled it. Recent Douglas County work spans retail center pads, hospital outparcel slabs, church campus expansions, and municipal paving.",
     ],
     note: 'Owner Chip Sconyers provides hands-on management on every commercial job site.',
   },
@@ -142,13 +131,13 @@ export const douglasville: LandingPage = {
       {
         question: 'Do you only do new construction, or also concrete repair and replacement?',
         answer: [
-          'We do both. New pours for ground-up commercial builds, plus tear-out and replacement for failed slabs, broken sidewalks, deteriorated parking lots, and non-compliant ADA ramps.',
+          'We do both. New pours for ground-up commercial builds, plus tear-out and replacement for failed warehouse floors, deteriorated parking fields, and dock aprons that have started to break up under trailer traffic.',
         ],
       },
       {
-        question: "What's the minimum project size you'll quote?",
+        question: 'What size projects do you take on?',
         answer: [
-          "We focus on commercial scopes — there's no hard square-footage minimum, but our pricing makes the most sense for jobs in the 500 sq ft + range. ADA ramp replacements, small slab tear-outs, and sidewalk sections are all in scope.",
+          'Commercial only, and the bigger the better — building pads, warehouse floors, full parking fields, and truck courts. We are not set up for residential driveways or patios. Sidewalks, stairs, and ADA work get self-performed as part of a larger site package rather than quoted on their own.',
         ],
       },
       {
@@ -207,6 +196,6 @@ export const douglasville: LandingPage = {
     areaServed: 'Douglasville',
     serviceType: 'Commercial Concrete Contracting',
     description:
-      'Commercial concrete slab pouring, parking lot paving, sidewalk construction, curbs and gutters, ADA ramps, and stairs for Douglasville, GA businesses.',
+      'Warehouse and industrial floors, structural slabs and foundations, parking lot paving, and truck court pavement for Douglasville, GA commercial construction.',
   },
 }

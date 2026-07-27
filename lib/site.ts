@@ -34,11 +34,16 @@ export const areaLinks = [
   { href: '/ada-ramp-installation-west-georgia', label: 'ADA Ramp Installation' },
 ] as const
 
+/**
+ * Advertised services. Sconyers is strictly large commercial, so the site
+ * headlines the two heavy disciplines — slabs and paving — split into the
+ * scopes a GC or developer actually bids. Sidewalks, stairs and ADA work are
+ * still self-performed, but as part of these contracts rather than as
+ * standalone jobs, so they are not sold separately.
+ */
 export const footerServices = [
-  'Concrete Slabs',
-  'Concrete Paving',
-  'Curbs & Gutters',
-  'Sidewalks',
-  'ADA Ramps',
-  'Stairs',
+  'Warehouse & Industrial Floors',
+  'Structural Slabs & Foundations',
+  'Parking Lots & Site Paving',
+  'Truck Courts & Loading Docks',
 ] as const

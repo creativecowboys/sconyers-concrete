@@ -17,34 +17,28 @@ type Props = {
 }
 
 const HOME_SERVICES = [
-  'Concrete Slabs',
-  'Concrete Paving',
-  'Curbs & Gutters',
-  'Sidewalks',
-  'ADA Handicap Ramps',
-  'Stairs',
-  'Multiple / Not Sure',
+  'Warehouse / Industrial Floor',
+  'Structural Slab or Foundation',
+  'Parking Lot / Site Paving',
+  'Truck Court / Loading Dock',
+  'Full Site Concrete Package',
 ]
 
 const PAGE_SERVICES = [
-  'Concrete Slabs',
-  'Concrete Paving',
-  'Curbs & Gutters',
-  'Sidewalks',
-  'ADA Handicap Ramps',
-  'Stairs',
-  'Multiple Services',
+  'Warehouse / Industrial Floor',
+  'Structural Slab or Foundation',
+  'Parking Lot / Site Paving',
+  'Truck Court / Loading Dock',
+  'Full Site Concrete Package',
   'Not Sure — Need Consultation',
 ]
 
 const LANDING_SERVICES = [
-  'Slabs',
-  'Paving',
-  'Curbs & Gutters',
-  'Sidewalks',
-  'ADA Ramps',
-  'Stairs',
-  'Multiple / Other',
+  'Warehouse / Industrial Floor',
+  'Structural Slab or Foundation',
+  'Parking Lot / Site Paving',
+  'Truck Court / Loading Dock',
+  'Full Site Concrete Package',
 ]
 
 const PAGE_TIMELINES = [

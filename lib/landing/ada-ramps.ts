@@ -36,13 +36,14 @@ export const adaRamps: LandingPage = {
         body: 'Built directly into the original site plan: entrance ramps, accessible parking-lot paths, and transition ramps. Poured strictly to standard ADA constraints (1:12 max slope, 60" landings, 36" clear width).',
       },
       {
-        // was about-team.jpg — posed crew shot with a competitor-branded truck.
+        image: '/images/power-screed.jpg',
+        alt: 'Power screed levelling a fresh pour beside a mixer chute',
         title: 'ADA Ramp Retrofits & Remediation',
-        body: 'Tear-out and replacement of non-compliant ramps on existing properties. Common after property sales, tenant changeovers, or code assessments.',
+        body: 'Tear-out and replacement of non-compliant ramps on existing commercial properties. Common after property sales, tenant changeovers, or code assessments.',
       },
       {
-        image: '/images/curbs-gutters.jpg',
-        alt: 'Forming and finishing curb and gutter along a commercial lot',
+        // No photo: the only candidate showed curb-and-gutter slipform work,
+        // which is off-message now that curb and gutter isn't a service.
         title: 'Curb Ramps & Detectable Warnings',
         body: 'Sidewalk-to-street transitions at parking areas, crosswalks, and drop-off zones. High-visibility truncated dome warning surfaces installed to spec.',
       },
@@ -137,9 +138,9 @@ export const adaRamps: LandingPage = {
         ],
       },
       {
-        question: "What's the cost of a typical ADA ramp installation?",
+        question: 'Do you quote ADA work on its own?',
         answer: [
-          "Costs vary widely depending on whether it's new construction or a retrofit (which requires demolition, slope correction, and utility adjustments). Demolition and base correction add labor, but a standard retrofit typically runs between $3,500 and $8,000 depending on size and handrail needs. We provide free detailed estimates.",
+          'Usually not. ADA ramps, curb ramps, and detectable warnings are scopes we self-perform inside a larger commercial contract — a building pad, a parking field, a site package. If you are already building with us, the accessible route is part of the job. Standalone remediation is case by case; call and we will tell you straight.',
         ],
       },
       {

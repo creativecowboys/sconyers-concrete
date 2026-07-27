@@ -4,12 +4,12 @@ export const newnan: LandingPage = {
   slug: 'commercial-concrete-contractor-newnan-ga',
   title: 'Commercial Concrete Contractor in Newnan, GA | Sconyers Concrete',
   description:
-    'Pouring commercial slabs, parking lots, ADA ramps & sidewalks across Newnan since 1994. Trusted by GCs building retail, restaurants & medical offices. Free estimates: 706-669-3089.',
+    'Pouring warehouse floors, structural foundations, parking fields & truck courts across Newnan since 1994. Trusted by GCs building retail, industrial & medical projects. Free estimates: 706-669-3089.',
 
   hero: {
     eyebrow: 'Serving Coweta County Since 1994',
     lines: ['Commercial', 'Concrete', 'Newnan, GA'],
-    sub: "Newnan is building fast — Hilton Garden Inn, Sprouts, Crunch Fitness, Mellow Mushroom, and dozens more. We've been pouring the slabs, parking lots, and ADA ramps for Coweta County commercial builds since 1994.",
+    sub: "Newnan is building fast — Hilton Garden Inn, Sprouts, Crunch Fitness, Mellow Mushroom, and dozens more. We've been pouring the floors, foundations, and parking fields for Coweta County commercial builds since 1994.",
     trustStrip:
       '30+ years · Bonded & insured · Free on-site estimates · Same-week response',
   },
@@ -28,42 +28,31 @@ export const newnan: LandingPage = {
     tag: 'What We Pour',
     heading: 'Commercial Services In Newnan',
     sub: 'Industrial-grade standards and precise compliance for every commercial concrete scope.',
+    autoColumns: true,
     cards: [
       {
         image: '/images/concrete-slabs.jpg',
-        alt: 'Commercial concrete slabs Newnan GA',
-        title: 'Commercial Concrete Slabs',
-        body: "Industrial-grade slabs for warehouses, retail buildouts, light industrial, and institutional builds. Engineered specifically for Newnan's industrial and warehouse growth (Yokogawa, Sewell, Cancer Treatment Centers facility zones). Form, place, and finish to spec.",
+        alt: 'Power-trowelling an interior warehouse floor',
+        title: 'Warehouse & Industrial Floors',
+        body: "Slab-on-grade floors engineered for Newnan's industrial and warehouse growth — the Yokogawa, Sewell, and Cancer Treatment Centers facility zones. Form, place, and finish to spec, at the flatness your racking demands.",
+      },
+      {
+        image: '/images/foundation-pour.jpg',
+        alt: 'Boom pump placing a large formed and reinforced building foundation',
+        title: 'Structural Slabs & Foundations',
+        body: 'Footings, grade beams, and structural pours placed by boom pump. We work off the structural drawings and coordinate reinforcement and mix design with your engineer before the first truck rolls.',
       },
       {
         image: '/images/concrete-paving.jpg',
-        alt: 'Commercial parking lot paving Newnan GA',
-        title: 'Parking Lot Paving',
-        body: 'Full-depth concrete parking lots built to handle heavy traffic on Bullsboro / Highway 34 retail strip pads. Engineered to endure Coweta County freeze-thaw cycles and heavy delivery traffic, lasting 30+ years.',
+        alt: 'Slipform paver placing a commercial concrete lane',
+        title: 'Parking Lots & Site Paving',
+        body: 'Full-depth concrete parking fields built to handle heavy traffic on Bullsboro / Highway 34 retail pads. Engineered to endure Coweta County freeze-thaw cycles and heavy delivery traffic, lasting 30+ years.',
       },
       {
-        image: '/images/curbs-gutters.jpg',
-        alt: 'Concrete curbs and gutters Newnan GA',
-        title: 'Curbs & Gutters',
-        body: "Extruded or formed curbs and gutters that meet GDOT and municipal specs. Proper drainage means your parking lot doesn't pond, your landscape beds don't wash out, and your liability stays low.",
-      },
-      {
-        image: '/images/sidewalks.jpg',
-        alt: 'Commercial concrete sidewalks Newnan GA',
-        title: 'Commercial Sidewalks',
-        body: 'ADA-width sidewalks, walkways between buildings, and pedestrian connections. Code-compliant, broom-finished, and tooled to spec.',
-      },
-      {
-        image: '/images/ada-ramps.jpg',
-        alt: 'ADA handicap concrete ramps Newnan GA',
-        title: 'ADA Handicap Ramps',
-        body: 'Compliant ramps installed to current ADA standards — slope, width, landing, detectable warning surfaces, and handrail mounting. Built right so your inspector signs off the first time.',
-      },
-      {
-        image: '/images/stairs.jpg',
-        alt: 'Commercial concrete stairs Newnan GA',
-        title: 'Commercial Concrete Stairs',
-        body: 'Precisely formed exterior stairs for storefronts, entrances, loading docks, and amphitheater seating. Reinforced and finished to last.',
+        image: '/images/finishing-crew.jpg',
+        alt: 'Crew screeding and finishing a large commercial pour',
+        title: 'Truck Courts & Loading Docks',
+        body: 'Heavy-duty pavement for the industrial corridor toward the airport — dock aprons, trailer parking, refuse pads, and fire lanes. Thicker sections, higher PSI, engineered jointing.',
       },
     ],
   },
@@ -142,13 +131,13 @@ export const newnan: LandingPage = {
       {
         question: 'Do you only do new construction, or also concrete repair and replacement?',
         answer: [
-          'We do both. New pours for ground-up commercial builds, plus tear-out and replacement for failed slabs, broken sidewalks, deteriorated parking lots, and non-compliant ADA ramps.',
+          'We do both. New pours for ground-up commercial builds, plus tear-out and replacement for failed warehouse floors, deteriorated parking fields, and dock aprons that have started to break up under trailer traffic.',
         ],
       },
       {
-        question: "What's the minimum project size you'll quote?",
+        question: 'What size projects do you take on?',
         answer: [
-          "We focus on commercial scopes — there's no hard square-footage minimum, but our pricing makes the most sense for jobs in the 500 sq ft + range. ADA ramp replacements, small slab tear-outs, and sidewalk sections are all in scope.",
+          'Commercial only, and the bigger the better — building pads, warehouse floors, full parking fields, and truck courts. We are not set up for residential driveways or patios. Sidewalks, stairs, and ADA work get self-performed as part of a larger site package rather than quoted on their own.',
         ],
       },
       {
@@ -207,6 +196,6 @@ export const newnan: LandingPage = {
     areaServed: 'Newnan',
     serviceType: 'Commercial Concrete Contracting',
     description:
-      'Commercial concrete slab pouring, parking lot paving, sidewalk construction, curbs and gutters, ADA ramps, and stairs for Newnan, GA businesses.',
+      'Warehouse and industrial floors, structural slabs and foundations, parking lot paving, and truck court pavement for Newnan, GA commercial construction.',
   },
 }
