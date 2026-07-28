@@ -115,6 +115,25 @@ export async function POST(request: Request) {
   `
 
   try {
+    // 1. Create the opportunity first — GHL is the system of record for leads.
+    //    Non-fatal by design: if it fails we still fall through to the email, so
+    //    a GHL outage costs a pipeline entry rather than the whole lead.
+    const ghl = await createGhlOpportunity({
+      name,
+      email,
+      phone: get('phone'),
+      company: get('company'),
+      location: get('location'),
+      service: get('service'),
+      timeline: get('timeline'),
+      message: get('message'),
+      source,
+    })
+    if (!ghl.success && ghl.error !== 'not_configured') {
+      console.error('[contact] GHL sync failed; still sending lead email:', ghl.error)
+    }
+
+    // 2. Then notify Chip. This always runs, whatever happened above.
     const resend = new Resend(apiKey)
     const { error } = await resend.emails.send({
       from: FROM_EMAIL,
@@ -131,24 +150,6 @@ export async function POST(request: Request) {
         { error: `We couldn't send your message. Please call ${site.phone}.` },
         { status: 502 }
       )
-    }
-
-    // Email is away, so the lead is safe. Push it into GHL as well — deliberately
-    // after the send and deliberately non-fatal: a GHL outage or misconfiguration
-    // must never cost us a lead or show the caller an error.
-    const ghl = await createGhlOpportunity({
-      name,
-      email,
-      phone: get('phone'),
-      company: get('company'),
-      location: get('location'),
-      service: get('service'),
-      timeline: get('timeline'),
-      message: get('message'),
-      source,
-    })
-    if (!ghl.success && ghl.error !== 'not_configured') {
-      console.error('[contact] lead emailed but GHL sync failed:', ghl.error)
     }
 
     return Response.json({ ok: true })
