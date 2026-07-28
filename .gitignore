@@ -11,3 +11,6 @@
 next-env.d.ts
 
 .DS_Store
+
+# Scratch: DNS setup notes, not part of the app
+DNS-RECORDS.txt
