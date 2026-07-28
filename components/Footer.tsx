@@ -64,6 +64,20 @@ export default function Footer() {
       </div>
       <div className="footer-bottom">
         <p>&copy; {new Date().getFullYear()} {site.name} All rights reserved.</p>
+        <a
+          className="footer-credit"
+          href="https://creativecowboys.co"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>Designed by</span>
+          <Image
+            src="/images/creative-cowboys-white.png"
+            alt="Creative Cowboys"
+            width={600}
+            height={270}
+          />
+        </a>
       </div>
     </footer>
   )

@@ -67,6 +67,14 @@ h2 { font-size: clamp(2.2rem, 5vw, 3.6rem); }
 h3 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.02em; }
 p { line-height: 1.7; }
 
+/* Even out heading line lengths instead of filling the first line and
+   stranding a word on its own ("...THAT SHOWS / UP"). h1 is excluded — the
+   hero sets its own line breaks explicitly. */
+h2, h3, h4 { text-wrap: balance; }
+/* Same idea for body copy, but `pretty` only fixes the last-line orphan and
+   leaves the rest of the paragraph alone. */
+.section-header p, .lead { text-wrap: pretty; }
+
 em { font-style: italic; }
 
 a { color: inherit; text-decoration: none; }
@@ -112,13 +120,17 @@ textarea:focus-visible,
 
 .section-header {
   text-align: center;
-  max-width: 700px;
+  /* Wide enough that a short headline sits on one line at 3.6rem instead of
+     wrapping a single word onto its own. Paragraphs below stay narrower. */
+  max-width: 940px;
   margin: 0 auto 4rem;
 }
 .section-header p {
   color: var(--gray-light);
   margin-top: 1rem;
   font-size: 1.05rem;
+  max-width: 700px;
+  margin-inline: auto;
 }
 
 /* ── BUTTONS ── */
@@ -925,6 +937,32 @@ blockquote cite {
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* "Designed by Creative Cowboys" — same treatment as the Grove site: quiet by
+   default, comes up on hover. Sits below the copyright. */
+.footer-credit {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 2.5rem;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+.footer-credit:hover { opacity: 1; }
+.footer-credit span {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gray);
+  transition: color 0.3s ease;
+}
+.footer-credit:hover span { color: var(--gray-light); }
+.footer-credit img {
+  height: 34px;
+  width: auto;
 }
 
 /* ── ANIMATIONS ── */
