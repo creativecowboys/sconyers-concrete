@@ -1,48 +1,77 @@
 # Sconyers Concrete, Inc. — Website
 
-Modern website for Sconyers Concrete, Inc. — a full-service commercial concrete contractor serving Greater Atlanta, GA since 1994.
+Website for Sconyers Concrete, Inc. — a full-service commercial concrete contractor
+serving Greater Atlanta, GA since 1994.
 
 ## Stack
 
-- Pure HTML/CSS/JS (no build step required)
-- Google Fonts: Barlow Condensed + Lora
-- Deployed via Vercel
+- Next.js 16 (App Router, TypeScript, Turbopack)
+- Global CSS (`app/globals.css`) — the original hand-written stylesheet, not Tailwind
+- `next/font` self-hosting Barlow Condensed + Lora (no Google Fonts requests)
+- Resend for contact-form delivery
+- Deployed on Vercel
 
-## Local Development
+## Local development
 
 ```bash
-# Any static file server works
-npx serve .
-# or
-python3 -m http.server 3000
+npm install
+npm run dev
 ```
 
-## Deployment
+Runs on <http://localhost:3712>.
 
-1. Push to GitHub
-2. Import repo in Vercel — it will auto-detect as a static site
-3. Deploy
+```bash
+npm run build      # production build
+npm run typecheck  # tsc --noEmit
+```
 
-## Contact Form
+## Environment variables
 
-The contact form uses Netlify Forms attributes (`data-netlify="true"`) by default.  
-To use Vercel, either:
-- Use [Formspree](https://formspree.io) — replace `<form>` with `action="https://formspree.io/f/YOUR_ID"`
-- Or use a serverless function in `/api/contact.js`
+Copy `.env.example` to `.env.local` and fill in:
 
-## Pages / Sections
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `RESEND_API_KEY` | yes | Sends estimate requests. Without it the forms return a "call us" error. |
+| `CONTACT_TO_EMAIL` | no | Lead destination. Defaults to `chip.sconyers@sconyersconcrete.com`. |
+| `CONTACT_FROM_EMAIL` | no | From address. **Its domain must be verified in Resend.** |
 
-- **Hero** — "Built Solid. Built Right." with call CTA
-- **Trust Bar** — client industries
-- **Services** — 6 commercial concrete services
-- **About** — 30+ year history, mission, stats
-- **Why Us** — 3 pillars: Quality, Pricing, Experience  
-- **Contact** — form + phone/email/address
-- **Footer**
+Set the same variables in the Vercel project settings.
 
-## Client Info
+## Routes
+
+| Route | Source |
+| --- | --- |
+| `/` | `app/page.tsx` |
+| `/contact` | `app/contact/page.tsx` |
+| 7 West Georgia SEO landing pages | `app/[slug]/page.tsx` + `lib/landing/*` |
+| `/api/contact` | `app/api/contact/route.ts` |
+| `/sitemap.xml`, `/robots.txt` | `app/sitemap.ts`, `app/robots.ts` |
+
+### Landing pages
+
+All seven SEO pages share one template. Their copy lives as data in
+`lib/landing/`, one file per page, typed by `lib/landing/types.ts`:
+
+- `douglasville`, `newnan`, `carrollton`, `villa-rica` — city pages (6 service
+  cards + a process block)
+- `parking-lot-paving`, `concrete-slabs`, `ada-ramps` — service pages (4 service
+  cards + one "feature band": a comparison table, step list, or compliance block)
+
+`lib/landing/index.ts` is the single source of truth for which pages exist — it
+drives the routes, `generateStaticParams`, and the sitemap. Adding a page means
+adding a data file and registering it there.
+
+Paragraph strings may contain `<strong>…</strong>`; `components/RichText.tsx`
+renders that and nothing else, so content files can't inject markup.
+
+JSON-LD (GeneralContractor, Service, FAQPage, BreadcrumbList) is generated in
+`lib/schema.ts` from the same data.
+
+## Business details
+
+Shared NAP data lives in `lib/site.ts` — change it there, not in components.
 
 - **Phone:** 706-669-3089
 - **Email:** chip.sconyers@sconyersconcrete.com
 - **Address:** 2290 Strawn Rd, Winston, GA 30187
-- **Service Area:** Greater Atlanta, GA
+- **Service area:** Greater Atlanta / West Georgia
