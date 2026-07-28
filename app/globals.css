@@ -961,7 +961,10 @@ blockquote cite {
 }
 .footer-credit:hover span { color: var(--gray-light); }
 .footer-credit img {
-  height: 34px;
+  /* The PNG carries transparent padding — ink is only ~75% of the canvas
+     height — and it's a stacked lockup, so each word gets half of that. At
+     34px the words rendered ~13px tall, too small for a script face. */
+  height: 48px;
   width: auto;
 }
 
