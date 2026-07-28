@@ -31,9 +31,12 @@ const FIELD_ORDER = [
 ]
 
 const TO_EMAIL = process.env.CONTACT_TO_EMAIL ?? site.email
+// Must be @send.sconyersconcrete.com — that subdomain is what's verified in
+// Resend (DKIM + SPF + MX), NOT the root domain. Sending from the root would be
+// rejected. Verified 2026-07-28.
 const FROM_EMAIL =
   process.env.CONTACT_FROM_EMAIL ??
-  'Sconyers Concrete Website <noreply@sconyersconcrete.com>'
+  'Sconyers Concrete Website <noreply@send.sconyersconcrete.com>'
 
 function escapeHtml(value: string) {
   return value
