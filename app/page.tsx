@@ -5,6 +5,7 @@ import ContactForm from '@/components/ContactForm'
 import TrustBar from '@/components/TrustBar'
 import { MailIcon, MapPinIcon, PhoneIcon } from '@/components/icons'
 import { site } from '@/lib/site'
+import { generalContractorSchema } from '@/lib/schema'
 
 export const metadata: Metadata = {
   title: 'Sconyers Concrete, Inc. | Commercial Concrete — Greater Atlanta, GA',
@@ -66,8 +67,15 @@ const pillars = [
 ]
 
 export default function HomePage() {
+  // The landing pages already emit this GeneralContractor block; the homepage
+  // (the URL the Google listing links to) had no structured data at all.
+  const organizationSchema = generalContractorSchema()
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
       {/* HERO */}
       <section
         className="hero"
