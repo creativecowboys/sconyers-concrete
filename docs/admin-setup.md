@@ -26,6 +26,10 @@ The seed block at the bottom is the allowlist — Chip, Heather, Brice and Dave,
 all confirmed addresses. Nobody can sign in unless their address is in
 `admin_invites`, so anyone added later needs a row (see section 6).
 
+Section 3a of the file is the migration for a database that already has the old
+media shape (a review queue and a `pending` default). It is plain `alter table
+… if not exists` plus two one-time `update`s, all safe to run again.
+
 The script also creates the private `job-media` storage bucket and every row
 level security policy.
 
@@ -84,11 +88,11 @@ Forwarding it to another device will not sign anyone in.
 
 ## Roles
 
-- **office** — Chip, Heather, Brice. Everything: create and edit jobs, approve
-  or reject media, work change orders, manage crews and the schedule.
-- **field** — crews. Read the job list and job detail, upload media, raise a
-  change order, and see their own submissions. They cannot see anyone else's
-  uploads.
+- **office** — Chip, Heather, Brice. Everything: create and edit jobs, delete
+  media, work the Google queue and captions, work change orders, manage crews
+  and the schedule.
+- **field** — crews. Read the job list and job detail, upload media, see the
+  whole photo library, raise a change order. They cannot delete anything.
 
 Roles are enforced in Postgres by row level security, not just in the UI.
 
@@ -108,15 +112,43 @@ document.
 
 ## Media
 
-Nothing is public on upload. Everything lands in an office review queue with
-short-lived signed preview URLs. Approving marks a photo cleared for use — it
-does not push it anywhere. Publishing to the website gallery and to the Google
-Business Profile is still a separate, manual step, and Google writes are blocked
-entirely until the Business Profile verification video is recorded at 2290
-Strawn Rd.
+**There is no review queue.** Anyone who can sign in can upload, and the upload
+is the approval — the one person adding jobsite photos is the same person who
+would have been approving them (Dave, Sep 9 2026). Everything lands live in the
+photo library at `/admin/media`, newest first, filterable by job, with
+short-lived signed preview URLs off the private bucket. Every signed-in staff
+member sees the whole library; **deleting is office-only**, in the UI and in row
+level security both, and it removes the file from storage as well as the row.
 
-Google Business Profile video limits, surfaced in the upload form: 30 seconds,
-100 MB, 720p or better.
+The legacy `media_items.status` column is left in place so pre-Sep-9 rows still
+validate. Nothing reads it.
+
+### One upload, two destinations
+
+Picking **Google listing** or **Both** on the upload form puts the row in the
+Google queue — a `before insert` trigger sets `google_status = 'queued'` from
+`destination`, so the queue is right however the row got there. The office works
+that queue at `/admin/google`: preview, job, detail, and a caption field to
+write the post copy in advance.
+
+**Nothing in this app writes to Google.** The Business Profile went back to
+unverified when the address moved to 2290 Strawn Rd, and Google refuses every
+listing change — photos included — until Heather or Chip records the
+verification video there. The push button is deliberately disabled and says so.
+"Mark as posted" is a bookkeeping action for after Creative Cowboys has pushed
+the photo through Search Atlas; it posts nothing.
+
+When the listing clears, the push that works is: file → public URL →
+`gbp_upsert_media_library_item` → `gbp_manage_media(action:"add", image_urls:
+[…])` → `gbp_bulk_deploy_locations`. That runs through Creative Cowboys' Search
+Atlas connection, not the client's.
+
+**The website half does not exist yet.** There is no public gallery route on
+this site, so "gallery" and "both" record the intent and nothing more. Building
+`/our-work` is the remaining half of "one step, two places."
+
+Google Business Profile video limits, surfaced in the upload form and again on
+the queue: 30 seconds, 100 MB, 720p or better.
 
 ## Storage cost
 

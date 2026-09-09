@@ -208,6 +208,8 @@ export default function UploadForm({
         gc_name: prefs.gcName.trim() || null,
         gc_name_public: prefs.gcNamePublic,
         destination: prefs.destination,
+        // google_status is set by a trigger from `destination`, so the queue is
+        // right however the row got here. Don't send it from the browser.
         uploaded_by: profileId,
       })
 
@@ -238,8 +240,8 @@ export default function UploadForm({
           <strong>
             {status.count} file{status.count === 1 ? '' : 's'} sent in.
           </strong>{' '}
-          They are in the office review queue — nothing shows up on the website
-          or on Google until somebody there approves it.
+          They are on file and everyone can see them. Anything you marked for
+          the Google listing is queued for the office to push.
         </div>
       ) : null}
 
@@ -423,7 +425,7 @@ export default function UploadForm({
             <span className="adm-field-label">
               Where should this go?
               <span className="adm-field-hint">
-                Office has the final say either way.
+                Pick Google or Both and it queues for the listing.
               </span>
             </span>
             <select
@@ -464,7 +466,7 @@ export default function UploadForm({
           className="adm-btn adm-btn-primary adm-btn-block"
           disabled={uploading || !prefsLoaded}
         >
-          {uploading ? 'Sending…' : 'Send to the office'}
+          {uploading ? 'Sending…' : 'Send them in'}
         </button>
       </div>
     </form>

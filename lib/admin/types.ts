@@ -52,7 +52,22 @@ export const MEDIA_DESTINATION_LABELS: Record<MediaDestination, string> = {
   internal: 'Internal only',
 }
 
+/**
+ * LEGACY. `media_items.status` was the review queue, which Dave killed on
+ * Sep 9 2026 — whoever uploads a photo is the person who would have approved
+ * it. New rows land 'approved'; nothing in the UI reads this any more.
+ */
 export type MediaStatus = 'pending' | 'approved' | 'rejected'
+
+export const GOOGLE_STATUSES = ['not_queued', 'queued', 'posted', 'skipped'] as const
+export type GoogleStatus = (typeof GOOGLE_STATUSES)[number]
+
+export const GOOGLE_STATUS_LABELS: Record<GoogleStatus, string> = {
+  not_queued: 'Not for Google',
+  queued: 'Waiting to post',
+  posted: 'Posted to Google',
+  skipped: 'Skipped',
+}
 
 export type MediaItem = {
   id: string
@@ -71,6 +86,9 @@ export type MediaItem = {
   gc_name_public: boolean
   destination: MediaDestination
   caption: string | null
+  google_status: GoogleStatus
+  google_posted_at: string | null
+  google_error: string | null
   status: MediaStatus
   review_note: string | null
   reviewed_at: string | null

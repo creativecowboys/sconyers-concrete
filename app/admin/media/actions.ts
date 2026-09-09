@@ -2,43 +2,37 @@
 
 import { revalidatePath } from 'next/cache'
 import { requireOffice } from '@/lib/admin/auth'
+import { MEDIA_BUCKET } from '@/lib/supabase/env'
 import { createClient } from '@/lib/supabase/server'
 
-async function review(formData: FormData, status: 'approved' | 'rejected') {
-  const profile = await requireOffice()
+/**
+ * There is no approve/reject any more. Uploads are live the moment they land —
+ * the one person adding jobsite photos is the same person who would have been
+ * approving them, so the queue was ceremony. (Dave, Sep 9 2026.)
+ *
+ * Deleting is the one thing still limited to the office, in the UI and in row
+ * level security both. It takes the file out of storage as well as the row, so
+ * a photo that should not have gone up is genuinely gone.
+ */
+export async function deleteMedia(formData: FormData) {
+  await requireOffice()
 
   const id = formData.get('id')
+  const path = formData.get('storage_path')
   if (typeof id !== 'string' || !id) return
 
-  const note = formData.get('review_note')
   const supabase = await createClient()
 
-  const { error } = await supabase
-    .from('media_items')
-    .update({
-      status,
-      review_note: typeof note === 'string' && note.trim() ? note.trim() : null,
-      reviewed_by: profile.id,
-      reviewed_at: new Date().toISOString(),
-    })
-    .eq('id', id)
+  if (typeof path === 'string' && path) {
+    const { error } = await supabase.storage.from(MEDIA_BUCKET).remove([path])
+    // A missing file should not block removing the row it belongs to.
+    if (error) console.error('[admin/media] file delete failed:', error.message)
+  }
 
-  if (error) console.error('[admin/media] review failed:', error.message)
+  const { error } = await supabase.from('media_items').delete().eq('id', id)
+  if (error) console.error('[admin/media] row delete failed:', error.message)
 
   revalidatePath('/admin/media')
+  revalidatePath('/admin/google')
   revalidatePath('/admin')
-}
-
-/**
- * Approving is the gate on anything public. Nothing is pushed to the website
- * gallery or to Google automatically — approval marks it cleared for a human to
- * publish, which is deliberate: Sconyers' Google listing is still unverified,
- * and jobsite photos can catch things a client would not want published.
- */
-export async function approveMedia(formData: FormData) {
-  await review(formData, 'approved')
-}
-
-export async function rejectMedia(formData: FormData) {
-  await review(formData, 'rejected')
 }

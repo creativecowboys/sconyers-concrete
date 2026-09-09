@@ -26,7 +26,7 @@ export default async function UploadPage({
       .limit(300),
     supabase
       .from('media_items')
-      .select('id, job_label, captured_on, media_type, status')
+      .select('id, job_label, captured_on, media_type, google_status')
       .eq('uploaded_by', profile.id)
       .order('created_at', { ascending: false })
       .limit(5),
@@ -40,6 +40,7 @@ export default async function UploadPage({
           <p>
             Two things are required: which job, and the day it was taken.
             Everything else is optional and gets remembered for next time.
+            Nothing waits on approval — what you send is on file straight away.
           </p>
         </div>
       </div>
@@ -63,14 +64,18 @@ export default async function UploadPage({
                   </span>
                   <span
                     className={
-                      item.status === 'approved'
+                      item.google_status === 'posted'
                         ? 'adm-badge adm-badge-ok'
-                        : item.status === 'rejected'
-                          ? 'adm-badge adm-badge-bad'
-                          : 'adm-badge adm-badge-warn'
+                        : item.google_status === 'queued'
+                          ? 'adm-badge adm-badge-warn'
+                          : 'adm-badge'
                     }
                   >
-                    {item.status === 'pending' ? 'waiting' : item.status}
+                    {item.google_status === 'queued'
+                      ? 'for Google'
+                      : item.google_status === 'posted'
+                        ? 'on Google'
+                        : 'on file'}
                   </span>
                 </div>
                 <div className="adm-row-meta">Taken {formatDate(item.captured_on)}</div>
@@ -80,11 +85,9 @@ export default async function UploadPage({
         </>
       ) : null}
 
-      {profile.role === 'office' ? (
-        <p className="adm-mt-lg">
-          <Link href="/admin/media">Go to the review queue →</Link>
-        </p>
-      ) : null}
+      <p className="adm-mt-lg">
+        <Link href="/admin/media">See every photo on file →</Link>
+      </p>
     </>
   )
 }
