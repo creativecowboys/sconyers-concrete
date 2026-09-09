@@ -16,7 +16,8 @@
 --
 -- Roles
 --   office : Chip, Heather, Brice. Full access, and the only role that deletes.
---   field  : crews. Read jobs, read and upload media, raise change orders.
+--   field  : crews. Read jobs, read and upload media, fix the labels on any
+--            photo (job, date, caption, destination), raise change orders.
 -- ============================================================================
 
 -- ---------------------------------------------------------------------------
@@ -296,23 +297,47 @@ update public.media_items
  where google_status = 'not_queued'
    and destination in ('google', 'both');
 
--- Destination decides the queue, on insert, in the database — so it is right
--- however the row got there.
+-- Destination decides the queue, in the database — so it is right however the
+-- row got there, and however it gets edited afterwards.
+--   insert : google/both queues the row.
+--   update : destination moving INTO google/both re-queues a row that was
+--            not_queued or skipped; moving OUT of google/both takes a row that
+--            is still queued back to not_queued. A posted row is never touched —
+--            it is on the listing, and the destination change is just a label.
 create or replace function public.media_items_queue_for_google()
 returns trigger
 language plpgsql
 as $$
+declare
+  was_google boolean := tg_op = 'UPDATE' and old.destination in ('google', 'both');
+  now_google boolean := new.destination in ('google', 'both');
 begin
-  if new.destination in ('google', 'both') and new.google_status = 'not_queued' then
+  if tg_op = 'INSERT' then
+    if now_google and new.google_status = 'not_queued' then
+      new.google_status := 'queued';
+    end if;
+    return new;
+  end if;
+
+  if new.google_status = 'posted' then
+    return new;
+  end if;
+
+  if now_google and not was_google and new.google_status in ('not_queued', 'skipped') then
     new.google_status := 'queued';
+  elsif was_google and not now_google and new.google_status = 'queued' then
+    new.google_status := 'not_queued';
   end if;
   return new;
 end;
 $$;
 
+-- `drop` + `create` rather than `create or replace`: the trigger's event list
+-- changed (insert-only → insert or update of destination), and CREATE OR
+-- REPLACE TRIGGER cannot change events on an existing trigger.
 drop trigger if exists media_items_queue_for_google on public.media_items;
 create trigger media_items_queue_for_google
-  before insert on public.media_items
+  before insert or update of destination on public.media_items
   for each row execute function public.media_items_queue_for_google();
 
 -- Indexed here, not up with the other media indexes: on a database that already
@@ -469,9 +494,11 @@ create policy jobs_office_write on public.jobs
   for all to authenticated using (public.is_office()) with check (public.is_office());
 
 -- media: one shared crew of trusted people — everyone signed in sees every
--- photo. The office/field split on *viewing* stopped earning its keep the
--- moment the review queue went away (Dave, Sep 9 2026). Deleting is still
--- office-only, and so is editing a caption or the Google queue state.
+-- photo, and anyone can fix the labels on any photo (job, date, caption,
+-- destination): "anyone is fine" (Dave, Sep 9 2026). Deleting is still
+-- office-only, here and on storage.objects below. The Google queue actions in
+-- the app stay office-only in the UI (app/admin/google/actions.ts) even
+-- though this row policy would allow the update.
 drop policy if exists media_read on public.media_items;
 create policy media_read on public.media_items
   for select to authenticated
@@ -482,9 +509,12 @@ create policy media_insert on public.media_items
   for insert to authenticated
   with check (public.is_staff() and uploaded_by = auth.uid());
 
+-- MIGRATION: `media_office_update` was the old office-only policy; the live
+-- database has it, so drop it by name before creating its replacement.
 drop policy if exists media_office_update on public.media_items;
-create policy media_office_update on public.media_items
-  for update to authenticated using (public.is_office()) with check (public.is_office());
+drop policy if exists media_staff_update on public.media_items;
+create policy media_staff_update on public.media_items
+  for update to authenticated using (public.is_staff()) with check (public.is_staff());
 
 drop policy if exists media_office_delete on public.media_items;
 create policy media_office_delete on public.media_items
