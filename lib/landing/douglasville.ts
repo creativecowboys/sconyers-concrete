@@ -9,7 +9,7 @@ export const douglasville: LandingPage = {
   hero: {
     eyebrow: 'Based 10 Minutes from Douglasville',
     lines: ['Commercial', 'Concrete', 'Douglasville, GA'],
-    sub: 'Based 10 minutes from downtown Douglasville. Pouring warehouse floors, structural foundations, parking fields, and truck courts for Douglas County commercial builds since 1994.',
+    sub: 'Based 10 minutes from downtown Douglasville. Pouring warehouse floors, structural foundations, parking fields, and truck courts for Douglas County commercial builds for 30+ years.',
     trustStrip:
       '30+ years · Bonded & insured · Free on-site estimates · Same-week response',
   },

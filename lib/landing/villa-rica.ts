@@ -7,9 +7,9 @@ export const villaRica: LandingPage = {
     'Villa Rica is growing 3.4% per year — and every new shopping center, medical campus, and industrial pad needs concrete. 30+ years of large-scale West GA commercial concrete. 706-669-3089.',
 
   hero: {
-    eyebrow: 'Serving Villa Rica Since 1994',
+    eyebrow: 'Serving Villa Rica for 30+ Years',
     lines: ['Commercial', 'Concrete', 'Villa Rica, GA'],
-    sub: "Villa Rica grew 24.77% since 2020 — and the commercial build-out is just catching up. Warehouse floors, structural foundations, parking fields. Same crew that's been pouring West Georgia concrete since 1994.",
+    sub: "Villa Rica grew 24.77% since 2020 — and the commercial build-out is just catching up. Warehouse floors, structural foundations, parking fields. Same crew that's been pouring West Georgia concrete for 30+ years.",
     trustStrip:
       '30+ years · Bonded & insured · Free on-site estimates · Same-week response',
   },

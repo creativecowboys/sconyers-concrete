@@ -7,9 +7,9 @@ export const carrollton: LandingPage = {
     'Commercial concrete for Carrollton — hospitals, retail, education, churches. 30+ years pouring warehouse floors, structural foundations & parking fields in Carroll County. Free estimates: 706-669-3089.',
 
   hero: {
-    eyebrow: 'Serving Carroll County Since 1994',
+    eyebrow: 'Serving Carroll County for 30+ Years',
     lines: ['Commercial', 'Concrete', 'Carrollton, GA'],
-    sub: "From Tanner Health expansions to the next Hays Mill Road retail build — Carrollton's commercial growth runs on concrete. We've been pouring it for Carroll County builders since 1994.",
+    sub: "From Tanner Health expansions to the next Hays Mill Road retail build — Carrollton's commercial growth runs on concrete. We've been pouring it for Carroll County builders for 30+ years.",
     trustStrip:
       '30+ years · Bonded & insured · Free on-site estimates · Same-week response',
   },

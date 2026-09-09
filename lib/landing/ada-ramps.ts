@@ -9,7 +9,7 @@ export const adaRamps: LandingPage = {
   hero: {
     eyebrow: 'West Georgia Accessibility Experts',
     lines: ['ADA Ramp', 'Installation', 'West Georgia'],
-    sub: 'Inspector-ready ADA handicap ramps — proper slope, landing, width, detectable warnings, and handrail mounting. Installed for hospitals, retail, churches, restaurants, and municipal facilities across West GA since 1994.',
+    sub: 'Inspector-ready ADA handicap ramps — proper slope, landing, width, detectable warnings, and handrail mounting. Installed for hospitals, retail, churches, restaurants, and municipal facilities across West GA for 30+ years.',
     trustStrip:
       '30+ years · Bonded & insured · Free on-site estimates · Same-week response',
   },
