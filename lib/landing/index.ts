@@ -1,7 +1,10 @@
 import { adaRamps } from './ada-ramps'
 import { carrollton } from './carrollton'
 import { concreteSlabs } from './concrete-slabs'
+import { cumming } from './cumming'
 import { douglasville } from './douglasville'
+import { fayetteville } from './fayetteville'
+import { mcdonough } from './mcdonough'
 import { newnan } from './newnan'
 import { parkingLotPaving } from './parking-lot-paving'
 import type { LandingPage } from './types'
@@ -12,6 +15,9 @@ export const landingPages: LandingPage[] = [
   newnan,
   carrollton,
   villaRica,
+  cumming,
+  fayetteville,
+  mcdonough,
   parkingLotPaving,
   concreteSlabs,
   adaRamps,
