@@ -11,6 +11,7 @@ const ITEMS: Item[] = [
   { href: '/admin/jobs', label: 'Jobs' },
   { href: '/admin/upload', label: 'Upload' },
   { href: '/admin/media', label: 'Photos' },
+  { href: '/admin/docs', label: 'Docs' },
   { href: '/admin/google', label: 'Google', officeOnly: true },
   { href: '/admin/crews', label: 'Crews', officeOnly: true },
 ]

@@ -30,8 +30,9 @@ Section 3a of the file is the migration for a database that already has the old
 media shape (a review queue and a `pending` default). It is plain `alter table
 … if not exists` plus two one-time `update`s, all safe to run again.
 
-The script also creates the private `job-media` storage bucket and every row
-level security policy.
+The script also creates the two private storage buckets — `job-media` for
+jobsite photos and video, `docs` for the shared Docs folder (section 3b) — and
+every row level security policy.
 
 ## 3. Set the environment variables
 

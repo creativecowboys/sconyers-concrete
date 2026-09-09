@@ -545,3 +545,28 @@ a.adm-row:hover {
   padding: 0.5rem 0.6rem;
   display: block;
 }
+
+/* ── DOCS (the shared folder) ────────────────────────────────────────────── */
+/* Rows are <a class="adm-row adm-doc-row"> opening a signed URL, so the
+   existing `.adm a.adm-row { color: inherit }` keeps them ink. No new `a`
+   selector here on purpose — see the note on .adm a above. */
+.adm-docs-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+.adm-doc-row .adm-row-title { flex-wrap: wrap; }
+/* A long filename-as-title must wrap inside the row, never push it wider. */
+.adm-doc-row .adm-row-title > span:first-child { overflow-wrap: anywhere; }
+/* On /admin/docs each item is the row plus, for the office, a delete form. One
+   column on a phone; side by side once there is room. */
+.adm-doc { display: grid; gap: 0.5rem; }
+.adm-doc-delete { display: flex; }
+.adm-doc-delete .adm-btn { width: 100%; }
+@media (min-width: 720px) {
+  .adm-doc-office { grid-template-columns: 1fr auto; align-items: stretch; }
+  .adm-doc-delete .adm-btn { width: auto; min-width: 7rem; height: 100%; }
+}

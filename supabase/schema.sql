@@ -12,7 +12,9 @@
 --                    uploader is the approver. (Dave, Sep 9 2026.)
 --   * change_orders  — INTERNAL field-to-office notes. Not a contract document.
 --   * crews / crew_events — crew schedule, published as a signed .ics feed.
---   * storage bucket "job-media" (private) + its policies.
+--   * documents      — the shared "Docs" folder (QR codes, forms). Anyone signed
+--                    in reads and uploads; the office deletes. (Dave, Sep 9 2026.)
+--   * storage buckets "job-media" and "docs" (both private) + their policies.
 --
 -- Roles
 --   office : Chip, Heather, Brice. Full access, and the only role that deletes.
@@ -320,6 +322,74 @@ create trigger media_items_queue_for_google
 -- this index any earlier fails with 42703 and takes the whole script with it.
 create index if not exists media_items_google_idx
   on public.media_items (google_status, created_at desc);
+
+-- ---------------------------------------------------------------------------
+-- 3b. Documents — the shared "Docs" folder (added Sep 9 2026)
+-- ---------------------------------------------------------------------------
+-- A shared folder for the office and the crews: the Google-review QR codes,
+-- forms, anything worth having on a phone. Everyone signed in reads and
+-- uploads; only the office deletes. Files live in the private `docs` bucket —
+-- the browser uploads straight to it with the user's own session and a server
+-- action then records the row.
+--
+-- Deliberately self-contained: table, index, RLS, bucket and storage policies
+-- are all here, in dependency order, so the block runs cleanly on the live
+-- database on its own. Nothing below references the table before it exists.
+create table if not exists public.documents (
+  id                uuid primary key default gen_random_uuid(),
+  title             text not null,
+  storage_path      text not null unique,
+  mime_type         text,
+  size_bytes        bigint,
+  original_name     text,
+  uploaded_by       uuid references public.profiles (id) on delete cascade,
+  -- Denormalised on purpose. Field users can only read their own profile row
+  -- (profiles_read_self), so a join to profiles would blank everyone else's
+  -- name for them. Same trick change_orders.raised_by_name uses.
+  uploaded_by_name  text,
+  created_at        timestamptz not null default now()
+);
+
+create index if not exists documents_created_idx
+  on public.documents (created_at desc);
+
+alter table public.documents enable row level security;
+
+drop policy if exists documents_staff_read on public.documents;
+create policy documents_staff_read on public.documents
+  for select to authenticated using (public.is_staff());
+
+drop policy if exists documents_insert on public.documents;
+create policy documents_insert on public.documents
+  for insert to authenticated
+  with check (public.is_staff() and uploaded_by = auth.uid());
+
+drop policy if exists documents_office_delete on public.documents;
+create policy documents_office_delete on public.documents
+  for delete to authenticated using (public.is_office());
+
+-- Private bucket. 25 MB per file — the same cap the upload form states, held
+-- here too so the browser check is not the only thing enforcing it.
+insert into storage.buckets (id, name, public, file_size_limit)
+values ('docs', 'docs', false, 26214400)
+on conflict (id) do nothing;
+
+-- Mirrors the job-media policies: staff upload their own, staff read all,
+-- office deletes.
+drop policy if exists docs_insert on storage.objects;
+create policy docs_insert on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'docs' and public.is_staff() and owner = auth.uid());
+
+drop policy if exists docs_read on storage.objects;
+create policy docs_read on storage.objects
+  for select to authenticated
+  using (bucket_id = 'docs' and public.is_staff());
+
+drop policy if exists docs_office_delete on storage.objects;
+create policy docs_office_delete on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'docs' and public.is_office());
 
 -- ---------------------------------------------------------------------------
 -- 4. Change orders — INTERNAL ONLY
