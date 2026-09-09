@@ -40,7 +40,7 @@ export default async function AdminHome({
     activeIds.length
       ? supabase
           .from('crew_events')
-          .select('job_id, starts_on, ends_on')
+          .select('job_id, starts_on, ends_on, crews(name)')
           .in('job_id', activeIds)
           .lte('starts_on', today)
           .limit(2000)
@@ -52,7 +52,32 @@ export default async function AdminHome({
       .limit(5),
   ])
 
-  const health = assessJobs(activeList, (schedule.data ?? []) as ScheduleRow[], today)
+  const scheduleRows = (schedule.data ?? []) as unknown as ScheduleRow[]
+
+  // Which crews have been on each job. Dave, Sep 9: the widget should say who is
+  // on what, and the date the crew is expected to be done.
+  const crewsByJob = new Map<string, Set<string>>()
+  for (const row of scheduleRows) {
+    const crewName = row.crews?.name
+    if (!row.job_id || !crewName) continue
+    let names = crewsByJob.get(row.job_id)
+    if (!names) {
+      names = new Set()
+      crewsByJob.set(row.job_id, names)
+    }
+    names.add(crewName)
+  }
+  const endDateById = new Map(activeList.map((job) => [job.id, job.end_date]))
+
+  const health = assessJobs(activeList, scheduleRows, today).map((job) => {
+    const end = endDateById.get(job.id) ?? null
+    return {
+      ...job,
+      crews: [...(crewsByJob.get(job.id) ?? [])].sort(),
+      due: end ? { date: end, past: end < today } : null,
+    }
+  })
+
   const docs = (docsResult.data ?? []) as DocumentRow[]
   const docsTotal = docsResult.count ?? docs.length
   const docUrls = await signDocumentUrls(supabase, docs)

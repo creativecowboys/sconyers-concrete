@@ -93,7 +93,8 @@ Forwarding it to another device will not sign anyone in.
   media, work the Google queue and captions, work change orders, manage crews
   and the schedule.
 - **field** — crews. Read the job list and job detail, upload media, see the
-  whole photo library, raise a change order. They cannot delete anything.
+  whole photo library, fix the labels on any photo (job, date taken, caption,
+  destination), raise a change order. They cannot delete anything.
 
 Roles are enforced in Postgres by row level security, not just in the UI.
 
@@ -118,8 +119,14 @@ is the approval — the one person adding jobsite photos is the same person who
 would have been approving them (Dave, Sep 9 2026). Everything lands live in the
 photo library at `/admin/media`, newest first, filterable by job, with
 short-lived signed preview URLs off the private bucket. Every signed-in staff
-member sees the whole library; **deleting is office-only**, in the UI and in row
-level security both, and it removes the file from storage as well as the row.
+member sees the whole library and can **edit the labels on any photo** — job,
+date taken, caption, and where it is meant to go — from the "Edit details"
+button on each card (Dave, Sep 9 2026: "anyone is fine"). Changing the
+destination to Google or Both queues the photo for the listing; changing it
+away takes a still-waiting photo back out; an already-posted photo is left
+alone. That is a database trigger, not the UI, so it holds however the row is
+edited. **Deleting is office-only**, in the UI and in row level security both,
+and it removes the file from storage as well as the row.
 
 The legacy `media_items.status` column is left in place so pre-Sep-9 rows still
 validate. Nothing reads it.

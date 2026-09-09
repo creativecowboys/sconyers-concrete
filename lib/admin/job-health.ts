@@ -21,6 +21,10 @@ export type HealthStatus = 'behind' | 'watch' | 'on_track'
 export type JobHealth = {
   id: string
   name: string
+  /** Crews that have been scheduled on this job, by name. Empty when nobody has. */
+  crews?: string[]
+  /** The job's end_date — the day the crew is expected to be done. */
+  due?: { date: string; past: boolean } | null
   /** null when the job has no start or end date — nothing to measure against. */
   plan: {
     daysOnSite: number
@@ -45,6 +49,8 @@ export type ScheduleRow = {
   job_id: string | null
   starts_on: string
   ends_on: string | null
+  /** Joined crew name — Supabase returns the many-to-one as a single object. */
+  crews?: { name: string } | null
 }
 
 /**

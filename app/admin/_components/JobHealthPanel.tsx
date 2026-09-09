@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { formatDate } from '@/lib/admin/format'
 import type { HealthStatus, JobHealth } from '@/lib/admin/job-health'
 
 const TONE: Record<HealthStatus, 'ok' | 'warn' | 'bad'> = {
@@ -51,6 +52,16 @@ export default function JobHealthPanel({ jobs }: { jobs: JobHealth[] }) {
                       {plan.reason ? ` · ${plan.reason}` : ''}
                     </span>
                   ) : null}
+                </div>
+
+                {/* Who is on it, and when they are expected to be done. */}
+                <div className="adm-row-meta">
+                  {job.crews && job.crews.length > 0
+                    ? job.crews.join(', ')
+                    : 'No crew scheduled'}
+                  {job.due
+                    ? ` · ${job.due.past ? 'Was due' : 'Due'} ${formatDate(job.due.date)}`
+                    : ''}
                 </div>
 
                 {plan && tone ? (
