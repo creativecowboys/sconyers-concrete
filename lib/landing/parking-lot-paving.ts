@@ -18,7 +18,7 @@ export const parkingLotPaving: LandingPage = {
     tag: 'Asphalt to Concrete Upgrade',
     heading: 'Douglasville Parking Lot Paving',
     paragraphs: [
-      "Asphalt is the default. Concrete is the upgrade. If you own or operate a commercial property in Douglasville and you're tired of resealing, patching, and re-striping every couple of years — concrete parking lot paving pays for itself within 5–7 years on most commercial sites. Sconyers Concrete has been pouring commercial parking lots across Douglas County since 1994. We know which mixes hold up to Douglasville's clay soil and freeze-thaw cycles, where the drainage usually fails, and how to phase a pour so your tenants don't lose access for weeks at a time.",
+      "Asphalt is the default. Concrete is the upgrade. If you own or operate a commercial property in Douglasville and you're tired of resealing, patching, and re-striping every couple of years — concrete parking lot paving pays for itself within 5–7 years on most commercial sites. Sconyers Concrete has been pouring commercial parking lots across Douglas County for 30+ years. We know which mixes hold up to Douglasville's clay soil and freeze-thaw cycles, where the drainage usually fails, and how to phase a pour so your tenants don't lose access for weeks at a time.",
       "Whether you're a developer pouring a new pad site, a property manager replacing a failed asphalt lot, or a GC bidding a build-to-suit for a national tenant — call <strong>706-669-3089</strong> for a free estimate, or use the form below.",
     ],
   },

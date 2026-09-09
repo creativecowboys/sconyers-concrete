@@ -5,7 +5,7 @@ export const cumming: LandingPage = {
   title:
     'Commercial Concrete Contractor in Cumming & Forsyth County, GA | Sconyers Concrete',
   description:
-    "Forsyth County grew 33.8% in a decade and the commercial build-out is chasing it. Warehouse floors, structural foundations, and parking fields poured by Sconyers' own crews since 1994. 706-669-3089.",
+    "Forsyth County grew 33.8% in a decade and the commercial build-out is chasing it. Warehouse floors, structural foundations, and parking fields poured by Sconyers' own crews for 30+ years. 706-669-3089.",
 
   hero: {
     eyebrow: 'Commercial Concrete · 30+ Years',
@@ -20,7 +20,7 @@ export const cumming: LandingPage = {
     heading: 'Cumming & Forsyth County Commercial Concrete',
     paragraphs: [
       "Forsyth County is one of the fastest-growing counties in the country — up 33.8% between 2015 and 2025 — and the commercial side is still catching up to the rooftops. Cumming City Center put 117,000 square feet of retail and dining on 75 acres west of downtown. Forsyth County Schools is the fifth-largest district in Georgia at more than 54,000 students and adds 1,500 to 1,800 more every year, which means new buildings on a schedule that doesn't slip. Medical office, retail pads, and mixed-use keep filling in along GA-400. Every one of those jobs starts with concrete.",
-      "Here's the straight version: Sconyers Concrete is headquartered in Winston, GA, on the west side of Atlanta. We are not the closest concrete contractor to Cumming and we're not going to pretend we are. What we are is a commercial outfit that's been pouring since 1994 and self-performs every scope — no rotating cast of hands you've never met. When a GC in Forsyth County calls us, it's because the crew quality and the schedule matter more than the pin on the map.",
+      "Here's the straight version: Sconyers Concrete is headquartered in Winston, GA, on the west side of Atlanta. We are not the closest concrete contractor to Cumming and we're not going to pretend we are. What we are is a commercial outfit that's been pouring for more than 30 years and self-performs every scope — no rotating cast of hands you've never met. When a GC in Forsyth County calls us, it's because the crew quality and the schedule matter more than the pin on the map.",
       'Call <strong>706-669-3089</strong> for a free estimate — on-site or over the phone, whichever gets you a number faster. Same-week response on every inquiry.',
     ],
   },

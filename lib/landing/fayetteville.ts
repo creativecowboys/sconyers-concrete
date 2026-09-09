@@ -5,7 +5,7 @@ export const fayetteville: LandingPage = {
   title:
     'Commercial Concrete Contractor in Fayetteville & Fayette County, GA | Sconyers Concrete',
   description:
-    'A $275M hospital tower, a 615-acre data center campus, and a 700-acre studio lot — Fayette County builds big. Warehouse floors, structural foundations, and parking fields self-performed since 1994. 706-669-3089.',
+    'A $275M hospital tower, a 615-acre data center campus, and a 700-acre studio lot — Fayette County builds big. Warehouse floors, structural foundations, and parking fields self-performed for 30+ years. 706-669-3089.',
 
   hero: {
     eyebrow: 'Commercial Concrete · 30+ Years',

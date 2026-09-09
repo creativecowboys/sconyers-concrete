@@ -4,7 +4,7 @@ export const newnan: LandingPage = {
   slug: 'commercial-concrete-contractor-newnan-ga',
   title: 'Commercial Concrete Contractor in Newnan, GA | Sconyers Concrete',
   description:
-    'Pouring warehouse floors, structural foundations, parking fields & truck courts across Newnan since 1994. Trusted by GCs building retail, industrial & medical projects. Free estimates: 706-669-3089.',
+    'Pouring warehouse floors, structural foundations, parking fields & truck courts across Newnan for 30+ years. Trusted by GCs building retail, industrial & medical projects. Free estimates: 706-669-3089.',
 
   hero: {
     eyebrow: 'Serving Coweta County for 30+ Years',
