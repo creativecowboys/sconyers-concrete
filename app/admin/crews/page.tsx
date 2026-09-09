@@ -232,18 +232,18 @@ export default async function CrewsPage({
         </div>
 
         <div className="adm-grid adm-grid-2">
-          <label className="adm-field">
-            <span className="adm-field-label">
-              Start time
-              <span className="adm-field-hint">Leave blank for an all-day entry.</span>
-            </span>
+          <label className="adm-field" style={{ marginBottom: 0 }}>
+            <span className="adm-field-label">Start time</span>
             <input type="time" name="start_time" />
           </label>
-          <label className="adm-field">
+          <label className="adm-field" style={{ marginBottom: 0 }}>
             <span className="adm-field-label">End time</span>
             <input type="time" name="end_time" />
           </label>
         </div>
+        {/* One hint for the pair. Hanging it off Start time alone pushed that
+            input down a line and left End time sitting higher — Dave, Sep 9. */}
+        <p className="adm-field-hint adm-mb">Leave both blank for an all-day entry.</p>
 
         <label className="adm-field">
           <span className="adm-field-label">Where</span>

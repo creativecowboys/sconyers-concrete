@@ -476,6 +476,48 @@ a.adm-row:hover {
   transition: width 0.2s ease;
 }
 
+/* ── JOB HEALTH (admin home) ─────────────────────────────────────────────── */
+/* Rows are <Link class="adm-row adm-health-row">, so the existing
+   `.adm a.adm-row { color: inherit }` keeps them ink, not red. No new `a`
+   selector here on purpose — see the note on .adm a above. */
+.adm-health-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+.adm-health-row .adm-row-title { flex-wrap: wrap; }
+.adm-health-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.6rem;
+}
+.adm-health-bar .adm-progress { flex: 1 1 auto; position: relative; }
+.adm-health-count {
+  flex: 0 0 auto;
+  font-size: 0.86rem;
+  color: var(--adm-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+/* Same (0,1,1) as `.adm-progress span` above; these win by coming later. */
+.adm-progress-ok span { background: var(--adm-ok); }
+.adm-progress-warn span { background: var(--adm-warn); }
+.adm-progress-bad span { background: var(--adm-bad); }
+/* Where today falls in the plan. Fill past the mark = burning days faster than planned. */
+.adm-health-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--adm-ink);
+  opacity: 0.5;
+}
+
 /* ── UTIL ────────────────────────────────────────────────────────────────── */
 .adm-muted { color: var(--adm-muted); }
 .adm-small { font-size: 0.85rem; }

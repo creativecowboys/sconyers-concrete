@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import { displayName, requireProfile } from '@/lib/admin/auth'
+import { todayInGeorgia } from '@/lib/admin/format'
+import { assessJobs, type JobRow, type ScheduleRow } from '@/lib/admin/job-health'
 import { createClient } from '@/lib/supabase/server'
+import JobHealthPanel from './_components/JobHealthPanel'
 
 type Search = Record<string, string | string[] | undefined>
 
@@ -16,7 +19,19 @@ export default async function AdminHome({
   const supabase = await createClient()
   const office = profile.role === 'office'
 
-  const [activeJobs, mediaOnFile, googleQueue] = await Promise.all([
+  // Job health, version one: crew days on site vs working days planned.
+  // "Today" is Georgia's today — a 9pm upload must not roll into tomorrow.
+  const today = todayInGeorgia()
+  const { data: activeRows } = await supabase
+    .from('jobs')
+    .select('id, name, status, start_date, end_date')
+    .eq('status', 'active')
+    .order('name')
+    .limit(200)
+  const activeList = (activeRows ?? []) as JobRow[]
+  const activeIds = activeList.map((job) => job.id)
+
+  const [activeJobs, mediaOnFile, schedule] = await Promise.all([
     supabase
       .from('jobs')
       .select('id', { count: 'exact', head: true })
@@ -24,11 +39,17 @@ export default async function AdminHome({
     // No more "waiting on review" — that number was always going to be zero
     // once uploads went live. What is true is how much is on file.
     supabase.from('media_items').select('id', { count: 'exact', head: true }),
-    supabase
-      .from('media_items')
-      .select('id', { count: 'exact', head: true })
-      .eq('google_status', 'queued'),
+    activeIds.length
+      ? supabase
+          .from('crew_events')
+          .select('job_id, starts_on, ends_on')
+          .in('job_id', activeIds)
+          .lte('starts_on', today)
+          .limit(2000)
+      : Promise.resolve({ data: [] as ScheduleRow[] }),
   ])
+
+  const health = assessJobs(activeList, (schedule.data ?? []) as ScheduleRow[], today)
 
   return (
     <>
@@ -50,7 +71,9 @@ export default async function AdminHome({
         </div>
       ) : null}
 
-      <div className="adm-stack">
+      <JobHealthPanel jobs={health} />
+
+      <div className="adm-stack adm-mt-lg">
         <Link href="/admin/upload" className="adm-btn adm-btn-primary adm-btn-block">
           Upload jobsite photos or video
         </Link>
@@ -75,10 +98,6 @@ export default async function AdminHome({
 
       {office ? (
         <div className="adm-stack adm-mt-lg">
-          <Link href="/admin/google" className="adm-btn adm-btn-block">
-            Google listing queue
-            {googleQueue.count ? ` (${googleQueue.count} waiting)` : ''}
-          </Link>
           <Link href="/admin/jobs/new" className="adm-btn adm-btn-block">
             Add a new job
           </Link>
