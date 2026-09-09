@@ -11,6 +11,9 @@ import {
 import { MEDIA_BUCKET } from '@/lib/supabase/env'
 import { createClient } from '@/lib/supabase/client'
 
+// Sentinel for the "not listed" row in the job dropdown.
+const NOT_LISTED = '__not_listed__'
+
 export type JobOption = { id: string; name: string }
 
 /**
@@ -105,6 +108,10 @@ export default function UploadForm({
   const [prefs, setPrefs] = useState<StickyPrefs>(EMPTY_PREFS)
   const [prefsLoaded, setPrefsLoaded] = useState(false)
   const [jobLabel, setJobLabel] = useState('')
+  // The dropdown covers the open jobs. `typingJob` is the escape hatch for a
+  // job the office hasn't entered yet — without it a crew on a brand-new pour
+  // simply cannot file a photo.
+  const [typingJob, setTypingJob] = useState(false)
   const [capturedOn, setCapturedOn] = useState(today)
   const [files, setFiles] = useState<File[]>([])
   const [videoInfo, setVideoInfo] = useState<{ name: string; seconds: number | null; bytes: number }[]>([])
@@ -116,7 +123,14 @@ export default function UploadForm({
     const stored = readPrefs()
     setPrefs(stored)
     const preselected = initialJobId ? jobs.find((job) => job.id === initialJobId) : undefined
-    setJobLabel(preselected?.name ?? stored.jobLabel)
+    const label = preselected?.name ?? stored.jobLabel
+    setJobLabel(label)
+    // A remembered job that has since closed would otherwise vanish from the
+    // dropdown and silently blank the field. Fall back to the text box.
+    setTypingJob(
+      Boolean(label.trim()) &&
+        !jobs.some((job) => job.name.toLowerCase() === label.trim().toLowerCase())
+    )
     setPrefsLoaded(true)
   }, [initialJobId, jobs])
 
@@ -255,29 +269,63 @@ export default function UploadForm({
           <span className="adm-field-label">
             Job <span className="adm-req">*</span>
             <span className="adm-field-hint">
-              Start typing — it suggests jobs already in the system. A new name
-              is fine too.
+              {typingJob
+                ? 'Type the job name. The office will tie it to a job later.'
+                : 'Pick the job these are from.'}
             </span>
           </span>
-          <input
-            type="text"
-            name="job"
-            list="job-options"
-            value={jobLabel}
-            onChange={(event) => setJobLabel(event.target.value)}
-            autoCapitalize="words"
-            autoComplete="off"
-            required
-          />
-          <datalist id="job-options">
-            {jobs.map((job) => (
-              <option key={job.id} value={job.name} />
-            ))}
-          </datalist>
+          {typingJob ? (
+            <input
+              type="text"
+              name="job"
+              value={jobLabel}
+              onChange={(event) => setJobLabel(event.target.value)}
+              autoCapitalize="words"
+              autoComplete="off"
+              required
+            />
+          ) : (
+            <select
+              name="job"
+              value={jobLabel}
+              onChange={(event) => {
+                if (event.target.value === NOT_LISTED) {
+                  setJobLabel('')
+                  setTypingJob(true)
+                  return
+                }
+                setJobLabel(event.target.value)
+              }}
+              required
+            >
+              <option value="" disabled>
+                Choose a job…
+              </option>
+              {jobs.map((job) => (
+                <option key={job.id} value={job.name}>
+                  {job.name}
+                </option>
+              ))}
+              <option value={NOT_LISTED}>Not listed — type it in</option>
+            </select>
+          )}
         </label>
 
-        {jobLabel.trim() && !matchedJob ? (
-          <div className="adm-note adm-small" style={{ marginTop: '-0.4rem' }}>
+        {typingJob ? (
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm"
+            onClick={() => {
+              setJobLabel('')
+              setTypingJob(false)
+            }}
+          >
+            Back to the job list
+          </button>
+        ) : null}
+
+        {typingJob && jobLabel.trim() && !matchedJob ? (
+          <div className="adm-note adm-small adm-mt">
             New job name. That is fine — the office will tie it to a job later.
           </div>
         ) : null}

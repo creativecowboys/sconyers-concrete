@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { JobJump } from './JobJump'
 import { requireProfile } from '@/lib/admin/auth'
 import { formatDate } from '@/lib/admin/format'
 import { JOB_STATUS_LABELS, type Job } from '@/lib/admin/types'
@@ -20,7 +21,6 @@ export default async function JobsPage({
 }) {
   const profile = await requireProfile()
   const params = await searchParams
-  const query = (Array.isArray(params.q) ? params.q[0] : params.q)?.trim() ?? ''
   const showAll = (Array.isArray(params.all) ? params.all[0] : params.all) === '1'
 
   const supabase = await createClient()
@@ -34,7 +34,6 @@ export default async function JobsPage({
     .limit(200)
 
   if (!showAll) request = request.in('status', ['bidding', 'upcoming', 'active', 'on_hold'])
-  if (query) request = request.or(`name.ilike.%${query}%,client_name.ilike.%${query}%,city.ilike.%${query}%`)
 
   const { data, error } = await request
   const jobs = (data ?? []) as Job[]
@@ -57,22 +56,9 @@ export default async function JobsPage({
         ) : null}
       </div>
 
-      <form className="adm-card adm-mb" action="/admin/jobs">
-        {showAll ? <input type="hidden" name="all" value="1" /> : null}
-        <label className="adm-field" style={{ marginBottom: '0.75rem' }}>
-          <span className="adm-field-label">Search</span>
-          <input
-            type="search"
-            name="q"
-            defaultValue={query}
-            placeholder="Job, contractor or city"
-            autoCapitalize="off"
-          />
-        </label>
-        <div className="adm-btn-row">
-          <button type="submit" className="adm-btn adm-btn-sm adm-btn-primary">
-            Search
-          </button>
+      <div className="adm-card adm-mb">
+        <JobJump jobs={jobs.map((job) => ({ id: job.id, name: job.name }))} />
+        <div className="adm-btn-row adm-mt">
           <Link
             href={showAll ? '/admin/jobs' : '/admin/jobs?all=1'}
             className="adm-btn adm-btn-sm"
@@ -80,7 +66,7 @@ export default async function JobsPage({
             {showAll ? 'Hide finished jobs' : 'Show finished jobs'}
           </Link>
         </div>
-      </form>
+      </div>
 
       {error ? (
         <div className="adm-note adm-note-bad">
@@ -88,9 +74,7 @@ export default async function JobsPage({
         </div>
       ) : jobs.length === 0 ? (
         <div className="adm-empty">
-          {query ? (
-            <>Nothing matched &ldquo;{query}&rdquo;.</>
-          ) : profile.role === 'office' ? (
+          {profile.role === 'office' ? (
             <>
               No jobs yet. <Link href="/admin/jobs/new">Add the first one.</Link>
             </>
