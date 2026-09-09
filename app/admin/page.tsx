@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { displayName, requireProfile } from '@/lib/admin/auth'
+import { signDocumentUrls } from '@/lib/admin/docs-server'
 import { todayInGeorgia } from '@/lib/admin/format'
 import { assessJobs, type JobRow, type ScheduleRow } from '@/lib/admin/job-health'
+import type { DocumentRow } from '@/lib/admin/types'
 import { createClient } from '@/lib/supabase/server'
+import DocsCard from './_components/DocsCard'
 import JobHealthPanel from './_components/JobHealthPanel'
 
 type Search = Record<string, string | string[] | undefined>
@@ -31,14 +34,9 @@ export default async function AdminHome({
   const activeList = (activeRows ?? []) as JobRow[]
   const activeIds = activeList.map((job) => job.id)
 
-  const [activeJobs, mediaOnFile, schedule] = await Promise.all([
-    supabase
-      .from('jobs')
-      .select('id', { count: 'exact', head: true })
-      .in('status', ['active', 'upcoming']),
-    // No more "waiting on review" — that number was always going to be zero
-    // once uploads went live. What is true is how much is on file.
-    supabase.from('media_items').select('id', { count: 'exact', head: true }),
+  // The Docs card shows the newest five; `count` is the whole folder, so the
+  // card knows whether to offer "See all".
+  const [schedule, docsResult] = await Promise.all([
     activeIds.length
       ? supabase
           .from('crew_events')
@@ -47,6 +45,11 @@ export default async function AdminHome({
           .lte('starts_on', today)
           .limit(2000)
       : Promise.resolve({ data: [] as ScheduleRow[] }),
+    supabase
+      .from('documents')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .limit(5),
   ])
 
   const scheduleRows = (schedule.data ?? []) as unknown as ScheduleRow[]
@@ -74,6 +77,10 @@ export default async function AdminHome({
       due: end ? { date: end, past: end < today } : null,
     }
   })
+
+  const docs = (docsResult.data ?? []) as DocumentRow[]
+  const docsTotal = docsResult.count ?? docs.length
+  const docUrls = await signDocumentUrls(supabase, docs)
 
   return (
     <>
@@ -109,16 +116,7 @@ export default async function AdminHome({
         </Link>
       </div>
 
-      <div className="adm-grid adm-grid-2 adm-mt-lg">
-        <div className="adm-card">
-          <h3>{activeJobs.count ?? 0}</h3>
-          <p className="adm-small adm-muted">Active &amp; upcoming jobs</p>
-        </div>
-        <div className="adm-card">
-          <h3>{mediaOnFile.count ?? 0}</h3>
-          <p className="adm-small adm-muted">Photos &amp; video on file</p>
-        </div>
-      </div>
+      <DocsCard docs={docs} total={docsTotal} signed={docUrls} />
 
       {office ? (
         <div className="adm-stack adm-mt-lg">
