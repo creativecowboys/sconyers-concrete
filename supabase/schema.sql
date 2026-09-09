@@ -250,8 +250,6 @@ create table if not exists public.media_items (
 create index if not exists media_items_created_idx on public.media_items (created_at desc);
 create index if not exists media_items_job_idx on public.media_items (job_id);
 create index if not exists media_items_uploader_idx on public.media_items (uploaded_by);
-create index if not exists media_items_google_idx
-  on public.media_items (google_status, created_at desc);
 
 -- ---------------------------------------------------------------------------
 -- 3a. MIGRATION — for the live database, which already has the old shape.
@@ -316,6 +314,12 @@ drop trigger if exists media_items_queue_for_google on public.media_items;
 create trigger media_items_queue_for_google
   before insert on public.media_items
   for each row execute function public.media_items_queue_for_google();
+
+-- Indexed here, not up with the other media indexes: on a database that already
+-- exists, google_status does not exist until the alter above runs, so creating
+-- this index any earlier fails with 42703 and takes the whole script with it.
+create index if not exists media_items_google_idx
+  on public.media_items (google_status, created_at desc);
 
 -- ---------------------------------------------------------------------------
 -- 4. Change orders — INTERNAL ONLY
