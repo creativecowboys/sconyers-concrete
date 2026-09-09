@@ -80,7 +80,7 @@ export const cumming: LandingPage = {
       {
         num: '02',
         title: 'Honest Pricing',
-        body: "Every estimate is free, transparent, and accurate — mobilization included in the number up front. You know exactly what you're getting before any forms are laid down.",
+        body: "Every estimate is free, transparent, and accurate. You know exactly what you're getting before any forms are laid down.",
       },
       {
         num: '03',
@@ -100,7 +100,7 @@ export const cumming: LandingPage = {
       },
       {
         title: '2. Scope Alignment',
-        body: 'We review your specs, drawings, or RFQ and confirm the pour dates in writing. We coordinate with your super on access, staging, and pump placement before we mobilize.',
+        body: 'We review your specs, drawings, or RFQ and come back with a schedule. We coordinate with your super on access, staging, and pump placement before we mobilize.',
       },
       {
         title: '3. Pour Day',
@@ -121,7 +121,7 @@ export const cumming: LandingPage = {
       {
         question: "You're based in Winston. Do you really travel to Forsyth County?",
         answer: [
-          "Yes — and we'd rather you ask that up front than find out on pour day. Sconyers Concrete is headquartered in Winston, GA, west of Atlanta, and Forsyth County is a real drive. We plan for it: crews travel as a unit, mobilization is priced into the estimate, and we commit to pour dates in writing before you build your schedule around us.",
+          "Yes — and we'd rather you ask that up front than find out on pour day. Sconyers Concrete is headquartered in Winston, GA, west of Atlanta, and Forsyth County is a real drive. We plan for it: crews travel as a unit and arrive ready to work, and we talk through the schedule with you before you build yours around us.",
           "If the job is small enough that travel is the biggest line on the ticket, we'll tell you that too. We take on commercial scopes where a self-performing crew is worth bringing in.",
         ],
       },
