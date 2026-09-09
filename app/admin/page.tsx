@@ -16,7 +16,7 @@ export default async function AdminHome({
   const supabase = await createClient()
   const office = profile.role === 'office'
 
-  const [activeJobs, mediaOnFile, googleQueue, openChangeOrders] = await Promise.all([
+  const [activeJobs, mediaOnFile, googleQueue] = await Promise.all([
     supabase
       .from('jobs')
       .select('id', { count: 'exact', head: true })
@@ -28,10 +28,6 @@ export default async function AdminHome({
       .from('media_items')
       .select('id', { count: 'exact', head: true })
       .eq('google_status', 'queued'),
-    supabase
-      .from('change_orders')
-      .select('id', { count: 'exact', head: true })
-      .in('status', ['new', 'acknowledged']),
   ])
 
   return (
@@ -41,8 +37,8 @@ export default async function AdminHome({
           <h1>Howdy, {displayName(profile).split(' ')[0]}</h1>
           <p>
             {office
-              ? 'Office view — you can create jobs, work change orders and run the crew schedule.'
-              : 'Field view — pull up a job, send in photos, flag a change to the office.'}
+              ? 'Office view — you can create jobs, review photos and run the crew schedule.'
+              : 'Field view — pull up a job and send in photos.'}
           </p>
         </div>
       </div>
@@ -58,9 +54,6 @@ export default async function AdminHome({
         <Link href="/admin/upload" className="adm-btn adm-btn-primary adm-btn-block">
           Upload jobsite photos or video
         </Link>
-        <Link href="/admin/change-orders/new" className="adm-btn adm-btn-block">
-          Flag a change to the office
-        </Link>
         <Link href="/admin/jobs" className="adm-btn adm-btn-block">
           Look up a job
         </Link>
@@ -69,7 +62,7 @@ export default async function AdminHome({
         </Link>
       </div>
 
-      <div className="adm-grid adm-grid-3 adm-mt-lg">
+      <div className="adm-grid adm-grid-2 adm-mt-lg">
         <div className="adm-card">
           <h3>{activeJobs.count ?? 0}</h3>
           <p className="adm-small adm-muted">Active &amp; upcoming jobs</p>
@@ -77,12 +70,6 @@ export default async function AdminHome({
         <div className="adm-card">
           <h3>{mediaOnFile.count ?? 0}</h3>
           <p className="adm-small adm-muted">Photos &amp; video on file</p>
-        </div>
-        <div className="adm-card">
-          <h3>{openChangeOrders.count ?? 0}</h3>
-          <p className="adm-small adm-muted">
-            {office ? 'Change orders to work' : 'Of your change orders still open'}
-          </p>
         </div>
       </div>
 
