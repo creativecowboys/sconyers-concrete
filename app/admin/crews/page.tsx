@@ -92,6 +92,90 @@ export default async function CrewsPage({
         </div>
       ) : null}
 
+      <h2 className="adm-mb">Put a crew on a job</h2>
+      <form action={createCrewEvent} className="adm-card">
+        <label className="adm-field">
+          <span className="adm-field-label">
+            Crew <span className="adm-req">*</span>
+          </span>
+          <select name="crew_id" required defaultValue="">
+            <option value="" disabled>
+              Pick a crew
+            </option>
+            {crewList.map((crew) => (
+              <option key={crew.id} value={crew.id}>
+                {crew.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="adm-field">
+          <span className="adm-field-label">
+            What shows on the calendar <span className="adm-req">*</span>
+            <span className="adm-field-hint">
+              This is the line a crew member reads on their phone. Job name and
+              scope beats a code.
+            </span>
+          </span>
+          <input type="text" name="title" required placeholder="Tanner outparcel — pour truck court" />
+        </label>
+
+        <label className="adm-field">
+          <span className="adm-field-label">Job (optional)</span>
+          <select name="job_id" defaultValue="">
+            <option value="">Not tied to a job</option>
+            {(jobs ?? []).map((job) => (
+              <option key={job.id} value={job.id}>
+                {job.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <div className="adm-grid adm-grid-2">
+          <label className="adm-field">
+            <span className="adm-field-label">
+              Start date <span className="adm-req">*</span>
+            </span>
+            <input type="date" name="starts_on" required />
+          </label>
+          <label className="adm-field">
+            <span className="adm-field-label">End date (optional)</span>
+            <input type="date" name="ends_on" />
+          </label>
+        </div>
+
+        <div className="adm-grid adm-grid-2">
+          <label className="adm-field" style={{ marginBottom: 0 }}>
+            <span className="adm-field-label">Start time</span>
+            <input type="time" name="start_time" />
+          </label>
+          <label className="adm-field" style={{ marginBottom: 0 }}>
+            <span className="adm-field-label">End time</span>
+            <input type="time" name="end_time" />
+          </label>
+        </div>
+        {/* One hint for the pair. Hanging it off Start time alone pushed that
+            input down a line and left End time sitting higher — Dave, Sep 9. */}
+        <p className="adm-field-hint adm-mb">Leave both blank for an all-day entry.</p>
+
+        <label className="adm-field">
+          <span className="adm-field-label">Where</span>
+          <input type="text" name="location" placeholder="2290 Strawn Rd, Winston GA" />
+        </label>
+
+        <label className="adm-field">
+          <span className="adm-field-label">Notes</span>
+          <textarea name="notes" />
+        </label>
+
+        <SubmitButton className="adm-btn adm-btn-primary adm-btn-block" pendingLabel="Saving…">
+          Add to the schedule
+        </SubmitButton>
+      </form>
+
+      <h2 className="adm-mt-lg adm-mb">Crews</h2>
       {crewList.length === 0 ? (
         <div className="adm-empty adm-mb">No crews yet. Add the first one below.</div>
       ) : (
@@ -176,89 +260,6 @@ export default async function CrewsPage({
           })}
         </div>
       )}
-
-      <h2 className="adm-mt-lg adm-mb">Put a crew on a job</h2>
-      <form action={createCrewEvent} className="adm-card">
-        <label className="adm-field">
-          <span className="adm-field-label">
-            Crew <span className="adm-req">*</span>
-          </span>
-          <select name="crew_id" required defaultValue="">
-            <option value="" disabled>
-              Pick a crew
-            </option>
-            {crewList.map((crew) => (
-              <option key={crew.id} value={crew.id}>
-                {crew.name}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="adm-field">
-          <span className="adm-field-label">
-            What shows on the calendar <span className="adm-req">*</span>
-            <span className="adm-field-hint">
-              This is the line a crew member reads on their phone. Job name and
-              scope beats a code.
-            </span>
-          </span>
-          <input type="text" name="title" required placeholder="Tanner outparcel — pour truck court" />
-        </label>
-
-        <label className="adm-field">
-          <span className="adm-field-label">Job (optional)</span>
-          <select name="job_id" defaultValue="">
-            <option value="">Not tied to a job</option>
-            {(jobs ?? []).map((job) => (
-              <option key={job.id} value={job.id}>
-                {job.name}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <div className="adm-grid adm-grid-2">
-          <label className="adm-field">
-            <span className="adm-field-label">
-              Start date <span className="adm-req">*</span>
-            </span>
-            <input type="date" name="starts_on" required />
-          </label>
-          <label className="adm-field">
-            <span className="adm-field-label">End date (optional)</span>
-            <input type="date" name="ends_on" />
-          </label>
-        </div>
-
-        <div className="adm-grid adm-grid-2">
-          <label className="adm-field" style={{ marginBottom: 0 }}>
-            <span className="adm-field-label">Start time</span>
-            <input type="time" name="start_time" />
-          </label>
-          <label className="adm-field" style={{ marginBottom: 0 }}>
-            <span className="adm-field-label">End time</span>
-            <input type="time" name="end_time" />
-          </label>
-        </div>
-        {/* One hint for the pair. Hanging it off Start time alone pushed that
-            input down a line and left End time sitting higher — Dave, Sep 9. */}
-        <p className="adm-field-hint adm-mb">Leave both blank for an all-day entry.</p>
-
-        <label className="adm-field">
-          <span className="adm-field-label">Where</span>
-          <input type="text" name="location" placeholder="2290 Strawn Rd, Winston GA" />
-        </label>
-
-        <label className="adm-field">
-          <span className="adm-field-label">Notes</span>
-          <textarea name="notes" />
-        </label>
-
-        <SubmitButton className="adm-btn adm-btn-primary adm-btn-block" pendingLabel="Saving…">
-          Add to the schedule
-        </SubmitButton>
-      </form>
 
       <h2 className="adm-mt-lg adm-mb">Add a crew</h2>
       <form action={createCrew} className="adm-card">
