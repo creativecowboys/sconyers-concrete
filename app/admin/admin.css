@@ -63,8 +63,11 @@
 .adm h2 { font-size: 1.2rem; }
 .adm h3 { font-size: 1.05rem; font-weight: 650; }
 .adm p { line-height: 1.55; }
-.adm a { color: var(--adm-accent-dark); text-decoration: none; }
-.adm a:hover { text-decoration: underline; }
+/* Inline links only. Without the :not(), this rule (0,1,1) outranks
+   .adm-btn-primary (0,1,0) and paints every button-shaped <Link> dark red —
+   which on the red fill is unreadable. */
+.adm a:not(.adm-btn) { color: var(--adm-accent-dark); text-decoration: none; }
+.adm a:not(.adm-btn):hover { text-decoration: underline; }
 
 /* ── SHELL ───────────────────────────────────────────────────────────────── */
 .adm-header {
@@ -336,6 +339,7 @@ a.adm-row:hover {
   font-weight: 650;
   cursor: pointer;
   text-align: center;
+  text-decoration: none;
 }
 .adm-btn:hover { text-decoration: none; background: var(--adm-surface-2); }
 .adm-btn:disabled { opacity: 0.55; cursor: not-allowed; }
