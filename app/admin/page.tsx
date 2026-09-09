@@ -16,15 +16,18 @@ export default async function AdminHome({
   const supabase = await createClient()
   const office = profile.role === 'office'
 
-  const [activeJobs, pendingMedia, openChangeOrders] = await Promise.all([
+  const [activeJobs, mediaOnFile, googleQueue, openChangeOrders] = await Promise.all([
     supabase
       .from('jobs')
       .select('id', { count: 'exact', head: true })
       .in('status', ['active', 'upcoming']),
+    // No more "waiting on review" — that number was always going to be zero
+    // once uploads went live. What is true is how much is on file.
+    supabase.from('media_items').select('id', { count: 'exact', head: true }),
     supabase
       .from('media_items')
       .select('id', { count: 'exact', head: true })
-      .eq('status', 'pending'),
+      .eq('google_status', 'queued'),
     supabase
       .from('change_orders')
       .select('id', { count: 'exact', head: true })
@@ -38,7 +41,7 @@ export default async function AdminHome({
           <h1>Howdy, {displayName(profile).split(' ')[0]}</h1>
           <p>
             {office
-              ? 'Office view — you can create jobs, approve photos and work change orders.'
+              ? 'Office view — you can create jobs, work change orders and run the crew schedule.'
               : 'Field view — pull up a job, send in photos, flag a change to the office.'}
           </p>
         </div>
@@ -61,6 +64,9 @@ export default async function AdminHome({
         <Link href="/admin/jobs" className="adm-btn adm-btn-block">
           Look up a job
         </Link>
+        <Link href="/admin/media" className="adm-btn adm-btn-block">
+          See the photo library
+        </Link>
       </div>
 
       <div className="adm-grid adm-grid-3 adm-mt-lg">
@@ -69,10 +75,8 @@ export default async function AdminHome({
           <p className="adm-small adm-muted">Active &amp; upcoming jobs</p>
         </div>
         <div className="adm-card">
-          <h3>{pendingMedia.count ?? 0}</h3>
-          <p className="adm-small adm-muted">
-            {office ? 'Photos waiting on your review' : 'Of your uploads still pending'}
-          </p>
+          <h3>{mediaOnFile.count ?? 0}</h3>
+          <p className="adm-small adm-muted">Photos &amp; video on file</p>
         </div>
         <div className="adm-card">
           <h3>{openChangeOrders.count ?? 0}</h3>
@@ -84,8 +88,9 @@ export default async function AdminHome({
 
       {office ? (
         <div className="adm-stack adm-mt-lg">
-          <Link href="/admin/media" className="adm-btn adm-btn-block">
-            Review the photo queue
+          <Link href="/admin/google" className="adm-btn adm-btn-block">
+            Google listing queue
+            {googleQueue.count ? ` (${googleQueue.count} waiting)` : ''}
           </Link>
           <Link href="/admin/jobs/new" className="adm-btn adm-btn-block">
             Add a new job
@@ -97,8 +102,11 @@ export default async function AdminHome({
       ) : null}
 
       <div className="adm-note adm-mt-lg">
-        <strong>Nothing you upload goes public on its own.</strong> Photos and
-        video sit in a review queue until someone in the office approves them.
+        <strong>Photos are on file the moment you send them.</strong> There is
+        no review queue — whoever takes the picture is the one who decides it is
+        worth keeping. Marking one for the Google listing puts it in a queue the
+        office works; the listing itself is still waiting on the verification
+        video at 2290 Strawn Rd.
       </div>
     </>
   )

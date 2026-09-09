@@ -1,43 +1,68 @@
 import Link from 'next/link'
-import { requireOffice } from '@/lib/admin/auth'
+import { requireProfile } from '@/lib/admin/auth'
 import { formatBytes, formatDate, formatDateTime } from '@/lib/admin/format'
 import {
+  GOOGLE_STATUS_LABELS,
   MEDIA_DESTINATION_LABELS,
   type MediaItem,
-  type MediaStatus,
 } from '@/lib/admin/types'
 import { MEDIA_BUCKET } from '@/lib/supabase/env'
 import { createClient } from '@/lib/supabase/server'
 import SubmitButton from '../_components/SubmitButton'
-import { approveMedia, rejectMedia } from './actions'
+import { deleteMedia } from './actions'
 
 type Search = Record<string, string | string[] | undefined>
 
-const TABS: { value: MediaStatus; label: string }[] = [
-  { value: 'pending', label: 'Waiting' },
-  { value: 'approved', label: 'Approved' },
-  { value: 'rejected', label: 'Rejected' },
-]
+const PAGE_SIZE = 60
 
-export default async function MediaQueuePage({
+function one(params: Search, key: string) {
+  const value = params[key]
+  return (Array.isArray(value) ? value[0] : value)?.trim() ?? ''
+}
+
+function googleBadgeClass(status: MediaItem['google_status']) {
+  if (status === 'posted') return 'adm-badge adm-badge-ok'
+  if (status === 'queued') return 'adm-badge adm-badge-warn'
+  return 'adm-badge'
+}
+
+export default async function MediaLibraryPage({
   searchParams,
 }: {
   searchParams: Promise<Search>
 }) {
-  await requireOffice()
+  // Everyone signed in sees the whole library. One crew, one shared set of
+  // pictures — the office/field split on viewing went with the review queue.
+  const profile = await requireProfile()
+  const office = profile.role === 'office'
+
   const params = await searchParams
-  const raw = Array.isArray(params.status) ? params.status[0] : params.status
-  const status: MediaStatus =
-    raw === 'approved' || raw === 'rejected' ? raw : 'pending'
+  const job = one(params, 'job')
 
   const supabase = await createClient()
-  const { data, error } = await supabase
+
+  // The job filter is built from what has actually been uploaded, not from the
+  // jobs table — plenty of media carries a free-text job name the office has
+  // not linked to a job row yet.
+  const { data: labelRows } = await supabase
+    .from('media_items')
+    .select('job_label')
+    .order('job_label')
+    .limit(1000)
+
+  const jobLabels = Array.from(
+    new Set(((labelRows ?? []) as { job_label: string }[]).map((row) => row.job_label))
+  ).sort((a, b) => a.localeCompare(b))
+
+  let request = supabase
     .from('media_items')
     .select('*')
-    .eq('status', status)
     .order('created_at', { ascending: false })
-    .limit(60)
+    .limit(PAGE_SIZE)
 
+  if (job) request = request.eq('job_label', job)
+
+  const { data, error } = await request
   const items = (data ?? []) as MediaItem[]
 
   // Short-lived signed URLs — the bucket is private, so nothing is reachable
@@ -59,187 +84,205 @@ export default async function MediaQueuePage({
     <>
       <div className="adm-page-head">
         <div>
-          <h1>Photo review</h1>
+          <h1>Photo library</h1>
           <p>
-            Everything the field sends lands here first. Approving marks it
-            cleared to use — it does not publish anything on its own.
+            Every photo and video the crew has sent in, newest first. Nothing
+            waits on approval — what you upload is on file straight away.
           </p>
         </div>
+        <Link href="/admin/upload" className="adm-btn adm-btn-primary">
+          Add photos
+        </Link>
       </div>
 
-      <div className="adm-btn-row adm-mb">
-        {TABS.map((tab) => (
-          <Link
-            key={tab.value}
-            href={`/admin/media?status=${tab.value}`}
-            className={
-              tab.value === status
-                ? 'adm-btn adm-btn-sm adm-btn-primary'
-                : 'adm-btn adm-btn-sm'
-            }
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </div>
-
-      <div className="adm-note adm-note-warn adm-mb">
-        <strong>Google posting is still blocked.</strong> The Sconyers Business
-        Profile went back to unverified when the address moved to Strawn Rd, and
-        Google refuses every write until Heather or Chip records the
-        verification video. Approve away — the queue keeps until it clears.
-      </div>
+      {jobLabels.length > 0 ? (
+        <form className="adm-card adm-mb" action="/admin/media">
+          <label className="adm-field" style={{ marginBottom: '0.75rem' }}>
+            <span className="adm-field-label">Job</span>
+            <select name="job" defaultValue={job}>
+              <option value="">All jobs</option>
+              {jobLabels.map((label) => (
+                <option key={label} value={label}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="adm-btn-row">
+            <button type="submit" className="adm-btn adm-btn-sm adm-btn-primary">
+              Show these
+            </button>
+            {job ? (
+              <Link href="/admin/media" className="adm-btn adm-btn-sm">
+                Clear
+              </Link>
+            ) : null}
+          </div>
+        </form>
+      ) : null}
 
       {error ? (
         <div className="adm-note adm-note-bad">
-          <strong>Could not load the queue.</strong> {error.message}
+          <strong>Could not load the library.</strong> {error.message}
         </div>
       ) : items.length === 0 ? (
         <div className="adm-empty">
-          {status === 'pending' ? 'Nothing waiting. All caught up.' : `No ${status} media.`}
+          {job ? (
+            <>
+              Nothing on file for &ldquo;{job}&rdquo;.{' '}
+              <Link href="/admin/media">Show everything</Link>
+            </>
+          ) : (
+            <>
+              No photos yet.{' '}
+              <Link href="/admin/upload">Send the first ones in.</Link>
+            </>
+          )}
         </div>
       ) : (
-        <div className="adm-stack">
-          {items.map((item) => {
-            const url = signed[item.storage_path]
-            return (
-              <div key={item.id} className="adm-card">
-                <div className="adm-grid adm-grid-2">
-                  <div>
-                    {item.media_type === 'video' ? (
-                      url ? (
-                        <video className="adm-media-video" src={url} controls preload="metadata" />
-                      ) : (
-                        <div className="adm-thumb adm-thumb-fallback">Video preview unavailable</div>
-                      )
-                    ) : url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        className="adm-thumb"
-                        src={url}
-                        alt={item.caption ?? `${item.job_label}, ${item.scope ?? 'jobsite'}`}
-                      />
-                    ) : (
-                      <div className="adm-thumb adm-thumb-fallback">Preview unavailable</div>
-                    )}
-                    {url ? (
-                      <p className="adm-small adm-mt">
-                        <a href={url} target="_blank" rel="noreferrer">
-                          Open the original
-                        </a>{' '}
-                        <span className="adm-muted">
-                          ({formatBytes(item.size_bytes)})
-                        </span>
-                      </p>
-                    ) : null}
-                  </div>
+        <>
+          <p className="adm-small adm-muted adm-mb">
+            {items.length === PAGE_SIZE
+              ? `Showing the newest ${PAGE_SIZE}. Filter by job to see further back.`
+              : `${items.length} file${items.length === 1 ? '' : 's'} on file${
+                  job ? ' for this job' : ''
+                }.`}
+          </p>
 
-                  <div>
-                    <dl className="adm-dl">
-                      <div>
-                        <dt>Job</dt>
-                        <dd>
+          <div className="adm-stack">
+            {items.map((item) => {
+              const url = signed[item.storage_path]
+              return (
+                <div key={item.id} className="adm-card">
+                  <div className="adm-grid adm-grid-2">
+                    <div>
+                      {item.media_type === 'video' ? (
+                        url ? (
+                          <video
+                            className="adm-media-video"
+                            src={url}
+                            controls
+                            preload="metadata"
+                          />
+                        ) : (
+                          <div className="adm-thumb adm-thumb-fallback">
+                            Video preview unavailable
+                          </div>
+                        )
+                      ) : url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          className="adm-thumb"
+                          src={url}
+                          alt={
+                            item.caption ??
+                            `${item.job_label}, ${item.scope ?? 'jobsite'}`
+                          }
+                        />
+                      ) : (
+                        <div className="adm-thumb adm-thumb-fallback">
+                          Preview unavailable
+                        </div>
+                      )}
+                      {url ? (
+                        <p className="adm-small adm-mt">
+                          <a href={url} target="_blank" rel="noreferrer">
+                            Open the original
+                          </a>{' '}
+                          <span className="adm-muted">({formatBytes(item.size_bytes)})</span>
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div>
+                      <div className="adm-row-title adm-mb">
+                        <span>
                           {item.job_id ? (
                             <Link href={`/admin/jobs/${item.job_id}`}>{item.job_label}</Link>
                           ) : (
-                            <>
-                              {item.job_label}{' '}
-                              <span className="adm-badge adm-badge-warn">not linked</span>
-                            </>
+                            item.job_label
                           )}
-                        </dd>
+                        </span>
+                        <span className={googleBadgeClass(item.google_status)}>
+                          {GOOGLE_STATUS_LABELS[item.google_status]}
+                        </span>
                       </div>
-                      <div>
-                        <dt>Taken</dt>
-                        <dd>{formatDate(item.captured_on)}</dd>
-                      </div>
-                      <div>
-                        <dt>Where the field wants it</dt>
-                        <dd>{MEDIA_DESTINATION_LABELS[item.destination]}</dd>
-                      </div>
-                      {item.scope || item.city || item.county ? (
+
+                      <dl className="adm-dl">
                         <div>
-                          <dt>Detail</dt>
+                          <dt>Taken</dt>
+                          <dd>{formatDate(item.captured_on)}</dd>
+                        </div>
+                        <div>
+                          <dt>Meant for</dt>
+                          <dd>{MEDIA_DESTINATION_LABELS[item.destination]}</dd>
+                        </div>
+                        {item.scope || item.city || item.county ? (
+                          <div>
+                            <dt>Detail</dt>
+                            <dd>
+                              {[item.scope, item.city, item.county && `${item.county} County`]
+                                .filter(Boolean)
+                                .join(' · ')}
+                            </dd>
+                          </div>
+                        ) : null}
+                        <div>
+                          <dt>Contractor</dt>
                           <dd>
-                            {[item.scope, item.city, item.county && `${item.county} County`]
-                              .filter(Boolean)
-                              .join(' · ')}
+                            {item.gc_name ? (
+                              <>
+                                {item.gc_name}{' '}
+                                {item.gc_name_public ? (
+                                  <span className="adm-badge adm-badge-ok">OK to name</span>
+                                ) : (
+                                  <span className="adm-badge adm-badge-bad">do not name</span>
+                                )}
+                              </>
+                            ) : (
+                              '—'
+                            )}
                           </dd>
                         </div>
-                      ) : null}
-                      <div>
-                        <dt>Contractor</dt>
-                        <dd>
-                          {item.gc_name ? (
-                            <>
-                              {item.gc_name}{' '}
-                              {item.gc_name_public ? (
-                                <span className="adm-badge adm-badge-ok">OK to name</span>
-                              ) : (
-                                <span className="adm-badge adm-badge-bad">do not name</span>
-                              )}
-                            </>
-                          ) : (
-                            '—'
-                          )}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Uploaded</dt>
-                        <dd>{formatDateTime(item.created_at)}</dd>
-                      </div>
-                      {item.review_note ? (
+                        {item.caption ? (
+                          <div>
+                            <dt>Caption</dt>
+                            <dd className="adm-multiline">{item.caption}</dd>
+                          </div>
+                        ) : null}
                         <div>
-                          <dt>Review note</dt>
-                          <dd className="adm-multiline">{item.review_note}</dd>
+                          <dt>Sent in</dt>
+                          <dd>{formatDateTime(item.created_at)}</dd>
                         </div>
-                      ) : null}
-                    </dl>
+                      </dl>
 
-                    {status === 'pending' ? (
-                      <div className="adm-mt">
-                        <form action={approveMedia} className="adm-mb">
+                      {office ? (
+                        <form action={deleteMedia} className="adm-mt">
                           <input type="hidden" name="id" value={item.id} />
-                          <SubmitButton
-                            className="adm-btn adm-btn-primary adm-btn-block"
-                            pendingLabel="Approving…"
-                          >
-                            Approve
-                          </SubmitButton>
-                        </form>
-                        <form action={rejectMedia}>
-                          <input type="hidden" name="id" value={item.id} />
-                          <label className="adm-field">
-                            <span className="adm-field-label">
-                              Reason (optional)
-                              <span className="adm-field-hint">
-                                Only the office sees this.
-                              </span>
-                            </span>
-                            <input type="text" name="review_note" />
-                          </label>
+                          <input
+                            type="hidden"
+                            name="storage_path"
+                            value={item.storage_path}
+                          />
                           <SubmitButton
                             className="adm-btn adm-btn-block"
-                            pendingLabel="Rejecting…"
+                            pendingLabel="Deleting…"
+                            confirm={`Delete this ${item.media_type} from ${item.job_label}? It cannot be undone.`}
                           >
-                            Reject
+                            Delete this file
                           </SubmitButton>
+                          <p className="adm-small adm-muted adm-mt">
+                            Deleting removes the file for good. Office only.
+                          </p>
                         </form>
-                      </div>
-                    ) : (
-                      <form action={status === 'approved' ? rejectMedia : approveMedia} className="adm-mt">
-                        <input type="hidden" name="id" value={item.id} />
-                        <SubmitButton className="adm-btn adm-btn-block" pendingLabel="Saving…">
-                          {status === 'approved' ? 'Undo — send back' : 'Approve after all'}
-                        </SubmitButton>
-                      </form>
-                    )}
+                      ) : null}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        </>
       )}
     </>
   )

@@ -4,6 +4,7 @@ import { requireProfile } from '@/lib/admin/auth'
 import { formatDate, formatDateTime } from '@/lib/admin/format'
 import {
   CHANGE_ORDER_STATUS_LABELS,
+  GOOGLE_STATUS_LABELS,
   JOB_STATUS_LABELS,
   type ChangeOrder,
   type Job,
@@ -35,7 +36,7 @@ export default async function JobDetailPage({
   const [{ data: media }, { data: changeOrders }] = await Promise.all([
     supabase
       .from('media_items')
-      .select('id, job_label, captured_on, media_type, status, scope, created_at')
+      .select('id, job_label, captured_on, media_type, google_status, scope, created_at')
       .eq('job_id', id)
       .order('created_at', { ascending: false })
       .limit(10),
@@ -121,13 +122,18 @@ export default async function JobDetailPage({
       </div>
 
       <h2 className="adm-mt-lg adm-mb">Recent media</h2>
+      <p className="adm-small adm-mb">
+        <Link href={`/admin/media?job=${encodeURIComponent(job.name)}`}>
+          Everything on file for this job →
+        </Link>
+      </p>
       {(media ?? []).length === 0 ? (
         <div className="adm-empty">Nothing uploaded against this job yet.</div>
       ) : (
         <div className="adm-stack">
           {(media as Pick<
             MediaItem,
-            'id' | 'captured_on' | 'media_type' | 'status' | 'scope'
+            'id' | 'captured_on' | 'media_type' | 'google_status' | 'scope'
           >[]).map((item) => (
             <div key={item.id} className="adm-row">
               <div className="adm-row-title">
@@ -137,14 +143,14 @@ export default async function JobDetailPage({
                 </span>
                 <span
                   className={
-                    item.status === 'approved'
+                    item.google_status === 'posted'
                       ? 'adm-badge adm-badge-ok'
-                      : item.status === 'rejected'
-                        ? 'adm-badge adm-badge-bad'
-                        : 'adm-badge adm-badge-warn'
+                      : item.google_status === 'queued'
+                        ? 'adm-badge adm-badge-warn'
+                        : 'adm-badge'
                   }
                 >
-                  {item.status}
+                  {GOOGLE_STATUS_LABELS[item.google_status]}
                 </span>
               </div>
               <div className="adm-row-meta">Taken {formatDate(item.captured_on)}</div>

@@ -8,14 +8,15 @@
 --   * admin_invites  — the allowlist. Nobody can sign in unless their email is here.
 --   * profiles       — one row per signed-in user, carrying their role.
 --   * jobs           — the thing everything else hangs off.
---   * media_items    — photo/video uploads from the field, pending office review.
+--   * media_items    — photo/video uploads from the field. Live on upload; the
+--                    uploader is the approver. (Dave, Sep 9 2026.)
 --   * change_orders  — INTERNAL field-to-office notes. Not a contract document.
 --   * crews / crew_events — crew schedule, published as a signed .ics feed.
 --   * storage bucket "job-media" (private) + its policies.
 --
 -- Roles
---   office : Chip, Heather, Brice. Full access.
---   field  : crews. Read jobs, upload media, raise change orders.
+--   office : Chip, Heather, Brice. Full access, and the only role that deletes.
+--   field  : crews. Read jobs, read and upload media, raise change orders.
 -- ============================================================================
 
 -- ---------------------------------------------------------------------------
@@ -203,6 +204,10 @@ create trigger jobs_touch_updated_at
 -- ---------------------------------------------------------------------------
 -- 3. Media (photos + video from the field)
 -- ---------------------------------------------------------------------------
+-- There is NO review queue. Anyone who can sign in can upload, and the upload
+-- is the approval — the one person adding photos is the same person who would
+-- have been approving them. (Dave, Sep 9 2026.) The `status` column below is
+-- kept only so old rows still validate; nothing reads it any more.
 create table if not exists public.media_items (
   id              uuid primary key default gen_random_uuid(),
   -- Job is required, but it is captured as free text with suggestions, so a
@@ -224,8 +229,16 @@ create table if not exists public.media_items (
   destination     text not null default 'internal'
                     check (destination in ('gallery', 'google', 'both', 'internal')),
   caption         text,
-  -- Review queue. Nothing is public until an office user approves it.
-  status          text not null default 'pending'
+  -- Google Business Profile hand-off. Picking 'google' or 'both' above puts the
+  -- row in the queue (see the trigger below). Nothing here writes to Google —
+  -- the listing is unverified until the video is recorded at 2290 Strawn Rd, so
+  -- the office marks a row posted by hand once it has actually been pushed.
+  google_status   text not null default 'not_queued'
+                    check (google_status in ('not_queued', 'queued', 'posted', 'skipped')),
+  google_posted_at timestamptz,
+  google_error    text,
+  -- LEGACY. Was the review queue; kept so pre-Sep-9 rows still validate.
+  status          text not null default 'approved'
                     check (status in ('pending', 'approved', 'rejected')),
   review_note     text,
   reviewed_by     uuid references public.profiles (id) on delete set null,
@@ -234,9 +247,75 @@ create table if not exists public.media_items (
   created_at      timestamptz not null default now()
 );
 
-create index if not exists media_items_status_idx on public.media_items (status, created_at desc);
+create index if not exists media_items_created_idx on public.media_items (created_at desc);
 create index if not exists media_items_job_idx on public.media_items (job_id);
 create index if not exists media_items_uploader_idx on public.media_items (uploaded_by);
+create index if not exists media_items_google_idx
+  on public.media_items (google_status, created_at desc);
+
+-- ---------------------------------------------------------------------------
+-- 3a. MIGRATION — for the live database, which already has the old shape.
+-- ---------------------------------------------------------------------------
+-- `create table if not exists` above does nothing on a database that already
+-- has this table, so the change from "review queue" to "live on upload" has to
+-- be spelled out. All of this is safe to run repeatedly.
+alter table public.media_items
+  add column if not exists google_status text not null default 'not_queued';
+alter table public.media_items
+  add column if not exists google_posted_at timestamptz;
+alter table public.media_items
+  add column if not exists google_error text;
+
+-- The check constraint only when it is genuinely missing — `add constraint`
+-- has no IF NOT EXISTS, so guard it.
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.media_items'::regclass
+      and conname = 'media_items_google_status_check'
+  ) then
+    alter table public.media_items
+      add constraint media_items_google_status_check
+      check (google_status in ('not_queued', 'queued', 'posted', 'skipped'));
+  end if;
+end
+$$;
+
+-- The status index went with the queue.
+drop index if exists public.media_items_status_idx;
+
+-- Uploads land live from here on.
+alter table public.media_items alter column status set default 'approved';
+
+-- One-time catch-up: everything that was sitting in the dead review queue is
+-- cleared. Anything an office user actually rejected stays rejected.
+update public.media_items set status = 'approved' where status = 'pending';
+
+-- Backfill the Google queue from what the field already asked for.
+update public.media_items
+   set google_status = 'queued'
+ where google_status = 'not_queued'
+   and destination in ('google', 'both');
+
+-- Destination decides the queue, on insert, in the database — so it is right
+-- however the row got there.
+create or replace function public.media_items_queue_for_google()
+returns trigger
+language plpgsql
+as $$
+begin
+  if new.destination in ('google', 'both') and new.google_status = 'not_queued' then
+    new.google_status := 'queued';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists media_items_queue_for_google on public.media_items;
+create trigger media_items_queue_for_google
+  before insert on public.media_items
+  for each row execute function public.media_items_queue_for_google();
 
 -- ---------------------------------------------------------------------------
 -- 4. Change orders — INTERNAL ONLY
@@ -385,12 +464,14 @@ drop policy if exists jobs_office_write on public.jobs;
 create policy jobs_office_write on public.jobs
   for all to authenticated using (public.is_office()) with check (public.is_office());
 
--- media: field sees its own uploads, office sees everything and is the only
--- role that can approve or reject.
+-- media: one shared crew of trusted people — everyone signed in sees every
+-- photo. The office/field split on *viewing* stopped earning its keep the
+-- moment the review queue went away (Dave, Sep 9 2026). Deleting is still
+-- office-only, and so is editing a caption or the Google queue state.
 drop policy if exists media_read on public.media_items;
 create policy media_read on public.media_items
   for select to authenticated
-  using (public.is_office() or uploaded_by = auth.uid());
+  using (public.is_staff());
 
 drop policy if exists media_insert on public.media_items;
 create policy media_insert on public.media_items
@@ -473,10 +554,12 @@ create policy job_media_insert on storage.objects
   for insert to authenticated
   with check (bucket_id = 'job-media' and public.is_staff() and owner = auth.uid());
 
+-- Matches media_read: any signed-in staff member can view any jobsite file.
+-- Without this the media library would list rows whose previews 403.
 drop policy if exists job_media_read on storage.objects;
 create policy job_media_read on storage.objects
   for select to authenticated
-  using (bucket_id = 'job-media' and (public.is_office() or owner = auth.uid()));
+  using (bucket_id = 'job-media' and public.is_staff());
 
 drop policy if exists job_media_office_delete on storage.objects;
 create policy job_media_office_delete on storage.objects

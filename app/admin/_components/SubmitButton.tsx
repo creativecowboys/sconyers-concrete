@@ -10,16 +10,30 @@ import { useFormStatus } from 'react-dom'
 export default function SubmitButton({
   children,
   pendingLabel,
+  confirm,
   className = 'adm-btn adm-btn-primary',
 }: {
   children: React.ReactNode
   pendingLabel?: string
+  /** Ask first. Used on the one action that cannot be undone: deleting a file. */
+  confirm?: string
   className?: string
 }) {
   const { pending } = useFormStatus()
 
   return (
-    <button type="submit" className={className} disabled={pending}>
+    <button
+      type="submit"
+      className={className}
+      disabled={pending}
+      onClick={
+        confirm
+          ? (event) => {
+              if (!window.confirm(confirm)) event.preventDefault()
+            }
+          : undefined
+      }
+    >
       {pending ? (pendingLabel ?? 'Working…') : children}
     </button>
   )
