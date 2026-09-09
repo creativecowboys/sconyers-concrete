@@ -3,6 +3,7 @@ import { Barlow_Condensed, Lora } from 'next/font/google'
 import Footer from '@/components/Footer'
 import Nav from '@/components/Nav'
 import ScrollReveal from '@/components/ScrollReveal'
+import SiteChrome from '@/components/SiteChrome'
 import TopBar from '@/components/TopBar'
 import { site } from '@/lib/site'
 import './globals.css'
@@ -53,10 +54,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </noscript>
       </head>
       <body>
-        <TopBar />
-        <Nav />
+        {/* SiteChrome drops the marketing header/footer on /admin and renders
+            nothing of its own anywhere else. */}
+        <SiteChrome>
+          <TopBar />
+          <Nav />
+        </SiteChrome>
         {children}
-        <Footer />
+        <SiteChrome>
+          <Footer />
+        </SiteChrome>
         <ScrollReveal />
       </body>
     </html>
