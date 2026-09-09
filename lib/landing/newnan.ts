@@ -63,7 +63,7 @@ export const newnan: LandingPage = {
     paragraphs: [
       "We've poured slabs and paving across Coweta County — Newnan retail corridors, restaurants on Jackson Street, church expansions off Highway 16, and office-park outparcels along Bullsboro Drive. Newer commercial growth — McIntosh Bailey Station Commons, the Hilton Garden Inn / Residence Inn cluster, the Sprouts and Crunch Fitness pads — represents exactly the type of work we're built to handle: tight GC schedules, demanding owners, no margin for callbacks.",
     ],
-    note: 'We manage every job on-site directly. We do not use third-party subcontractors.',
+    note: 'We manage every job on-site directly.',
   },
 
   whyUs: {
@@ -102,7 +102,7 @@ export const newnan: LandingPage = {
       },
       {
         title: '3. Pour Day',
-        body: "Our crew shows up on time with standard-exceeding materials. No sub-contracting — Chip's core crew runs the site.",
+        body: "Our crew shows up on time with standard-exceeding materials. Chip's core crew runs the site.",
       },
       {
         title: '4. Walkthrough & Punch',
