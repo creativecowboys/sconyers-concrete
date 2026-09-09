@@ -63,11 +63,16 @@
 .adm h2 { font-size: 1.2rem; }
 .adm h3 { font-size: 1.05rem; font-weight: 650; }
 .adm p { line-height: 1.55; }
-/* Inline links only. Without the :not(), this rule (0,1,1) outranks
-   .adm-btn-primary (0,1,0) and paints every button-shaped <Link> dark red —
-   which on the red fill is unreadable. */
-.adm a:not(.adm-btn) { color: var(--adm-accent-dark); text-decoration: none; }
-.adm a:not(.adm-btn):hover { text-decoration: underline; }
+/* Inline links only. Buttons are excluded because this rule would otherwise
+   outrank .adm-btn-primary (0,1,0) and paint every button-shaped <Link> dark
+   red — unreadable on the red fill.
+   The exclusion sits inside :where() on purpose. A bare :not(.adm-btn) counts
+   as a class, pushing this to (0,2,1), which then outranks .adm-nav a and
+   .adm-row further down and turns the nav and the job rows red. :where()
+   contributes no specificity, so this stays (0,1,1) — exactly what it was
+   before buttons were excluded — and the later rules still win. */
+.adm a:where(:not(.adm-btn)) { color: var(--adm-accent-dark); text-decoration: none; }
+.adm a:where(:not(.adm-btn)):hover { text-decoration: underline; }
 
 /* ── SHELL ───────────────────────────────────────────────────────────────── */
 .adm-header {
@@ -210,6 +215,11 @@
   min-height: 64px;
   color: inherit;
 }
+/* .adm-row asks for `color: inherit`, but `.adm a` (0,1,1) beats `.adm-row`
+   (0,1,0), so job rows rendered red — every row looking like a warning. This
+   restores the intent. Predates the button fix; found rendering the nav. */
+.adm a.adm-row { color: inherit; }
+
 a.adm-row:hover {
   text-decoration: none;
   border-color: var(--adm-line-strong);
