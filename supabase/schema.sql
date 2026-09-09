@@ -484,14 +484,15 @@ create policy job_media_office_delete on storage.objects
   using (bucket_id = 'job-media' and public.is_office());
 
 -- ---------------------------------------------------------------------------
--- 8. Seed — EDIT THESE, then run.
+-- 8. Seed
 -- ---------------------------------------------------------------------------
--- Everyone who should be able to sign in needs a row here first. Real
--- addresses go in before this runs; the placeholders below will not work.
+-- Everyone who should be able to sign in needs a row here first. These four
+-- are the real addresses, confirmed by Dave on Sep 9 2026 — add anyone else
+-- here or from the admin. Re-running is safe.
 insert into public.admin_invites (email, role, full_name) values
   ('chip.sconyers@sconyersconcrete.com', 'office', 'Chip Sconyers'),
-  ('heather@sconyersconcrete.com',       'office', 'Heather Gray'),
-  ('brice@sconyersconcrete.com',         'office', 'Brice'),
+  ('heather.gray@sconyersconcrete.com',  'office', 'Heather Gray'),
+  ('brice.wiley@sconyersconcrete.com',   'office', 'Brice Wiley'),
   ('dave@creativecowboys.co',            'office', 'Dave Collum')
 on conflict (email) do update
   set role = excluded.role,

@@ -22,9 +22,9 @@ Save the database password in the password manager, not here.
 Supabase dashboard → SQL Editor → paste the whole of `supabase/schema.sql` →
 Run. It is idempotent, so running it again later is safe.
 
-**Edit the seed block at the bottom first.** It is the allowlist — the real
-email addresses for Chip, Heather and Brice go in before it runs, because
-nobody can sign in unless their address is in `admin_invites`.
+The seed block at the bottom is the allowlist — Chip, Heather, Brice and Dave,
+all confirmed addresses. Nobody can sign in unless their address is in
+`admin_invites`, so anyone added later needs a row (see section 6).
 
 The script also creates the private `job-media` storage bucket and every row
 level security policy.
