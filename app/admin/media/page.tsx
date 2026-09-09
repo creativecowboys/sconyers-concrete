@@ -8,8 +8,10 @@ import {
 } from '@/lib/admin/types'
 import { MEDIA_BUCKET } from '@/lib/supabase/env'
 import { createClient } from '@/lib/supabase/server'
+import type { JobOption } from '../_components/JobPicker'
 import SubmitButton from '../_components/SubmitButton'
 import { deleteMedia } from './actions'
+import MediaEditForm from './MediaEditForm'
 
 type Search = Record<string, string | string[] | undefined>
 
@@ -43,12 +45,18 @@ export default async function MediaLibraryPage({
 
   // The job filter is built from what has actually been uploaded, not from the
   // jobs table — plenty of media carries a free-text job name the office has
-  // not linked to a job row yet.
-  const { data: labelRows } = await supabase
-    .from('media_items')
-    .select('job_label')
-    .order('job_label')
-    .limit(1000)
+  // not linked to a job row yet. The open jobs feed the edit form's picker,
+  // the same list the upload form offers.
+  const [{ data: labelRows }, { data: jobRows }] = await Promise.all([
+    supabase.from('media_items').select('job_label').order('job_label').limit(1000),
+    supabase
+      .from('jobs')
+      .select('id, name')
+      .in('status', ['bidding', 'upcoming', 'active', 'on_hold'])
+      .order('name')
+      .limit(300),
+  ])
+  const jobs = (jobRows ?? []) as JobOption[]
 
   const jobLabels = Array.from(
     new Set(((labelRows ?? []) as { job_label: string }[]).map((row) => row.job_label))
@@ -87,7 +95,8 @@ export default async function MediaLibraryPage({
           <h1>Photo library</h1>
           <p>
             Every photo and video the crew has sent in, newest first. Nothing
-            waits on approval — what you upload is on file straight away.
+            waits on approval — what you upload is on file straight away. Wrong
+            job or date on one? Anyone can fix it from here.
           </p>
         </div>
         <Link href="/admin/upload" className="adm-btn adm-btn-primary">
@@ -255,6 +264,8 @@ export default async function MediaLibraryPage({
                           <dd>{formatDateTime(item.created_at)}</dd>
                         </div>
                       </dl>
+
+                      <MediaEditForm item={item} jobs={jobs} />
 
                       {office ? (
                         <form action={deleteMedia} className="adm-mt">

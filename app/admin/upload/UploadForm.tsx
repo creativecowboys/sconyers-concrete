@@ -10,11 +10,9 @@ import {
 } from '@/lib/admin/types'
 import { MEDIA_BUCKET } from '@/lib/supabase/env'
 import { createClient } from '@/lib/supabase/client'
+import JobPicker, { matchJob, type JobOption } from '../_components/JobPicker'
 
-// Sentinel for the "not listed" row in the job dropdown.
-const NOT_LISTED = '__not_listed__'
-
-export type JobOption = { id: string; name: string }
+export type { JobOption }
 
 /**
  * Fields that are sticky between uploads. A crew photographing a slab will not
@@ -127,17 +125,11 @@ export default function UploadForm({
     setJobLabel(label)
     // A remembered job that has since closed would otherwise vanish from the
     // dropdown and silently blank the field. Fall back to the text box.
-    setTypingJob(
-      Boolean(label.trim()) &&
-        !jobs.some((job) => job.name.toLowerCase() === label.trim().toLowerCase())
-    )
+    setTypingJob(Boolean(label.trim()) && !matchJob(jobs, label))
     setPrefsLoaded(true)
   }, [initialJobId, jobs])
 
-  const matchedJob = useMemo(
-    () => jobs.find((job) => job.name.toLowerCase() === jobLabel.trim().toLowerCase()),
-    [jobs, jobLabel]
-  )
+  const matchedJob = useMemo(() => matchJob(jobs, jobLabel), [jobs, jobLabel])
 
   const oversizeVideo = videoInfo.some(
     (info) => info.bytes > GBP_VIDEO_LIMITS.megabytes * 1024 * 1024
@@ -265,70 +257,15 @@ export default function UploadForm({
 
       {/* ── The two required fields, and nothing else above the fold. ── */}
       <div className="adm-card">
-        <label className="adm-field">
-          <span className="adm-field-label">
-            Job <span className="adm-req">*</span>
-            <span className="adm-field-hint">
-              {typingJob
-                ? 'Type the job name. The office will tie it to a job later.'
-                : 'Pick the job these are from.'}
-            </span>
-          </span>
-          {typingJob ? (
-            <input
-              type="text"
-              name="job"
-              value={jobLabel}
-              onChange={(event) => setJobLabel(event.target.value)}
-              autoCapitalize="words"
-              autoComplete="off"
-              required
-            />
-          ) : (
-            <select
-              name="job"
-              value={jobLabel}
-              onChange={(event) => {
-                if (event.target.value === NOT_LISTED) {
-                  setJobLabel('')
-                  setTypingJob(true)
-                  return
-                }
-                setJobLabel(event.target.value)
-              }}
-              required
-            >
-              <option value="" disabled>
-                Choose a job…
-              </option>
-              {jobs.map((job) => (
-                <option key={job.id} value={job.name}>
-                  {job.name}
-                </option>
-              ))}
-              <option value={NOT_LISTED}>Not listed — type it in</option>
-            </select>
-          )}
-        </label>
-
-        {typingJob ? (
-          <button
-            type="button"
-            className="adm-btn adm-btn-sm"
-            onClick={() => {
-              setJobLabel('')
-              setTypingJob(false)
-            }}
-          >
-            Back to the job list
-          </button>
-        ) : null}
-
-        {typingJob && jobLabel.trim() && !matchedJob ? (
-          <div className="adm-note adm-small adm-mt">
-            New job name. That is fine — the office will tie it to a job later.
-          </div>
-        ) : null}
+        <JobPicker
+          jobs={jobs}
+          value={jobLabel}
+          typing={typingJob}
+          onChange={({ label, typing }) => {
+            setJobLabel(label)
+            setTypingJob(typing)
+          }}
+        />
 
         <label className="adm-field adm-mt">
           <span className="adm-field-label">
