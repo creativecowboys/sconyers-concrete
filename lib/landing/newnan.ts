@@ -7,9 +7,9 @@ export const newnan: LandingPage = {
     'Pouring warehouse floors, structural foundations, parking fields & truck courts across Newnan since 1994. Trusted by GCs building retail, industrial & medical projects. Free estimates: 706-669-3089.',
 
   hero: {
-    eyebrow: 'Serving Coweta County Since 1994',
+    eyebrow: 'Serving Coweta County for 30+ Years',
     lines: ['Commercial', 'Concrete', 'Newnan, GA'],
-    sub: "Newnan is building fast — Hilton Garden Inn, Sprouts, Crunch Fitness, Mellow Mushroom, and dozens more. We've been pouring the floors, foundations, and parking fields for Coweta County commercial builds since 1994.",
+    sub: "Newnan is building fast — Hilton Garden Inn, Sprouts, Crunch Fitness, Mellow Mushroom, and dozens more. We've been pouring the floors, foundations, and parking fields for Coweta County commercial builds for 30+ years.",
     trustStrip:
       '30+ years · Bonded & insured · Free on-site estimates · Same-week response',
   },

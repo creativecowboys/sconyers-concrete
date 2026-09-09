@@ -9,7 +9,7 @@ export const parkingLotPaving: LandingPage = {
   hero: {
     eyebrow: 'Douglas County Concrete Paving',
     lines: ['Parking Lot', 'Paving', 'Douglasville, GA'],
-    sub: "Concrete parking lots outlast asphalt 3-to-1 in commercial use. We've been pouring them across Douglas County since 1994 — for shopping centers, medical offices, churches, restaurants, and office parks.",
+    sub: "Concrete parking lots outlast asphalt 3-to-1 in commercial use. We've been pouring them across Douglas County for 30+ years — for shopping centers, medical offices, churches, restaurants, and office parks.",
     trustStrip:
       '30+ years · Bonded & insured · Free on-site estimates · Same-week response',
   },
