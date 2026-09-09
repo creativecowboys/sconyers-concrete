@@ -5,7 +5,7 @@ export const mcdonough: LandingPage = {
   title:
     'Commercial Concrete Contractor in McDonough & Henry County, GA | Sconyers Concrete',
   description:
-    "Henry County's I-75 corridor is filling up with million-square-foot distribution buildings — and every one needs a truck court that holds. Heavy commercial concrete, self-performed since 1994. 706-669-3089.",
+    "Henry County's I-75 corridor is filling up with million-square-foot distribution buildings — and every one needs a truck court that holds. Heavy commercial concrete, self-performed for 30+ years. 706-669-3089.",
 
   hero: {
     eyebrow: 'Commercial Concrete · 30+ Years',

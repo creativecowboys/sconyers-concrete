@@ -167,7 +167,7 @@ export default function HomePage() {
               <h2>30 Years of Concrete You Can Count On</h2>
               <p className="lead">
                 Sconyers Concrete Inc. has been laying the foundation for Greater Atlanta
-                businesses since 1994. Strictly commercial, strictly self-performed —
+                businesses for more than 30 years. Strictly commercial, strictly self-performed —
                 our own crews run every pour, start to finish.
               </p>
               <p>
