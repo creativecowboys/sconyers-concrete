@@ -7,7 +7,7 @@ export default function TopBar() {
       <div className="top-bar-inner">
         <span className="top-bar-left">
           <PinIcon />
-          Serving West Georgia
+          Serving Greater Metro Atlanta
         </span>
         <Link href="/contact" className="top-bar-right">
           Start your next project →

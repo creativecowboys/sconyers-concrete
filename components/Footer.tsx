@@ -22,8 +22,7 @@ export default function Footer() {
             </span>
           </Link>
           <p>
-            Full-service commercial concrete contractor serving Greater Atlanta, GA since{' '}
-            {site.foundingDate}.
+            Full-service commercial concrete contractor serving Greater Metro Atlanta, GA.
           </p>
         </div>
         <div className="footer-links">

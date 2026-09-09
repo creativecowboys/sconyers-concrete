@@ -84,7 +84,7 @@ export default function HomePage() {
       >
         <div className="hero-texture" />
         <div className="hero-inner">
-          <div className="hero-eyebrow">Greater Atlanta, Georgia · Since 1994</div>
+          <div className="hero-eyebrow">Greater Atlanta, Georgia · 30+ Years</div>
           <h1 className="hero-title">
             <span className="line-1">Built</span>
             <span className="line-2">Solid.</span>
