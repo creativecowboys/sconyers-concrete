@@ -43,7 +43,7 @@ const services = [
 
 const stats = [
   { num: '30', sup: '+', label: 'Years of Combined Experience' },
-  { num: '100', sup: '%', label: 'Self-Performed — No Subcontracted Crews' },
+  { num: '100', sup: '%', label: 'Self-Performed Crews' },
   { num: '7', label: 'Commercial Sectors Served' },
   { num: 'FREE', label: 'On-Site or Phone Estimates', highlight: true },
 ]

@@ -102,7 +102,7 @@ export const carrollton: LandingPage = {
       },
       {
         title: '3. Pour Day',
-        body: "Our crew shows up on time with standard-exceeding materials. No sub-contracting — Chip's core crew runs the site.",
+        body: "Our crew shows up on time with standard-exceeding materials. Chip's core crew runs the site.",
       },
       {
         title: '4. Walkthrough & Punch',
