@@ -6,14 +6,19 @@ const ERRORS: Record<string, string> = {
   save: 'That did not save. Try again, and tell Creative Cowboys if it keeps happening.',
 }
 
+export type CrewOption = { id: string; name: string }
+
 export default function JobForm({
   action,
   job,
+  crews,
   error,
   submitLabel,
 }: {
   action: (formData: FormData) => void | Promise<void>
   job?: Job
+  /** Active crews, alphabetical. The edit page adds the job's current crew even if it has been retired. */
+  crews: CrewOption[]
   error?: string
   submitLabel: string
 }) {
@@ -81,6 +86,25 @@ export default function JobForm({
           <input type="date" name="end_date" defaultValue={job?.end_date ?? ''} />
         </label>
       </div>
+
+      <label className="adm-field">
+        <span className="adm-field-label">
+          Crew
+          <span className="adm-field-hint">
+            {crews.length === 0
+              ? 'No crews set up yet. Add one on the Crews page and it will show here.'
+              : 'Every weekday from the start date to the finish date goes on this crew\u2019s calendar. Add a finish date to put the crew on the schedule.'}
+          </span>
+        </span>
+        <select name="crew_id" defaultValue={job?.crew_id ?? ''}>
+          <option value="">No crew yet</option>
+          {crews.map((crew) => (
+            <option key={crew.id} value={crew.id}>
+              {crew.name}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <label className="adm-field">
         <span className="adm-field-label">

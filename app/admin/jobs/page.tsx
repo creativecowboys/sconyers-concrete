@@ -27,7 +27,7 @@ export default async function JobsPage({
   let request = supabase
     .from('jobs')
     .select(
-      'id, name, client_name, address, city, county, status, start_date, end_date, notes, created_at, updated_at'
+      'id, name, client_name, address, city, county, status, start_date, end_date, crew_id, notes, created_at, updated_at'
     )
     .order('status')
     .order('start_date', { ascending: false, nullsFirst: false })
@@ -35,8 +35,12 @@ export default async function JobsPage({
 
   if (!showAll) request = request.in('status', ['bidding', 'upcoming', 'active', 'on_hold'])
 
-  const { data, error } = await request
+  const [{ data, error }, { data: crewRows }] = await Promise.all([
+    request,
+    supabase.from('crews').select('id, name'),
+  ])
   const jobs = (data ?? []) as Job[]
+  const crewName = new Map((crewRows ?? []).map((crew) => [crew.id, crew.name as string]))
 
   return (
     <>
@@ -99,8 +103,15 @@ export default async function JobsPage({
                   .filter(Boolean)
                   .join(' · ') || 'No contractor or location on file'}
               </div>
-              {job.start_date ? (
-                <div className="adm-row-meta">Starts {formatDate(job.start_date)}</div>
+              {job.start_date || job.crew_id ? (
+                <div className="adm-row-meta">
+                  {[
+                    job.start_date && `Starts ${formatDate(job.start_date)}`,
+                    job.crew_id && (crewName.get(job.crew_id) ?? 'Crew assigned'),
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </div>
               ) : null}
             </Link>
           ))}

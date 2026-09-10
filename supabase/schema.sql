@@ -529,6 +529,21 @@ revoke all on function public.crew_calendar_feed(uuid) from public;
 grant execute on function public.crew_calendar_feed(uuid) to anon, authenticated;
 
 -- ---------------------------------------------------------------------------
+-- 3c. MIGRATION — jobs.crew_id (added Sep 9 2026)
+-- ---------------------------------------------------------------------------
+-- Chip assigns the crew on the job screen, not one schedule entry at a time on
+-- the Crews page. A job at bid stage has no crew, so this is nullable.
+--
+-- This lives here, after section 5, and not next to 3a/3b: the column
+-- references public.crews, which does not exist until section 5 has run on a
+-- fresh install. The index comes after the alter for the same reason it does
+-- in 3a — on a live database the column is not there until the alter runs.
+alter table public.jobs
+  add column if not exists crew_id uuid references public.crews (id) on delete set null;
+
+create index if not exists jobs_crew_idx on public.jobs (crew_id);
+
+-- ---------------------------------------------------------------------------
 -- 6. Row level security
 -- ---------------------------------------------------------------------------
 alter table public.admin_invites     enable row level security;
