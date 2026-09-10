@@ -12,5 +12,7 @@ export function isSupabaseConfigured() {
   return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY)
 }
 
-/** Bucket created by supabase/schema.sql. Private. */
+/** Buckets created by supabase/schema.sql. Both private. */
 export const MEDIA_BUCKET = 'job-media'
+/** The shared Docs folder — QR codes, forms, anything worth having on a phone. */
+export const DOCS_BUCKET = 'docs'

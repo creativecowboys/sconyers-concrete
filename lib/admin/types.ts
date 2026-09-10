@@ -98,6 +98,22 @@ export type MediaItem = {
   created_at: string
 }
 
+/**
+ * A file in the shared Docs folder. Named DocumentRow rather than Document so
+ * it never shadows the DOM's global `Document` type inside a .tsx file.
+ */
+export type DocumentRow = {
+  id: string
+  title: string
+  storage_path: string
+  mime_type: string | null
+  size_bytes: number | null
+  original_name: string | null
+  uploaded_by: string | null
+  uploaded_by_name: string | null
+  created_at: string
+}
+
 export const CHANGE_ORDER_STATUSES = ['new', 'acknowledged', 'handled'] as const
 export type ChangeOrderStatus = (typeof CHANGE_ORDER_STATUSES)[number]
 
