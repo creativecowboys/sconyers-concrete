@@ -37,6 +37,8 @@ export type Job = {
   status: JobStatus
   start_date: string | null
   end_date: string | null
+  /** The crew assigned on the job screen. null until the office picks one. */
+  crew_id: string | null
   notes: string | null
   created_at: string
   updated_at: string

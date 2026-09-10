@@ -12,24 +12,42 @@ import {
 } from '@/lib/admin/types'
 import { createClient } from '@/lib/supabase/server'
 
+type Search = Record<string, string | string[] | undefined>
+
+function first(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value
+}
+
 export default async function JobDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>
+  searchParams: Promise<Search>
 }) {
   const { id } = await params
+  const search = await searchParams
   const profile = await requireProfile()
   const supabase = await createClient()
 
   const { data: job } = await supabase
     .from('jobs')
     .select(
-      'id, name, client_name, address, city, county, status, start_date, end_date, notes, created_at, updated_at'
+      'id, name, client_name, address, city, county, status, start_date, end_date, crew_id, notes, created_at, updated_at'
     )
     .eq('id', id)
     .maybeSingle<Job>()
 
   if (!job) notFound()
+
+  const { data: crew } = job.crew_id
+    ? await supabase.from('crews').select('name').eq('id', job.crew_id).maybeSingle<{ name: string }>()
+    : { data: null }
+  const crewLabel = crew?.name ?? (job.crew_id ? 'Crew assigned' : null)
+
+  // Set by the save action: how the crew calendar came out of that save.
+  const scheduled = Number(first(search.scheduled))
+  const scheduleProblem = first(search.schedule)
 
   // RLS already limits the field to their own rows, so these queries are safe
   // to run for both roles without a role branch.
@@ -70,6 +88,27 @@ export default async function JobDetailPage({
           </Link>
         ) : null}
       </div>
+
+      {Number.isFinite(scheduled) && first(search.scheduled) !== undefined ? (
+        <div className={`adm-note ${scheduled > 0 ? 'adm-note-ok' : 'adm-note-warn'} adm-mb`}>
+          {scheduled > 0 ? (
+            <>
+              <strong>{crewLabel ?? 'The crew'}</strong> is on the calendar for{' '}
+              {scheduled} working {scheduled === 1 ? 'day' : 'days'}.
+            </>
+          ) : (
+            <>No weekdays between those dates, so nothing went on the calendar.</>
+          )}
+        </div>
+      ) : null}
+      {scheduleProblem ? (
+        <div className="adm-note adm-note-warn adm-mb">
+          <strong>The job saved, but the crew calendar did not.</strong>{' '}
+          {scheduleProblem === 'too-long'
+            ? 'That is more than a year of working days — check the finish date.'
+            : 'Put the crew on the schedule from the Crews page, or edit the job and save again.'}
+        </div>
+      ) : null}
 
       <div className="adm-stack adm-mb">
         <Link
@@ -113,6 +152,10 @@ export default async function JobDetailPage({
             <dd>
               {formatDate(job.start_date)} → {formatDate(job.end_date)}
             </dd>
+          </div>
+          <div>
+            <dt>Crew</dt>
+            <dd>{crewLabel ?? '—'}</dd>
           </div>
           <div>
             <dt>Notes</dt>

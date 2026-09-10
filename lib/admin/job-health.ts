@@ -68,7 +68,7 @@ export function toDayNumber(iso: string): number | null {
   return Math.round(Date.UTC(y, m - 1, d) / DAY_MS)
 }
 
-function isWeekday(day: number) {
+export function isWeekday(day: number) {
   const dow = new Date(day * DAY_MS).getUTCDay()
   return dow !== 0 && dow !== 6
 }

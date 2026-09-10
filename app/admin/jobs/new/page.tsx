@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { requireOffice } from '@/lib/admin/auth'
-import JobForm from '../../_components/JobForm'
+import { createClient } from '@/lib/supabase/server'
+import JobForm, { type CrewOption } from '../../_components/JobForm'
 import { createJob } from '../actions'
 
 type Search = Record<string, string | string[] | undefined>
@@ -14,6 +15,13 @@ export default async function NewJobPage({
   const params = await searchParams
   const error = Array.isArray(params.error) ? params.error[0] : params.error
 
+  const supabase = await createClient()
+  const { data: crews } = await supabase
+    .from('crews')
+    .select('id, name')
+    .eq('active', true)
+    .order('name')
+
   return (
     <>
       <div className="adm-page-head">
@@ -26,7 +34,12 @@ export default async function NewJobPage({
         </Link>
       </div>
 
-      <JobForm action={createJob} error={error} submitLabel="Create job" />
+      <JobForm
+        action={createJob}
+        crews={(crews ?? []) as CrewOption[]}
+        error={error}
+        submitLabel="Create job"
+      />
     </>
   )
 }
