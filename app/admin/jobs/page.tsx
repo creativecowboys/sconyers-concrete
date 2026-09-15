@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { JobJump } from './JobJump'
 import { requireProfile } from '@/lib/admin/auth'
 import { formatDate } from '@/lib/admin/format'
-import { JOB_STATUS_LABELS, type Job } from '@/lib/admin/types'
+import { JOB_COLUMNS, JOB_STATUS_LABELS, JOB_TYPE_LABELS, type Job } from '@/lib/admin/types'
 import { createClient } from '@/lib/supabase/server'
 
 type Search = Record<string, string | string[] | undefined>
@@ -26,9 +26,7 @@ export default async function JobsPage({
   const supabase = await createClient()
   let request = supabase
     .from('jobs')
-    .select(
-      'id, name, client_name, address, city, county, status, start_date, end_date, crew_id, notes, created_at, updated_at'
-    )
+    .select(JOB_COLUMNS)
     .order('status')
     .order('start_date', { ascending: false, nullsFirst: false })
     .limit(200)
@@ -103,16 +101,15 @@ export default async function JobsPage({
                   .filter(Boolean)
                   .join(' · ') || 'No contractor or location on file'}
               </div>
-              {job.start_date || job.crew_id ? (
-                <div className="adm-row-meta">
-                  {[
-                    job.start_date && `Starts ${formatDate(job.start_date)}`,
-                    job.crew_id && (crewName.get(job.crew_id) ?? 'Crew assigned'),
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
-                </div>
-              ) : null}
+              <div className="adm-row-meta">
+                {[
+                  JOB_TYPE_LABELS[job.job_type],
+                  job.start_date && `Starts ${formatDate(job.start_date)}`,
+                  job.crew_id && (crewName.get(job.crew_id) ?? 'Crew assigned'),
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </div>
             </Link>
           ))}
         </div>

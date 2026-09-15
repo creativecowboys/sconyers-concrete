@@ -12,6 +12,7 @@
 --                    uploader is the approver. (Dave, Sep 9 2026.)
 --   * change_orders  — INTERNAL field-to-office notes. Not a contract document.
 --   * crews / crew_events — crew schedule, published as a signed .ics feed.
+--   * sov_lines      — Schedule of Values lines for 80/20 jobs (section 3d).
 --   * documents      — the shared "Docs" folder (QR codes, forms). Anyone signed
 --                    in reads and uploads; the office deletes. (Dave, Sep 9 2026.)
 --   * storage buckets "job-media" and "docs" (both private) + their policies.
@@ -181,6 +182,13 @@ create table if not exists public.jobs (
   start_date  date,
   end_date    date,
   notes       text,
+  -- How the job is billed (Chip, Sep 15 2026). See section 3d for the two models.
+  job_type        text not null default 'day_rate'
+                    check (job_type in ('day_rate', 'eighty_twenty')),
+  day_rate_cents  integer,            -- day rate: labor-only rate per crew-day
+  days_bid        integer,            -- day rate: crew-days the job was bid at
+  contract_cents  bigint,             -- 80/20: the contract Sconyers won
+  crew_share_pct  numeric not null default 80,  -- 80/20: the crew's share
   created_by  uuid references public.profiles (id) on delete set null,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
@@ -542,6 +550,78 @@ alter table public.jobs
   add column if not exists crew_id uuid references public.crews (id) on delete set null;
 
 create index if not exists jobs_crew_idx on public.jobs (crew_id);
+
+-- ---------------------------------------------------------------------------
+-- 3d. MIGRATION — job types + Schedule of Values (added Sep 15 2026)
+-- ---------------------------------------------------------------------------
+-- Chip's two billing models, in his words (Sep 15 2026):
+--   day_rate      — a set day rate, labor only; Sconyers buys no materials.
+--                   Bid as "how many days I know it'll take a crew".
+--   eighty_twenty — Sconyers bids and wins the contract, then offers 80% of
+--                   it to one of its crews, who buy the forms and bring the
+--                   equipment. Sconyers keeps 20% for oversight and billing.
+--                   Progress is tracked and billed by a Schedule of Values.
+--
+-- `sov_lines` is one row per SOV line, laid out like the standard AIA G703
+-- sheet: item, description, scheduled value, work completed previously, this
+-- period, materials stored, retainage. "Total completed", "% complete" and
+-- "balance to finish" are derived in code, never stored. Chip's own sheet
+-- has not reached us yet, so the columns are deliberately plain and easy to
+-- add to.
+--
+-- Same shape as 3a: the columns are in CREATE TABLE above for a fresh
+-- install, and added here for the live database. The check constraint is
+-- guarded by name — Postgres names an inline column check
+-- `jobs_job_type_check`, so a fresh install skips it cleanly.
+alter table public.jobs add column if not exists job_type text not null default 'day_rate';
+alter table public.jobs add column if not exists day_rate_cents integer;
+alter table public.jobs add column if not exists days_bid integer;
+alter table public.jobs add column if not exists contract_cents bigint;
+alter table public.jobs add column if not exists crew_share_pct numeric not null default 80;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.jobs'::regclass and conname = 'jobs_job_type_check'
+  ) then
+    alter table public.jobs
+      add constraint jobs_job_type_check check (job_type in ('day_rate', 'eighty_twenty'));
+  end if;
+end $$;
+
+create table if not exists public.sov_lines (
+  id                        uuid primary key default gen_random_uuid(),
+  job_id                    uuid not null references public.jobs (id) on delete cascade,
+  sort                      integer not null default 0,
+  item_no                   text,
+  description               text not null default '',
+  scheduled_value_cents     bigint not null default 0,
+  previous_completed_cents  bigint not null default 0,
+  this_period_cents         bigint not null default 0,
+  stored_cents              bigint not null default 0,
+  retainage_pct             numeric not null default 0,
+  created_at                timestamptz not null default now(),
+  updated_at                timestamptz not null default now()
+);
+
+create index if not exists sov_lines_job_idx on public.sov_lines (job_id, sort);
+
+drop trigger if exists sov_lines_touch_updated_at on public.sov_lines;
+create trigger sov_lines_touch_updated_at
+  before update on public.sov_lines
+  for each row execute function public.touch_updated_at();
+
+alter table public.sov_lines enable row level security;
+
+-- Same rule as jobs: every active staff member reads, only the office writes.
+drop policy if exists sov_lines_staff_read on public.sov_lines;
+create policy sov_lines_staff_read on public.sov_lines
+  for select to authenticated using (public.is_staff());
+
+drop policy if exists sov_lines_office_write on public.sov_lines;
+create policy sov_lines_office_write on public.sov_lines
+  for all to authenticated using (public.is_office()) with check (public.is_office());
 
 -- ---------------------------------------------------------------------------
 -- 6. Row level security

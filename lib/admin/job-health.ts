@@ -1,31 +1,68 @@
 /**
- * Job health, version one — derived only from data the admin already holds.
+ * Job health — derived from data the admin already holds, per job type.
  *
  * Chip's question is "is this job on track, mainly by how many days the crew
- * has been on site." Until he answers the scoping email (days bid, pours,
- * 80/20 vs day rate) there is no bid to measure against, so version one uses:
+ * has been on site." Since Sep 15 2026 we know how he bills, so there are
+ * two views:
  *
- *   days on site  = distinct calendar dates ≤ today with a crew event on the job
- *   days planned  = working days (Mon–Fri) from jobs.start_date to end_date
+ *   day_rate      days on site  = distinct calendar dates ≤ today with a crew
+ *                                 event on the job
+ *                 days planned  = working days (Mon–Fri) from start to finish
+ *                 money line    = days on site × day rate, against days bid × rate
  *
- * No new columns, nothing guessed. A job with no start or end date has no
- * plan and is shown as "No schedule yet".
+ *   eighty_twenty % complete    = Σ SOV total completed ÷ Σ SOV scheduled value
+ *                 compared to the share of the schedule (start→finish) that
+ *                 has elapsed. Contract split crew / Sconyers by crew_share_pct.
+ *                 No SOV lines yet → nothing to measure, "No SOV yet".
  *
- * TODO(chip): a second bar for pours done vs pours planned, once Chip says
- * how he counts progress. Day-rate jobs will need a different view entirely
- * (days are revenue there, not a budget).
+ * Everything here is pure: the SOV totals come in already summed (lib/admin/sov.ts),
+ * so the only import is a type — erased at runtime, which is what lets
+ * `node --experimental-strip-types` run the unit tests against this file directly.
  */
 
+import type { SovSummary } from './sov'
+
 export type HealthStatus = 'behind' | 'watch' | 'on_track'
+
+export type JobKind = 'day_rate' | 'eighty_twenty'
+
+/** Day-rate money line: what the days on site have earned against the bid. */
+export type DayRateMoney = {
+  rateCents: number
+  earnedCents: number
+  /** days_bid × rate. null when the job has no days bid. */
+  bidCents: number | null
+  daysBid: number | null
+}
+
+/** 80/20 progress: the SOV rolled up, compared to the schedule. */
+export type SovHealth = {
+  /** Σ completed ÷ Σ scheduled, 0–1 (above 1 when over-billed). */
+  pct: number
+  completedCents: number
+  scheduledCents: number
+  contractCents: number | null
+  crewCents: number | null
+  sconyersCents: number | null
+  /** Working days elapsed since start ÷ days planned, 0–1. null without both dates. */
+  elapsedShare: number | null
+  /** null when there is no schedule to compare against. */
+  status: HealthStatus | null
+  reason: string | null
+}
 
 export type JobHealth = {
   id: string
   name: string
+  kind: JobKind
   /** Crews that have been scheduled on this job, by name. Empty when nobody has. */
   crews?: string[]
   /** The job's end_date — the day the crew is expected to be done. */
   due?: { date: string; past: boolean } | null
-  /** null when the job has no start or end date — nothing to measure against. */
+  /**
+   * Day-rate jobs only. null when the job has no start or end date — nothing
+   * to measure against. Always null on an 80/20 job, which uses `sov`.
+   */
   plan: {
     daysOnSite: number
     daysPlanned: number
@@ -35,6 +72,10 @@ export type JobHealth = {
     /** Short, cheap explanation for the pill. null when there is nothing to say. */
     reason: string | null
   } | null
+  /** Day-rate jobs only. null until a day rate is entered. */
+  money: DayRateMoney | null
+  /** 80/20 jobs only. null until the SOV has at least one line. */
+  sov: SovHealth | null
 }
 
 export type JobRow = {
@@ -43,6 +84,11 @@ export type JobRow = {
   status: string
   start_date: string | null
   end_date: string | null
+  job_type?: JobKind | null
+  day_rate_cents?: number | null
+  days_bid?: number | null
+  contract_cents?: number | null
+  crew_share_pct?: number | null
 }
 
 export type ScheduleRow = {
@@ -107,17 +153,104 @@ function plural(n: number, word: string) {
   return `${n} ${word}${n === 1 ? '' : 's'}`
 }
 
-export function assessJob(job: JobRow, daysOnSite: number, today: number): JobHealth {
+function kindOf(job: JobRow): JobKind {
+  return job.job_type === 'eighty_twenty' ? 'eighty_twenty' : 'day_rate'
+}
+
+/** Working-day plan from the job's dates. null when either is missing or the span has no weekdays. */
+function planSpan(job: JobRow, today: number) {
   const start = job.start_date ? toDayNumber(job.start_date) : null
   const end = job.end_date ? toDayNumber(job.end_date) : null
-  if (start === null || end === null) return { id: job.id, name: job.name, plan: null }
-
+  if (start === null || end === null) return null
   const daysPlanned = workingDays(start, end)
   // A span with no weekdays in it (weekend-only, or end before start) is not
   // a plan we can measure against. Treat it the same as missing dates.
-  if (daysPlanned === 0) return { id: job.id, name: job.name, plan: null }
-
+  if (daysPlanned === 0) return null
   const elapsedShare = Math.min(1, workingDays(start, today) / daysPlanned)
+  return { start, end, daysPlanned, elapsedShare }
+}
+
+/** Day rate × days: what the crew has earned so far and what the job was bid at. */
+export function dayRateMoney(job: JobRow, daysOnSite: number): DayRateMoney | null {
+  const rate = job.day_rate_cents ?? null
+  if (rate === null || rate <= 0) return null
+  const daysBid = job.days_bid ?? null
+  return {
+    rateCents: rate,
+    earnedCents: daysOnSite * rate,
+    bidCents: daysBid === null ? null : daysBid * rate,
+    daysBid,
+  }
+}
+
+/**
+ * 80/20: SOV % complete against the share of the schedule that has gone by.
+ * Same 85% Watch line as the day-rate bar — billed at least 85% of where the
+ * calendar says it should be is Watch; less is Behind. Past the finish date
+ * and still active with anything left to bill is Behind. Fully billed is On
+ * track whatever the calendar says.
+ */
+export function assessSov(job: JobRow, sov: SovSummary | null | undefined, today: number): SovHealth | null {
+  if (!sov || sov.lines === 0) return null
+
+  const contract = job.contract_cents ?? null
+  const sharePct = job.crew_share_pct ?? 80
+  const crew = contract === null ? null : Math.round((contract * sharePct) / 100)
+  const span = planSpan(job, today)
+
+  let status: HealthStatus | null = null
+  let reason: string | null = null
+
+  if (span) {
+    const gap = Math.round((span.elapsedShare - sov.pct) * 100)
+    if (sov.pct >= 1) {
+      status = 'on_track'
+      reason = 'Fully billed'
+    } else if (today > span.end && job.status === 'active') {
+      status = 'behind'
+      const past = workingDays(span.end + 1, today)
+      reason = past > 0 ? `${plural(past, 'day')} past end date` : 'Past end date'
+    } else if (sov.pct >= span.elapsedShare) {
+      status = 'on_track'
+    } else if (sov.pct >= WATCH_SHARE * span.elapsedShare) {
+      status = 'watch'
+      reason = `${gap}% behind plan`
+    } else {
+      status = 'behind'
+      reason = `${gap}% behind plan`
+    }
+  }
+
+  return {
+    pct: sov.pct,
+    completedCents: sov.completed,
+    scheduledCents: sov.scheduled,
+    contractCents: contract,
+    crewCents: crew,
+    sconyersCents: contract === null || crew === null ? null : contract - crew,
+    elapsedShare: span ? span.elapsedShare : null,
+    status,
+    reason,
+  }
+}
+
+export function assessJob(
+  job: JobRow,
+  daysOnSite: number,
+  today: number,
+  sov?: SovSummary | null
+): JobHealth {
+  const kind = kindOf(job)
+  const base = { id: job.id, name: job.name, kind }
+
+  if (kind === 'eighty_twenty') {
+    return { ...base, plan: null, money: null, sov: assessSov(job, sov, today) }
+  }
+
+  const money = dayRateMoney(job, daysOnSite)
+  const span = planSpan(job, today)
+  if (!span) return { ...base, plan: null, money, sov: null }
+  const { end, daysPlanned, elapsedShare } = span
 
   let status: HealthStatus = 'on_track'
   let reason: string | null = null
@@ -137,24 +270,39 @@ export function assessJob(job: JobRow, daysOnSite: number, today: number): JobHe
   }
 
   return {
-    id: job.id,
-    name: job.name,
+    ...base,
     plan: { daysOnSite, daysPlanned, elapsedShare, status, reason },
+    money,
+    sov: null,
   }
 }
 
 const ORDER: Record<HealthStatus, number> = { behind: 0, watch: 1, on_track: 2 }
 
-/** Behind first, then Watch, then On track, then jobs with no schedule. */
-export function assessJobs(jobs: JobRow[], events: ScheduleRow[], todayIso: string): JobHealth[] {
+/** The pill a row shows, whichever view it uses. null = no pill. */
+export function healthStatus(job: JobHealth): HealthStatus | null {
+  if (job.plan) return job.plan.status
+  if (job.sov) return job.sov.status
+  return null
+}
+
+/** Behind first, then Watch, then On track, then jobs with nothing to measure. */
+export function assessJobs(
+  jobs: JobRow[],
+  events: ScheduleRow[],
+  todayIso: string,
+  sovByJob?: Map<string, SovSummary>
+): JobHealth[] {
   const today = toDayNumber(todayIso)
   if (today === null) return []
   const onSite = daysOnSiteByJob(events, today)
   return jobs
-    .map((job) => assessJob(job, onSite.get(job.id)?.size ?? 0, today))
+    .map((job) => assessJob(job, onSite.get(job.id)?.size ?? 0, today, sovByJob?.get(job.id)))
     .sort((a, b) => {
-      const ra = a.plan ? ORDER[a.plan.status] : 3
-      const rb = b.plan ? ORDER[b.plan.status] : 3
+      const sa = healthStatus(a)
+      const sb = healthStatus(b)
+      const ra = sa ? ORDER[sa] : 3
+      const rb = sb ? ORDER[sb] : 3
       return ra - rb || a.name.localeCompare(b.name)
     })
 }

@@ -2,15 +2,20 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { requireProfile } from '@/lib/admin/auth'
 import { formatDate, formatDateTime } from '@/lib/admin/format'
+import { formatCents, splitContract } from '@/lib/admin/money'
 import {
   CHANGE_ORDER_STATUS_LABELS,
   GOOGLE_STATUS_LABELS,
+  JOB_COLUMNS,
   JOB_STATUS_LABELS,
+  JOB_TYPE_LABELS,
   type ChangeOrder,
   type Job,
   type MediaItem,
+  type SovLine,
 } from '@/lib/admin/types'
 import { createClient } from '@/lib/supabase/server'
+import SovEditor from '../SovEditor'
 
 type Search = Record<string, string | string[] | undefined>
 
@@ -32,13 +37,17 @@ export default async function JobDetailPage({
 
   const { data: job } = await supabase
     .from('jobs')
-    .select(
-      'id, name, client_name, address, city, county, status, start_date, end_date, crew_id, notes, created_at, updated_at'
-    )
+    .select(JOB_COLUMNS)
     .eq('id', id)
     .maybeSingle<Job>()
 
   if (!job) notFound()
+
+  const eightyTwenty = job.job_type === 'eighty_twenty'
+  const split =
+    eightyTwenty && job.contract_cents != null
+      ? splitContract(job.contract_cents, job.crew_share_pct)
+      : null
 
   const { data: crew } = job.crew_id
     ? await supabase.from('crews').select('name').eq('id', job.crew_id).maybeSingle<{ name: string }>()
@@ -51,7 +60,7 @@ export default async function JobDetailPage({
 
   // RLS already limits the field to their own rows, so these queries are safe
   // to run for both roles without a role branch.
-  const [{ data: media }, { data: changeOrders }] = await Promise.all([
+  const [{ data: media }, { data: changeOrders }, { data: sovRows }] = await Promise.all([
     supabase
       .from('media_items')
       .select('id, job_label, captured_on, media_type, google_status, scope, created_at')
@@ -64,7 +73,18 @@ export default async function JobDetailPage({
       .eq('job_id', id)
       .order('created_at', { ascending: false })
       .limit(10),
+    eightyTwenty
+      ? supabase
+          .from('sov_lines')
+          .select(
+            'id, job_id, sort, item_no, description, scheduled_value_cents, previous_completed_cents, this_period_cents, stored_cents, retainage_pct'
+          )
+          .eq('job_id', id)
+          .order('sort')
+          .limit(200)
+      : Promise.resolve({ data: [] as SovLine[] }),
   ])
+  const sovLines = (sovRows ?? []) as SovLine[]
 
   const location = [job.address, job.city, job.county && `${job.county} County`]
     .filter(Boolean)
@@ -158,11 +178,48 @@ export default async function JobDetailPage({
             <dd>{crewLabel ?? '—'}</dd>
           </div>
           <div>
+            <dt>Billing</dt>
+            <dd>
+              {JOB_TYPE_LABELS[job.job_type]}
+              {eightyTwenty ? (
+                job.contract_cents != null && split ? (
+                  <>
+                    {' '}· {formatCents(job.contract_cents)} contract · crew {formatCents(split.crew)} (
+                    {job.crew_share_pct}%) · Sconyers {formatCents(split.sconyers)}
+                  </>
+                ) : (
+                  ' · no contract amount yet'
+                )
+              ) : job.day_rate_cents != null ? (
+                <>
+                  {' '}· {formatCents(job.day_rate_cents)}/day
+                  {job.days_bid != null
+                    ? ` · ${job.days_bid} ${job.days_bid === 1 ? 'day' : 'days'} bid · ${formatCents(job.day_rate_cents * job.days_bid)} bid total`
+                    : ' · no days bid yet'}
+                </>
+              ) : (
+                ' · no day rate yet'
+              )}
+            </dd>
+          </div>
+          <div>
             <dt>Notes</dt>
             <dd className="adm-multiline">{job.notes || '—'}</dd>
           </div>
         </dl>
       </div>
+
+      {eightyTwenty ? (
+        <>
+          <h2 className="adm-mt-lg adm-mb">Schedule of Values</h2>
+          <p className="adm-small adm-mb">
+            {profile.role === 'office'
+              ? 'One line per item on the SOV. Total completed, % and balance work themselves out; the home page reads the % off this table.'
+              : 'Where the job stands on the Schedule of Values. The office keeps this up to date.'}
+          </p>
+          <SovEditor jobId={job.id} lines={sovLines} canEdit={profile.role === 'office'} />
+        </>
+      ) : null}
 
       <h2 className="adm-mt-lg adm-mb">Recent media</h2>
       <p className="adm-small adm-mb">
