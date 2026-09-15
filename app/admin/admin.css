@@ -570,3 +570,142 @@ a.adm-row:hover {
   .adm-doc-office { grid-template-columns: 1fr auto; align-items: stretch; }
   .adm-doc-delete .adm-btn { width: auto; min-width: 7rem; height: 100%; }
 }
+
+/* ── JOB TYPE (job form) ─────────────────────────────────────────────────── */
+.adm-fieldset { border: 0; padding: 0; margin: 0 0 1rem; min-width: 0; }
+.adm-fieldset legend { padding: 0; margin-bottom: 0.35rem; }
+/* Two-way switch: Day rate / 80-20. The radio itself is visually hidden
+   (.adm-sr); the label is the tap target, 52px like every other control. */
+.adm-seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--adm-line-strong);
+  border-radius: var(--adm-radius);
+  overflow: hidden;
+  background: var(--adm-surface);
+}
+.adm-seg-opt { display: block; position: relative; cursor: pointer; }
+.adm-seg-opt span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  font-weight: 650;
+  color: var(--adm-muted);
+  user-select: none;
+}
+.adm-seg-opt + .adm-seg-opt span { border-left: 1px solid var(--adm-line-strong); }
+.adm-seg-opt input:checked + span { background: var(--adm-ink); color: #fff; }
+.adm-seg-opt input:focus-visible + span { outline: 3px solid var(--adm-accent); outline-offset: -3px; }
+/* The live arithmetic under the numbers: bid total, or the crew / Sconyers split. */
+.adm-split {
+  margin: -0.25rem 0 1rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--adm-surface-2);
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+  font-size: 0.92rem;
+  color: var(--adm-muted);
+}
+.adm-split strong { color: var(--adm-ink); font-variant-numeric: tabular-nums; }
+/* Number inputs get the same box as text inputs (they were not in the list). */
+.adm input[type='number'] {
+  width: 100%;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--adm-ink);
+  background: var(--adm-surface);
+  border: 1px solid var(--adm-line-strong);
+  border-radius: var(--adm-radius);
+  padding: 0.8rem 0.85rem;
+  min-height: 52px;
+  font-variant-numeric: tabular-nums;
+}
+.adm input[type='number']:focus-visible {
+  outline: 3px solid var(--adm-accent);
+  outline-offset: 1px;
+  border-color: var(--adm-accent);
+}
+
+/* ── SCHEDULE OF VALUES (job page) ───────────────────────────────────────── */
+/* The one thing in the admin allowed to be wider than a phone: an 11-column
+   G703 sheet. It scrolls inside its own box; the page never does. */
+.adm-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -1rem; padding: 0 1rem; }
+.adm-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+/* Fixed layout, widths set on the header cells: with auto layout the browser
+   shrank every money input to ~60px inside the 800px main column and the
+   numbers clipped. This floor keeps each column usable and lets the wrapper
+   scroll instead. Description takes whatever is left. */
+.adm-sov {
+  table-layout: fixed;
+  min-width: 1380px;
+}
+.adm-table-hint { display: block; margin: 0 0 0.5rem; }
+@media (min-width: 1300px) {
+  .adm-table-hint { display: none; }
+}
+.adm-table th,
+.adm-table td {
+  padding: 0.35rem 0.4rem;
+  border-bottom: 1px solid var(--adm-line);
+  vertical-align: middle;
+  text-align: left;
+  white-space: nowrap;
+}
+.adm-table th {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--adm-muted);
+  border-bottom-color: var(--adm-line-strong);
+  white-space: normal;
+  vertical-align: bottom;
+}
+.adm-table tfoot td {
+  font-weight: 700;
+  border-top: 2px solid var(--adm-line-strong);
+  border-bottom: 0;
+  background: var(--adm-surface-2);
+}
+.adm-sov-item { width: 3.75rem; }
+.adm-sov-desc { width: 16rem; white-space: normal; }
+.adm-sov-money { width: 6.75rem; text-align: right; }
+.adm-sov-pct { width: 4.25rem; text-align: right; }
+.adm-sov-actions { width: 9.5rem; white-space: nowrap; }
+.adm-table th.adm-sov-money,
+.adm-table th.adm-sov-pct { text-align: right; }
+.adm-sov-derived { color: var(--adm-muted); background: var(--adm-surface-2); }
+.adm-table tfoot td.adm-sov-derived { color: var(--adm-ink); }
+/* Cell inputs are the compact version of the form inputs: same 16px floor
+   (iOS zoom), 44px tall instead of 52 so ten of them fit on a row. */
+.adm-sov input[type='text'],
+.adm-sov input[type='number'] {
+  min-height: 44px;
+  padding: 0.45rem 0.55rem;
+  border-radius: 6px;
+}
+.adm-sov .adm-sov-money input,
+.adm-sov .adm-sov-pct input { text-align: right; }
+.adm-btn-cell {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 0.5rem;
+  margin-right: 0.15rem;
+  font-size: 1rem;
+}
+.adm-btn-cell:disabled { opacity: 0.35; }
+.adm-sov-summary { margin: 0 0 0.9rem; color: var(--adm-muted); font-size: 0.95rem; }
+.adm-sov-summary strong { color: var(--adm-ink); font-variant-numeric: tabular-nums; }
+
+/* ── JOB HEALTH additions ────────────────────────────────────────────────── */
+.adm-health-pills { display: inline-flex; gap: 0.35rem; flex-wrap: wrap; justify-content: flex-end; }
+/* The money line sits under the bar on its own line, so a long
+   "$49,250 billed of $145,000 · crew … / Sconyers …" never squeezes the bar. */
+.adm-health-money { font-variant-numeric: tabular-nums; }

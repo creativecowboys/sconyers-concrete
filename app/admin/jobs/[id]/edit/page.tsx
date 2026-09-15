@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { requireOffice } from '@/lib/admin/auth'
-import type { Crew, Job } from '@/lib/admin/types'
+import { JOB_COLUMNS, type Crew, type Job } from '@/lib/admin/types'
 import { createClient } from '@/lib/supabase/server'
 import JobForm, { type CrewOption } from '../../../_components/JobForm'
 import { updateJob } from '../../actions'
@@ -23,9 +23,7 @@ export default async function EditJobPage({
   const supabase = await createClient()
   const { data: job } = await supabase
     .from('jobs')
-    .select(
-      'id, name, client_name, address, city, county, status, start_date, end_date, crew_id, notes, created_at, updated_at'
-    )
+    .select(JOB_COLUMNS)
     .eq('id', id)
     .maybeSingle<Job>()
 

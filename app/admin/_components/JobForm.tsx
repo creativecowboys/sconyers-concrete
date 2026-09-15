@@ -1,4 +1,5 @@
 import { JOB_STATUS_LABELS, JOB_STATUSES, type Job } from '@/lib/admin/types'
+import JobTypeFields from './JobTypeFields'
 import SubmitButton from './SubmitButton'
 
 const ERRORS: Record<string, string> = {
@@ -29,6 +30,9 @@ export default function JobForm({
       ) : null}
 
       {job ? <input type="hidden" name="id" value={job.id} /> : null}
+
+      {/* Day rate or 80/20, and the numbers that go with it. Client-side only for the toggle and the live split. */}
+      <JobTypeFields job={job} />
 
       <label className="adm-field">
         <span className="adm-field-label">

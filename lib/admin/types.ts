@@ -27,6 +27,21 @@ export const JOB_STATUS_LABELS: Record<JobStatus, string> = {
   complete: 'Complete',
 }
 
+/**
+ * How a job is billed. Chip, Sep 15 2026:
+ *   day_rate      — a set day rate, labor only. Bid as crew-days.
+ *   eighty_twenty — Sconyers wins the contract, hands 80% to a crew who buy
+ *                   the forms and bring the equipment, keeps 20% for oversight
+ *                   and billing. Progress is billed off a Schedule of Values.
+ */
+export const JOB_TYPES = ['day_rate', 'eighty_twenty'] as const
+export type JobType = (typeof JOB_TYPES)[number]
+
+export const JOB_TYPE_LABELS: Record<JobType, string> = {
+  day_rate: 'Day rate',
+  eighty_twenty: '80/20',
+}
+
 export type Job = {
   id: string
   name: string
@@ -40,8 +55,39 @@ export type Job = {
   /** The crew assigned on the job screen. null until the office picks one. */
   crew_id: string | null
   notes: string | null
+  job_type: JobType
+  /** Day rate only: labor-only rate per crew-day, in cents. */
+  day_rate_cents: number | null
+  /** Day rate only: the crew-days the job was bid at. */
+  days_bid: number | null
+  /** 80/20 only: the contract Sconyers won, in cents. */
+  contract_cents: number | null
+  /** 80/20 only: the crew's share of the contract. Defaults to 80. */
+  crew_share_pct: number
   created_at: string
   updated_at: string
+}
+
+/** Every column a page needs to build a `Job`. One place, so a new column is added once. */
+export const JOB_COLUMNS =
+  'id, name, client_name, address, city, county, status, start_date, end_date, crew_id, notes, job_type, day_rate_cents, days_bid, contract_cents, crew_share_pct, created_at, updated_at'
+
+/**
+ * One line of a Schedule of Values, laid out like the AIA G703 sheet. Total
+ * completed, % complete and balance to finish are derived in lib/admin/sov.ts,
+ * never stored.
+ */
+export type SovLine = {
+  id: string
+  job_id: string
+  sort: number
+  item_no: string | null
+  description: string
+  scheduled_value_cents: number
+  previous_completed_cents: number
+  this_period_cents: number
+  stored_cents: number
+  retainage_pct: number
 }
 
 export const MEDIA_DESTINATIONS = ['gallery', 'google', 'both', 'internal'] as const
