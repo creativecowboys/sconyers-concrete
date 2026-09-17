@@ -4,11 +4,14 @@
  */
 
 /**
- * 25 MB per file. Said in the upload hint, checked in the browser before the
+ * 50 MB per file. Said in the upload hint, checked in the browser before the
  * upload starts, and set as the `docs` bucket's file_size_limit in
  * supabase/schema.sql so the cap holds even if the browser check is skipped.
+ * 50 MB is also the project-wide ceiling while the Supabase spend cap is on;
+ * raising it past that means turning the spend cap off first (Sep 2026).
  */
-export const DOC_MAX_BYTES = 25 * 1024 * 1024
+export const DOC_MAX_MB = 50
+export const DOC_MAX_BYTES = DOC_MAX_MB * 1024 * 1024
 
 /**
  * What the picker allows. Extensions rather than MIME types on purpose:
@@ -30,7 +33,7 @@ export const DOC_EXTENSIONS = [
 
 export const DOC_ACCEPT = DOC_EXTENSIONS.map((ext) => `.${ext}`).join(',')
 
-export const DOC_TYPES_HINT = 'PNG, JPG, PDF, Word, Excel, CSV or text — up to 25 MB.'
+export const DOC_TYPES_HINT = `PNG, JPG, PDF, Word, Excel, CSV or text — up to ${DOC_MAX_MB} MB each. Pick several at once if you like.`
 
 export function docExtension(name: string) {
   const match = /\.([a-z0-9]+)$/i.exec(name.trim())

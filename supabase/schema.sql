@@ -401,11 +401,14 @@ drop policy if exists documents_office_delete on public.documents;
 create policy documents_office_delete on public.documents
   for delete to authenticated using (public.is_office());
 
--- Private bucket. 25 MB per file — the same cap the upload form states, held
--- here too so the browser check is not the only thing enforcing it.
+-- Private bucket. 50 MB per file — the same cap the upload form states, held
+-- here too so the browser check is not the only thing enforcing it. The update
+-- carries existing databases from the original 25 MB (Sep 2026: Chip's drawing
+-- sets were over 25). 50 MB is the project ceiling while the spend cap is on.
 insert into storage.buckets (id, name, public, file_size_limit)
-values ('docs', 'docs', false, 26214400)
+values ('docs', 'docs', false, 52428800)
 on conflict (id) do nothing;
+update storage.buckets set file_size_limit = 52428800 where id = 'docs';
 
 -- Mirrors the job-media policies: staff upload their own, staff read all,
 -- office deletes.
