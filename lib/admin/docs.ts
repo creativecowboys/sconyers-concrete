@@ -4,13 +4,14 @@
  */
 
 /**
- * 50 MB per file. Said in the upload hint, checked in the browser before the
- * upload starts, and set as the `docs` bucket's file_size_limit in
- * supabase/schema.sql so the cap holds even if the browser check is skipped.
- * 50 MB is also the project-wide ceiling while the Supabase spend cap is on;
- * raising it past that means turning the spend cap off first (Sep 2026).
+ * 1 GB per file (Dave, Sep 2026: "just use as he needs" — drawing sets).
+ * Said in the upload hint, checked in the browser before the upload starts,
+ * and set as the `docs` bucket's file_size_limit in supabase/schema.sql so the
+ * cap holds even if the browser check is skipped. The project-wide Global file
+ * size limit is also 1 GB; the org spend cap was turned off to allow it.
  */
-export const DOC_MAX_MB = 50
+export const DOC_MAX_MB = 1024
+export const DOC_MAX_LABEL = '1 GB'
 export const DOC_MAX_BYTES = DOC_MAX_MB * 1024 * 1024
 
 /**
@@ -33,7 +34,7 @@ export const DOC_EXTENSIONS = [
 
 export const DOC_ACCEPT = DOC_EXTENSIONS.map((ext) => `.${ext}`).join(',')
 
-export const DOC_TYPES_HINT = `PNG, JPG, PDF, Word, Excel, CSV or text — up to ${DOC_MAX_MB} MB each. Pick several at once if you like.`
+export const DOC_TYPES_HINT = `PNG, JPG, PDF, Word, Excel, CSV or text — up to ${DOC_MAX_LABEL} each. Pick several at once if you like.`
 
 export function docExtension(name: string) {
   const match = /\.([a-z0-9]+)$/i.exec(name.trim())

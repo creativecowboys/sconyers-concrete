@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { displayName, requireOffice, requireProfile } from '@/lib/admin/auth'
-import { DOC_MAX_BYTES, DOC_MAX_MB, isAllowedDoc } from '@/lib/admin/docs'
+import { DOC_MAX_BYTES, DOC_MAX_LABEL, isAllowedDoc } from '@/lib/admin/docs'
 import { DOCS_BUCKET } from '@/lib/supabase/env'
 import { createClient } from '@/lib/supabase/server'
 
@@ -42,7 +42,7 @@ export async function recordDocument(input: RecordDocumentInput): Promise<Record
     return { ok: false, message: 'That file type is not allowed.' }
   }
   if (!Number.isFinite(size) || size <= 0 || size > DOC_MAX_BYTES) {
-    return { ok: false, message: `Files have to be ${DOC_MAX_MB} MB or under.` }
+    return { ok: false, message: `Files have to be ${DOC_MAX_LABEL} or under.` }
   }
 
   const supabase = await createClient()

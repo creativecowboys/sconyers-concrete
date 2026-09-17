@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   DOC_ACCEPT,
   DOC_MAX_BYTES,
-  DOC_MAX_MB,
+  DOC_MAX_LABEL,
   DOC_TYPES_HINT,
   isAllowedDoc,
   safeDocName,
@@ -56,7 +56,7 @@ export default function DocUploadForm({ profileId }: { profileId: string }) {
       return {
         name: file.name,
         ok: false,
-        message: `it is ${formatBytes(file.size)}, over the ${DOC_MAX_MB} MB limit`,
+        message: `it is ${formatBytes(file.size)}, over the ${DOC_MAX_LABEL} limit`,
       }
     }
 
@@ -168,7 +168,7 @@ export default function DocUploadForm({ profileId }: { profileId: string }) {
             {files.map((f) => (
               <li key={`${f.name}-${f.size}`}>
                 {f.name} · {formatBytes(f.size)}
-                {f.size > DOC_MAX_BYTES ? ` — over ${DOC_MAX_MB} MB, will be skipped` : ''}
+                {f.size > DOC_MAX_BYTES ? ` — over ${DOC_MAX_LABEL}, will be skipped` : ''}
               </li>
             ))}
           </ul>
