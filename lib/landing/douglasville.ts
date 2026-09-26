@@ -4,12 +4,12 @@ export const douglasville: LandingPage = {
   slug: 'commercial-concrete-contractor-douglasville-ga',
   title: 'Commercial Concrete Contractor in Douglasville, GA | Sconyers Concrete',
   description:
-    'Commercial concrete contractor based 10 minutes from Douglasville. 30+ years pouring warehouse floors, structural foundations, parking fields & truck courts across Douglas County. Free estimates: 706-669-3089.',
+    'Commercial concrete contractor in Douglasville, GA. Warehouse floors, truck courts, and I-20 parking fields. Winston crew, 10 minutes away. 706-669-3089.',
 
   hero: {
     eyebrow: 'Based 10 Minutes from Douglasville',
     lines: ['Commercial', 'Concrete', 'Douglasville, GA'],
-    sub: 'Based 10 minutes from downtown Douglasville. Pouring warehouse floors, structural foundations, parking fields, and truck courts for Douglas County commercial builds for 30+ years.',
+    sub: 'A concrete contractor for warehouse floors, structural foundations, parking fields, and truck courts across Douglas County. Based 10 minutes from downtown Douglasville — same crew for 30+ years.',
     trustStrip:
       '30+ years · Bonded & insured · Free on-site estimates · Same-week response',
   },
@@ -18,9 +18,9 @@ export const douglasville: LandingPage = {
     tag: 'The Contractor That Shows Up',
     heading: 'Douglasville Commercial Concrete Work',
     paragraphs: [
-      "Douglasville developers don't have time for the contractor that ghosts. You've got a slab to pour before the steel goes up, a parking field that has to be open for the grand opening, or a dock apron that has to carry loaded trailers on day one. Sconyers Concrete is the West Georgia commercial concrete contractor that <strong>actually shows up</strong> — on the day we said, with the crew we promised, doing the job the way the specs called for.",
-      "We're headquartered in Winston, GA — about 10 minutes from Arbor Place Mall and right off the I-20 corridor. That means our trucks roll into Douglasville job sites first thing in the morning, not after a 90-minute commute from north Atlanta. For 30+ years, we've poured for hospitals, shopping centers, churches, office parks, country clubs, restaurants, and municipal facilities across Douglas County and the broader Greater Atlanta region.",
-      "If you're a GC, developer, property manager, or facility director with a commercial concrete scope in Douglasville, you're looking at the right crew. Call <strong>706-669-3089</strong> for a free estimate, or use the form below — we respond same-week, often same-day.",
+      "Douglasville is the I-20 west market next to our shop, and the concrete scopes here are the heavy ones. Logistics buildings are going in along Bright Star Connector — Dermody's LogistiCenter at Bright Star is a two-building park totaling 182,364 square feet, and Rockefeller Group is developing Access West Logistics Center, 258,460 square feet on 46.3 acres about three miles off Exit 37, with trailer stalls in the site plan. South of the interstate, Arbor Place and the Douglas Boulevard retail corridor keep adding pad sites. Wellstar Douglas Medical Center, a 108-bed hospital on Hospital Drive, anchors the medical campus off the same interchange. Warehouse slabs, parking fields, and truck courts are the concrete those sites actually need.",
+      "Sconyers Concrete is the commercial concrete contractor in Douglasville, GA that can be on site without a north-Atlanta commute. We're headquartered in Winston — about 10 minutes from Arbor Place Mall and right off I-20. For 30+ years we've poured for hospitals, shopping centers, churches, office parks, country clubs, restaurants, and municipal facilities across Douglas County. Clay soil, Douglasville permitting, and GDOT paving sections are the conditions we already plan for.",
+      "If you're a GC, developer, property manager, or facility director with a commercial concrete scope in Douglasville, call <strong>706-669-3089</strong> for a free estimate, or use the form below. We respond same-week, often same-day.",
     ],
   },
 
@@ -34,7 +34,7 @@ export const douglasville: LandingPage = {
         image: '/images/concrete-slabs.jpg',
         alt: 'Power-trowelling an interior warehouse floor',
         title: 'Warehouse & Industrial Floors',
-        body: 'Slab-on-grade floors for distribution, manufacturing, and light industrial buildings along the I-20 corridor. Form, place, and finish — or place-and-finish on prepped subgrade. Engineered for the loads your tenants will throw at it.',
+        body: 'Slab-on-grade floors for distribution and light industrial buildings along I-20 and Bright Star Connector. Form, place, and finish — or place-and-finish on prepped subgrade — with reinforcement, joint layout, and flatness built for rack loads and forklift traffic.',
       },
       {
         image: '/images/foundation-pour.jpg',
@@ -46,13 +46,13 @@ export const douglasville: LandingPage = {
         image: '/images/concrete-paving.jpg',
         alt: 'Slipform paver placing a commercial concrete lane',
         title: 'Parking Lots & Site Paving',
-        body: "Full-depth concrete parking fields and drive aisles for shopping centers, medical campuses, and office parks. Built to handle Douglasville's freeze-thaw cycles and the heavy delivery traffic that destroys cheaper asphalt within 5 years.",
+        body: 'Full-depth concrete parking fields and drive aisles for shopping centers, the Douglas Boulevard retail corridor, medical campuses, and office parks. Built for delivery traffic and Douglas County freeze-thaw cycles.',
       },
       {
         image: '/images/finishing-crew.jpg',
         alt: 'Crew screeding and finishing a large commercial pour',
         title: 'Truck Courts & Loading Docks',
-        body: 'Heavy-duty pavement where the loads are worst — dock aprons, trailer parking, refuse pads, and fire lanes poured to GDOT and municipal specs. Thicker sections, higher PSI, engineered jointing.',
+        body: 'Dock aprons, trailer parking, refuse pads, and fire lanes for logistics sites off I-20. Thicker sections, higher PSI, and jointing laid out for turning loads — poured to GDOT and municipal specs.',
       },
     ],
   },
@@ -61,9 +61,10 @@ export const douglasville: LandingPage = {
     tag: 'Local Proof',
     heading: 'Douglas County Jobs We Know How to Handle',
     paragraphs: [
-      "We've poured concrete from Lithia Springs to Villa Rica, from the Douglas Boulevard retail corridor to the office parks along Bright Star Road. Whatever your site looks like — tight urban infill near downtown Douglasville, sprawling pad sites along I-20, or a hillside church property off Highway 5 — we've handled it. Recent Douglas County work spans retail center pads, hospital outparcel slabs, church campus expansions, and municipal paving.",
+      'Douglasville sites split cleanly. Retail and medical sit south of I-20 — Douglas Boulevard, the outparcels around Arbor Place, and the campus around Hospital Drive. Industrial sits on Bright Star Road, Bright Star Connector, and Wood Road, where a building slab and a truck court are different pours. A truck court section poured to car-park thickness starts spalling under landing gear. We pour that scope thicker, at higher PSI, jointed for the turning radius.',
+      "We've poured from Lithia Springs to the Carroll County line at Villa Rica: tight infill near downtown Douglasville, pad sites on the interstate, and hillside church properties off Highway 5. The commercial work we take is retail center pads, hospital outparcel slabs, church campus expansions, and municipal paving. We don't publish client names. The crew and the spec are what we stand on.",
     ],
-    note: 'Owner Chip Sconyers provides hands-on management on every commercial job site.',
+    note: 'Owner Chip Sconyers guarantees every commercial pour meets your design requirements.',
   },
 
   whyUs: {
@@ -83,7 +84,7 @@ export const douglasville: LandingPage = {
       {
         num: '03',
         title: 'Proven Experience',
-        body: '30 years in Greater Atlanta means we know Douglasville Permitting, soils, andGDOT specs inside and out. We handle the complexity for you.',
+        body: '30 years in Greater Atlanta means we know Douglasville permitting, soils, and GDOT specs inside and out. We handle the complexity for you.',
       },
     ],
   },
@@ -98,11 +99,11 @@ export const douglasville: LandingPage = {
       },
       {
         title: '2. Scope Alignment',
-        body: 'We review your specs, drawings, or RFQ. We coordinate with your super on access and timeline.',
+        body: 'We review your specs, drawings, or RFQ. We coordinate with your super on access, staging, and timeline.',
       },
       {
         title: '3. Pour Day',
-        body: "Our crew shows up on time with standard-exceeding materials. Chip's core crew runs the site.",
+        body: "Our crew shows up on time with the materials the spec calls for. Chip's core crew runs the site.",
       },
       {
         title: '4. Walkthrough & Punch',
@@ -116,6 +117,12 @@ export const douglasville: LandingPage = {
     heading: 'Frequently Asked Questions',
     sub: 'Common questions about commercial concrete services in Douglasville and Douglas County.',
     items: [
+      {
+        question: 'Are you a concrete contractor in Douglasville, GA?',
+        answer: [
+          'Yes. Sconyers Concrete is headquartered at 2290 Strawn Rd in Winston, about 10 minutes from downtown Douglasville. Douglas County is home turf — not a market we visit from the north side of Atlanta. Call 706-669-3089 to talk through a commercial scope.',
+        ],
+      },
       {
         question: 'How fast can you start a Douglasville project?',
         answer: [
@@ -132,6 +139,12 @@ export const douglasville: LandingPage = {
         question: 'Do you only do new construction, or also concrete repair and replacement?',
         answer: [
           'We do both. New pours for ground-up commercial builds, plus tear-out and replacement for failed warehouse floors, deteriorated parking fields, and dock aprons that have started to break up under trailer traffic.',
+        ],
+      },
+      {
+        question: 'Do you pour truck courts and dock aprons?',
+        answer: [
+          "That's the heaviest scope on an I-20 logistics site, and it's the one we are set up for. Dock aprons, trailer parking, jockey lanes, refuse pads, and fire lanes — poured thicker, at higher PSI, with jointing laid out around the turning loads rather than a generic grid.",
         ],
       },
       {
@@ -170,7 +183,7 @@ export const douglasville: LandingPage = {
   map: {
     tag: 'Winston Headquartered',
     heading: 'Serving Douglasville & West Georgia',
-    body: 'We are located in Winston, GA—just 10 minutes from downtown Douglasville. This enables quick crew mobilization and reliable scheduling for any site in Douglas County.',
+    body: 'We are located at 2290 Strawn Rd in Winston, GA — about 10 minutes from downtown Douglasville. That puts a crew on an I-20, Douglas Boulevard, or Bright Star site without a cross-town haul.',
     alsoServeHeading: 'We also serve:',
     alsoServe: [
       'Newnan',
@@ -196,6 +209,6 @@ export const douglasville: LandingPage = {
     areaServed: 'Douglasville',
     serviceType: 'Commercial Concrete Contracting',
     description:
-      'Warehouse and industrial floors, structural slabs and foundations, parking lot paving, and truck court pavement for Douglasville, GA commercial construction.',
+      'Commercial concrete contractor in Douglasville, GA: warehouse and industrial floors, structural slabs and foundations, parking lot paving, and truck court pavement for Douglas County commercial construction.',
   },
 }

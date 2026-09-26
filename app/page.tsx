@@ -4,7 +4,7 @@ import Link from 'next/link'
 import ContactForm from '@/components/ContactForm'
 import TrustBar from '@/components/TrustBar'
 import { MailIcon, MapPinIcon, PhoneIcon } from '@/components/icons'
-import { site } from '@/lib/site'
+import { areaLinks, site } from '@/lib/site'
 import { generalContractorSchema } from '@/lib/schema'
 
 export const metadata: Metadata = {
@@ -229,6 +229,30 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* SERVICE AREAS */}
+      <section className="service-areas" id="areas">
+        <div className="section-inner">
+          <div className="section-header">
+            <span className="section-tag">Where We Pour</span>
+            <h2>West Georgia Commercial Concrete</h2>
+            <p>
+              Based in Winston, about 10 minutes from downtown Douglasville. For a{' '}
+              <Link href="/commercial-concrete-contractor-douglasville-ga">
+                commercial concrete contractor in Douglasville, GA
+              </Link>
+              , start there — or pick another market below.
+            </p>
+          </div>
+          <ul className="area-grid">
+            {areaLinks.map((area) => (
+              <li key={area.href}>
+                <Link href={area.href}>{area.label}</Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

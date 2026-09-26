@@ -23,6 +23,21 @@ export const trustSectors = [
   'Municipal Facilities',
 ] as const
 
+/**
+ * City names used in landing-page "We also serve" lists, mapped to the
+ * commercial-contractor page when one exists. Names without a page stay plain
+ * text. Keys must match the strings in each page's `alsoServe` array.
+ */
+export const cityPageHrefs: Record<string, string> = {
+  Douglasville: '/commercial-concrete-contractor-douglasville-ga',
+  Newnan: '/commercial-concrete-contractor-newnan-ga',
+  Carrollton: '/commercial-concrete-contractor-carrollton-ga',
+  'Villa Rica': '/commercial-concrete-contractor-villa-rica-ga',
+  Cumming: '/commercial-concrete-contractor-cumming-ga',
+  Fayetteville: '/commercial-concrete-contractor-fayetteville-ga',
+  McDonough: '/commercial-concrete-contractor-mcdonough-ga',
+}
+
 /** Footer "Areas We Serve" column — also the canonical list of landing-page routes. */
 export const areaLinks = [
   { href: '/commercial-concrete-contractor-douglasville-ga', label: 'Douglasville, GA' },

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import ContactForm from '@/components/ContactForm'
 import RichText from '@/components/RichText'
@@ -13,7 +14,7 @@ import {
   generalContractorSchema,
   serviceSchema,
 } from '@/lib/schema'
-import { site } from '@/lib/site'
+import { cityPageHrefs, site } from '@/lib/site'
 
 const MAP_EMBED_SRC =
   'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3320.5!2d-84.7876!3d33.7365!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x888906!2s2290+Strawn+Rd%2C+Winston%2C+GA+30187!5e0!3m2!1sen!2sus!4v1711000000000'
@@ -252,9 +253,14 @@ export default async function LandingPageRoute(props: PageProps<'/[slug]'>) {
             <p>{page.map.body}</p>
             <h4>{page.map.alsoServeHeading}</h4>
             <ul className="lp-serve-list">
-              {page.map.alsoServe.map((city) => (
-                <li key={city}>{city}</li>
-              ))}
+              {page.map.alsoServe.map((city) => {
+                const href = cityPageHrefs[city]
+                return (
+                  <li key={city}>
+                    {href ? <Link href={href}>{city}</Link> : city}
+                  </li>
+                )
+              })}
             </ul>
           </div>
         </div>
