@@ -1058,7 +1058,7 @@ blockquote cite {
     transition: max-height 0.35s ease, opacity 0.3s ease, transform 0.3s ease, padding 0.3s ease;
   }
   .nav-links.open {
-    max-height: 400px;
+    max-height: 520px;
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
@@ -1131,6 +1131,8 @@ blockquote cite {
   /* Why Us */
   .why-us { padding: 4rem 1.5rem; }
   .pillars { grid-template-columns: 1fr; gap: 1.5rem; }
+
+  .service-areas { padding: 4rem 1.5rem; }
 
   /* Contact */
   .contact { padding: 4rem 1.5rem; }
@@ -1509,6 +1511,51 @@ blockquote cite {
   color: var(--gray-light);
   columns: 2;
   padding-left: 1.25rem;
+}
+.lp-serve-list a {
+  color: var(--warm-white);
+  border-bottom: 1px solid rgba(204, 20, 20, 0.7);
+}
+.lp-serve-list a:hover { color: var(--accent-light); }
+
+/* Homepage service-area links. City pages live one click off the home URL
+   so Douglasville (and the other markets) are not only in the footer. */
+.service-areas {
+  padding: 7rem 2rem;
+  background: var(--concrete-mid);
+  border-top: 1px solid var(--border);
+}
+.service-areas .section-header { margin-bottom: 2.5rem; }
+.service-areas .section-header a {
+  color: var(--warm-white);
+  border-bottom: 1px solid var(--accent);
+}
+.service-areas .section-header a:hover { color: var(--accent-light); }
+.area-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  max-width: 940px;
+  margin: 0 auto;
+}
+.area-grid a {
+  display: block;
+  padding: 1.1rem 1.25rem;
+  background: var(--concrete-surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--warm-white);
+  transition: border-color 0.2s, color 0.2s;
+}
+.area-grid a:hover {
+  border-color: var(--accent);
+  color: var(--accent-light);
 }
 
 @media (max-width: 900px) {
