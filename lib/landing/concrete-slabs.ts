@@ -183,6 +183,7 @@ export const concreteSlabs: LandingPage = {
     body: 'We are headquartered in Winston, GA — about 35 minutes from downtown Newnan. This allows fast crew dispatch and concrete mobilization for any job site in Coweta County.',
     alsoServeHeading: 'We also serve:',
     alsoServe: [
+      'Newnan',
       'Douglasville',
       'Carrollton',
       'Villa Rica',

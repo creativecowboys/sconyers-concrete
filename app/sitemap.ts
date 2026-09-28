@@ -2,12 +2,18 @@ import type { MetadataRoute } from 'next'
 import { landingPages } from '@/lib/landing'
 import { site } from '@/lib/site'
 
+/** Prerender with the marketing pages so /sitemap.xml stays a static XML file. */
+export const dynamic = 'force-static'
+
 /** Kept in sync with the priorities the old static sitemap.xml carried. */
 const LANDING_PRIORITY: Record<string, number> = {
   'commercial-concrete-contractor-douglasville-ga': 0.9,
   'commercial-concrete-contractor-newnan-ga': 0.9,
   'commercial-concrete-contractor-carrollton-ga': 0.9,
   'commercial-concrete-contractor-villa-rica-ga': 0.9,
+  'commercial-concrete-contractor-cumming-ga': 0.9,
+  'commercial-concrete-contractor-fayetteville-ga': 0.9,
+  'commercial-concrete-contractor-mcdonough-ga': 0.9,
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -239,11 +239,15 @@ export default function HomePage() {
             <span className="section-tag">Where We Pour</span>
             <h2>West Georgia Commercial Concrete</h2>
             <p>
-              Based in Winston, about 10 minutes from downtown Douglasville. For a{' '}
+              Based in Winston, about 10 minutes from downtown Douglasville. Start with a{' '}
               <Link href="/commercial-concrete-contractor-douglasville-ga">
                 commercial concrete contractor in Douglasville, GA
               </Link>
-              , start there — or pick another market below.
+              , or a{' '}
+              <Link href="/commercial-concrete-contractor-newnan-ga">
+                commercial concrete contractor in Newnan, GA
+              </Link>
+              , or pick another market below.
             </p>
           </div>
           <ul className="area-grid">
