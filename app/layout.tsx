@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Barlow_Condensed, Lora } from 'next/font/google'
+import Analytics from '@/components/Analytics'
 import Footer from '@/components/Footer'
 import Nav from '@/components/Nav'
 import ScrollReveal from '@/components/ScrollReveal'
@@ -65,6 +66,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
         </SiteChrome>
         <ScrollReveal />
+        {/* Google Analytics: nothing until NEXT_PUBLIC_GA_ID is set, and never
+            on /admin. See the Analytics section of the README. */}
+        <Analytics />
       </body>
     </html>
   )

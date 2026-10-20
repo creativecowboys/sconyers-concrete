@@ -34,8 +34,44 @@ Copy `.env.example` to `.env.local` and fill in:
 | `RESEND_API_KEY` | yes | Sends estimate requests. Without it the forms return a "call us" error. |
 | `CONTACT_TO_EMAIL` | no | Lead destination. Defaults to `chip.sconyers@sconyersconcrete.com`. |
 | `CONTACT_FROM_EMAIL` | no | From address. **Its domain must be verified in Resend.** |
+| `NEXT_PUBLIC_GA_ID` | no | Google Analytics 4 measurement ID (`G-…`). Production only — see [Analytics](#analytics). |
 
 Set the same variables in the Vercel project settings.
+
+## Analytics
+
+Google Analytics 4, wired in `components/Analytics.tsx` (mounted once in
+`app/layout.tsx`), `lib/analytics.ts` and `lib/analytics-rules.ts`.
+
+- **Off until `NEXT_PUBLIC_GA_ID` is set.** The ID is baked in at build time, so
+  set it in Vercel for **Production only** (previews and local dev then send
+  nothing) and redeploy. With no ID the site loads no tag and sends nothing.
+- **Never on the staff admin.** Nothing under `/admin` (sign-in, the magic-link
+  callback, jobs, crews, docs, media) loads the tag. If someone moves from a
+  public page into the admin in the same tab, GA's own opt-out switch
+  (`window['ga-disable-<ID>']`, true on any `/admin` address) drops every hit.
+- **Page views:** GA4's automatic `page_view`, including client-side navigation
+  (Enhanced measurement → "Page changes based on browser history events").
+
+| Event | Fires when | Parameters |
+| --- | --- | --- |
+| `generate_lead` | An estimate form is sent and `/api/contact` answers success. Never on the click, a failed send, or a bot caught by the honeypot. | `form_source`: `home`, `contact`, or the landing page slug |
+| `click_to_call` | Any `tel:` link is clicked, anywhere on the public site | `link_location`, `page_path`, `phone_line` (`main` = 706-669-3089, `other` = any other number) |
+| `click_email` | Any `mailto:` link is clicked | `link_location`, `page_path` |
+
+`link_location` is worked out from where the link sits, so a phone link added
+later is counted without touching it: `header`, `footer`, `hero`,
+`contact_section` (the "Get in touch" block on home and landing pages),
+`contact_details` and `contact_team` (contact page), `form_thanks` (the note
+after a sent form), `cta_band` (landing page bands), otherwise the section's
+`id` or class (e.g. `services`). Rules: `LOCATION_RULES` in
+`lib/analytics-rules.ts`, tested in `tests/analytics.test.mts`.
+
+**In GA4:** Admin → Events → mark `generate_lead` and `click_to_call` as key
+events. To report on the parameters, register `form_source`, `link_location`,
+`page_path` and `phone_line` as event-scoped custom dimensions (Admin → Custom
+definitions). A click on a phone link means someone tapped it, not that a call
+connected.
 
 ## Routes
 

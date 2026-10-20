@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { trackEvent } from '@/lib/analytics'
 
 type Variant = 'home' | 'page' | 'landing'
 type Status = 'idle' | 'sending' | 'sent' | 'error'
@@ -90,6 +91,13 @@ export default function ContactForm({
         )
         setStatus('error')
         return
+      }
+
+      // Count the lead in Google Analytics only now that /api/contact has said
+      // it went through. A filled-in honeypot means a bot: the API answers "ok"
+      // without sending anything, so that one is not a lead.
+      if (!String(payload.company_website ?? '').trim()) {
+        trackEvent('generate_lead', { form_source: source })
       }
 
       setStatus('sent')
