@@ -9,8 +9,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { screenPitch } from "../lib/pitch.ts";
 
-const PROFILE = "default";
-const screen = (message) => screenPitch([message], { profile: PROFILE });
+const OPTIONS = {"profile":"default"}; // as the site's route calls it
+const screen = (message) => screenPitch([message], OPTIONS);
 
 const REAL = [
   "Looking for a quote on a 30x40 slab for a new shop building in Bowdon. Timeline is next month.",
@@ -54,7 +54,9 @@ const PITCHES = [
   "Need business funding? Get approved for a business line of credit up to $150,000 today. Same-day funding available.",
   "Dear Sir, we offer SEO and SMM services to boost your online presence and grow your business. Kindly reply with your budget.",
   "I'd love to help your business rank higher. I specialize in local SEO for small businesses. Are you the decision-maker?",
-  "We write SEO-optimized blog posts for your website, 4 articles a month for $199. Want samples?"
+  "We write SEO-optimized blog posts for your website, 4 articles a month for $199. Want samples?",
+  "Hi, want the power of AI without having to learn it? We give you a trained VA who operates our custom AI system for you. You hand off the admin, CRM, follow ups and processes and they build, automate and handle it. Your first 30 days are on us. Reply STOP to opt out.",
+  "Quick note for the owner: we help event companies book more corporate gigs every month with done-for-you outreach. Worth a chat? Reply STOP to opt out."
 ];
 
 test("real-shaped Sconyers Concrete messages are never treated as a pitch", () => {
@@ -68,7 +70,7 @@ test("most real-shaped messages go through clean (no [Check] tag)", () => {
 
 test("vendor pitches are caught", () => {
   const caught = PITCHES.filter((m) => screen(m).verdict === "pitch").length;
-  assert.ok(caught >= 20, `${caught}/${PITCHES.length} caught`);
+  assert.ok(caught >= 22, `${caught}/${PITCHES.length} caught`);
   for (const m of PITCHES) assert.notEqual(screen(m).verdict, "clean", m);
 });
 

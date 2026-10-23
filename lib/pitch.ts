@@ -29,14 +29,22 @@
 //
 // Keep this file the same in every client repo that uses it (Creative Cowboys
 // pitch filter, Oct 2026). Per-site tuning goes in the caller: the profile,
-// and `skip` with rule ids for a business whose real customers use a phrase.
+// `skip` for a phrase a business's real customers use, `promote` for one no
+// real customer of that business would write.
 //
 // Pure: no imports, no I/O, so it runs in Node, the Edge runtime and tests.
 
 export type PitchVerdict = "pitch" | "check" | "clean";
 export type PitchProfile = "default" | "business";
 export type PitchResult = { verdict: PitchVerdict; score: number; reasons: string[] };
-export type PitchOptions = { profile?: PitchProfile; skip?: string[] };
+export type PitchOptions = {
+  profile?: PitchProfile;
+  /** Rule ids this site ignores (a phrase its real customers use). */
+  skip?: string[];
+  /** Rule ids this site treats as offers (weight 2), e.g. "bulk-optout" where
+   *  no real customer would quote an opt-out line. */
+  promote?: string[];
+};
 
 type Kind = "offer" | "service" | "weak" | "context";
 type Rule = { id: string; kind: Kind; re: RegExp; reason: string };
@@ -138,6 +146,32 @@ const RULES: Rule[] = [
     ),
   },
   {
+    id: "hand-off-the",
+    kind: "offer",
+    reason: "offers to take over your admin/CRM work",
+    re: rx("\\bhand off (the|your|all (the|your)) (admin|crm|follow[- ]?ups?|bookkeeping|marketing|scheduling|busy ?work|back office)\\b"),
+  },
+  {
+    id: "give-you-va",
+    kind: "offer",
+    reason: "offers you a trained VA / assistant",
+    re: rx(
+      "\\b(give|provide|assign|get|match) you (with )?(a|an|your own) (((trained|dedicated|virtual|personal|full[- ]time|part[- ]time|remote) )*(va|virtual assistant|appointment setter)|(trained|dedicated|virtual|remote|offshore) (assistant|developer|team|marketer))\\b"
+    ),
+  },
+  {
+    id: "trained-va",
+    kind: "offer",
+    reason: "offers a trained/dedicated VA",
+    re: rx("\\b(trained|dedicated|offshore|filipino|full[- ]time|part[- ]time) (va|vas)\\b"),
+  },
+  {
+    id: "bulk-optout",
+    kind: "service",
+    reason: "bulk-sender opt-out line",
+    re: rx("\\b(reply|text|respond with) ['\"]?(stop|remove|unsubscribe|no)['\"]? (to|if you('d| would) like to) (opt[- ]?out|unsubscribe|stop|be removed)\\b"),
+  },
+  {
     id: "need-more-customers",
     kind: "offer",
     reason: "\"want more customers?\" cold opener",
@@ -229,6 +263,14 @@ const RULES: Rule[] = [
     reason: "AI receptionist/chatbot pitch",
     re: rx(
       "\\b(ai (receptionists?|chat ?bots?|voice agents?|phone agents?|answering (service|agents?)|sales agents?|appointment setters?)|ai[- ](powered|driven) (chat ?bots?|receptionists?|agents?|marketing|lead))\\b"
+    ),
+  },
+  {
+    id: "our-ai-system",
+    kind: "service",
+    reason: "pitches an AI system/tool",
+    re: rx(
+      "\\b((our|my) (own |custom |proprietary |in[- ]house )?ai (systems?|tools?|platforms?|agents?|assistants?|solutions?|software|workflows?)|(the )?power of ai without)"
     ),
   },
   {
@@ -376,6 +418,7 @@ export function screenPitch(fields: unknown, options: PitchOptions = {}): PitchR
   const text = normalize(fields);
   const profile = options.profile || "default";
   const skip = new Set(options.skip || []);
+  const promote = new Set(options.promote || []);
   let score = 0;
   let strong = false;
   let standalone = false;
@@ -385,10 +428,11 @@ export function screenPitch(fields: unknown, options: PitchOptions = {}): PitchR
 
   for (const rule of RULES) {
     if (skip.has(rule.id) || !rule.re.test(text)) continue;
-    const weight = rule.kind === "offer" ? 2 : rule.kind === "service" ? (profile === "business" ? 1 : 2) : 1;
+    const kind: Kind = promote.has(rule.id) ? "offer" : rule.kind;
+    const weight = kind === "offer" ? 2 : kind === "service" ? (profile === "business" ? 1 : 2) : 1;
     if (weight === 2) strong = true;
-    if (rule.kind !== "context") standalone = true;
-    if (rule.kind === "offer") offer = true;
+    if (kind !== "context") standalone = true;
+    if (kind === "offer") offer = true;
     score += weight;
     reasons.push(rule.reason);
   }
