@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 import { site } from '@/lib/site'
 import { createGhlOpportunity } from '@/lib/ghl'
+import { pitchNote, pitchSubjectPrefix, screenPitch } from '@/lib/pitch'
 
 /** Field name -> label, in the order they should appear in the email. */
 const FIELD_LABELS: Record<string, string> = {
@@ -91,14 +92,28 @@ export async function POST(request: Request) {
     value: get(key),
   }))
 
+  // Vendor pitches (SEO, web, marketing, loans) skip GoHighLevel and arrive
+  // with "[Filtered: pitch]" in the subject. This site keeps no other copy of
+  // a submission, so a pitch is still emailed: a false positive is never lost.
+  const pitch = screenPitch([get('company'), get('message')], { profile: 'default' })
+  const note = pitchNote(pitch)
+  if (pitch.verdict !== 'clean') {
+    console.warn(`[contact] pitch screen: ${pitch.verdict} (${pitch.reasons.join('; ')})`)
+  }
+
   const text = [
+    ...(note ? [note, ''] : []),
     `New estimate request from the ${source} page.`,
     '',
     ...rows.map((row) => `${row.label}: ${row.value}`),
   ].join('\n')
 
   const html = `
-    <h2 style="font-family:Arial,sans-serif;">New estimate request</h2>
+    <h2 style="font-family:Arial,sans-serif;">New estimate request</h2>${
+      note
+        ? `\n    <p style="font-family:Arial,sans-serif;background:#fef3c7;border:1px solid #f59e0b;color:#78350f;padding:10px 12px;">${escapeHtml(note)}</p>`
+        : ''
+    }
     <p style="font-family:Arial,sans-serif;color:#555;">
       Submitted from the <strong>${escapeHtml(source)}</strong> page.
     </p>
@@ -118,17 +133,21 @@ export async function POST(request: Request) {
     // 1. Create the opportunity first — GHL is the system of record for leads.
     //    Non-fatal by design: if it fails we still fall through to the email, so
     //    a GHL outage costs a pipeline entry rather than the whole lead.
-    const ghl = await createGhlOpportunity({
-      name,
-      email,
-      phone: get('phone'),
-      company: get('company'),
-      location: get('location'),
-      service: get('service'),
-      timeline: get('timeline'),
-      message: get('message'),
-      source,
-    })
+    //    A filtered pitch is never added to GHL.
+    const ghl =
+      pitch.verdict === 'pitch'
+        ? ({ success: true, skipped: 'pitch' } as const)
+        : await createGhlOpportunity({
+            name,
+            email,
+            phone: get('phone'),
+            company: get('company'),
+            location: get('location'),
+            service: get('service'),
+            timeline: get('timeline'),
+            message: get('message'),
+            source,
+          })
     if (!ghl.success && ghl.error !== 'not_configured') {
       console.error('[contact] GHL sync failed; still sending lead email:', ghl.error)
     }
@@ -139,7 +158,7 @@ export async function POST(request: Request) {
       from: FROM_EMAIL,
       to: TO_EMAIL,
       replyTo: email,
-      subject: `New estimate request — ${name} (${source})`,
+      subject: `${pitchSubjectPrefix(pitch)}New estimate request — ${name} (${source})`,
       text,
       html,
     })
