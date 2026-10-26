@@ -43,8 +43,8 @@ export const newnan: LandingPage = {
         body: 'Footings, grade beams, and structural pours placed by boom pump and sequenced around your steel erector. We coordinate with the engineer of record on reinforcement and mix design before a truck rolls.',
       },
       {
-        image: '/images/concrete-paving.jpg',
-        alt: 'Slipform paver placing a commercial concrete lane',
+        image: '/images/laser-screed-paving.jpg',
+        alt: 'Ride-on laser screed leveling a freshly placed commercial concrete slab',
         title: 'Parking Lots & Site Paving',
         body: 'Full-depth concrete parking fields and drive aisles for the Bullsboro Drive and Highway 34 retail corridor, medical campuses, and office pads. Built for delivery traffic and Coweta County freeze-thaw cycles.',
       },

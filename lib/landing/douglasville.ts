@@ -43,8 +43,8 @@ export const douglasville: LandingPage = {
         body: 'Footings, grade beams, and structural pours placed by boom pump and sequenced around your steel erector. We coordinate with the engineer of record on reinforcement and mix design before a truck rolls.',
       },
       {
-        image: '/images/concrete-paving.jpg',
-        alt: 'Slipform paver placing a commercial concrete lane',
+        image: '/images/laser-screed-paving.jpg',
+        alt: 'Ride-on laser screed leveling a freshly placed commercial concrete slab',
         title: 'Parking Lots & Site Paving',
         body: 'Full-depth concrete parking fields and drive aisles for shopping centers, the Douglas Boulevard retail corridor, medical campuses, and office parks. Built for delivery traffic and Douglas County freeze-thaw cycles.',
       },

@@ -43,8 +43,8 @@ export const villaRica: LandingPage = {
         body: "Footings, grade beams, and structural pours for Villa Rica's greenfield developments — placed by boom pump, coordinated with your engineer on reinforcement and mix design.",
       },
       {
-        image: '/images/concrete-paving.jpg',
-        alt: 'Slipform paver placing a commercial concrete lane',
+        image: '/images/laser-screed-paving.jpg',
+        alt: 'Ride-on laser screed leveling a freshly placed commercial concrete slab',
         title: 'Parking Lots & Site Paving',
         body: 'Full-depth concrete parking fields for shopping centers, medical campuses, churches, and office parks. Built to handle heavy delivery traffic and freeze-thaw cycles.',
       },

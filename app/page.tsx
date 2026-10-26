@@ -28,8 +28,8 @@ const services = [
     body: 'Formed and reinforced footings, grade beams, and structural pours placed by boom pump, sequenced around your steel erector and site trades.',
   },
   {
-    image: '/images/concrete-paving.jpg',
-    alt: 'Slipform paver placing a commercial concrete lane',
+    image: '/images/laser-screed-paving.jpg',
+    alt: 'Ride-on laser screed leveling a freshly placed commercial concrete slab',
     title: 'Parking Lots & Site Paving',
     body: 'Full-depth concrete parking fields, drive aisles, and access roads for shopping centers, medical campuses, and office parks. Built for decades of traffic.',
   },

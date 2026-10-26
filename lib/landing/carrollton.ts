@@ -43,8 +43,8 @@ export const carrollton: LandingPage = {
         body: 'Footings, grade beams, and structural pours for hospital and campus expansions, placed by boom pump and phased around live facility operations.',
       },
       {
-        image: '/images/concrete-paving.jpg',
-        alt: 'Slipform paver placing a commercial concrete lane',
+        image: '/images/laser-screed-paving.jpg',
+        alt: 'Ride-on laser screed leveling a freshly placed commercial concrete slab',
         title: 'Parking Lots & Site Paving',
         body: "Full-depth concrete parking fields for shopping centers, medical campuses, churches, and office parks. Built to handle Carroll County's clay-heavy soil and heavy traffic loads.",
       },

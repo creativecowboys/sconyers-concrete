@@ -30,8 +30,8 @@ export const parkingLotPaving: LandingPage = {
     autoColumns: true,
     cards: [
       {
-        image: '/images/concrete-paving.jpg',
-        alt: 'Slipform paver placing a commercial concrete lane',
+        image: '/images/laser-screed-paving.jpg',
+        alt: 'Ride-on laser screed leveling a freshly placed commercial concrete slab',
         title: 'New Construction Parking Lots',
         body: 'Full scope: subgrade prep, base prep, forming, rebar/mesh, pour, finish, joint sawing, and striping coordination. Engineered for new retail, hospitality, medical, and office developments.',
       },
