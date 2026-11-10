@@ -62,7 +62,10 @@ export default function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} {site.name} All rights reserved.</p>
+        <p>
+          &copy; {new Date().getFullYear()} {site.name} All rights reserved. ·{' '}
+          <Link href="/privacy">Privacy</Link>
+        </p>
         <a
           className="footer-credit"
           href="https://creativecowboys.co"

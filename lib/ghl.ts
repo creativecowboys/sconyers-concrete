@@ -45,6 +45,19 @@ export interface GhlLead {
   message?: string
   /** Which page the form was submitted from, e.g. "commercial-concrete-slabs-newnan-ga". */
   source?: string
+  /** The ad click that brought them, when there was one (see lib/attribution.ts). */
+  ad?: {
+    gclid?: string
+    source?: string
+    medium?: string
+    campaign?: string
+    term?: string
+  }
+}
+
+function isPaidGoogle(ad: GhlLead['ad']): boolean {
+  if (!ad) return false
+  return Boolean(ad.gclid || (ad.source === 'google' && ad.medium === 'cpc'))
 }
 
 interface GhlResponse {
@@ -111,6 +124,7 @@ export async function createGhlOpportunity(
       source: 'Website - Estimate Request',
       tags: [
         'website-lead',
+        ...(isPaidGoogle(lead.ad) ? ['google-ads'] : []),
         ...(lead.service ? [`service:${lead.service.toLowerCase()}`] : []),
       ],
     })
@@ -160,6 +174,15 @@ export async function createGhlOpportunity(
       ...(lead.service ? [`Service: ${lead.service}`] : []),
       ...(lead.timeline ? [`Timeline: ${lead.timeline}`] : []),
       ...(lead.message ? ['', 'Project details:', lead.message] : []),
+      ...(isPaidGoogle(lead.ad)
+        ? [
+            '',
+            'From a Google ad:',
+            ...(lead.ad?.campaign ? [`Campaign: ${lead.ad.campaign}`] : []),
+            ...(lead.ad?.term ? [`Search keyword: ${lead.ad.term}`] : []),
+            ...(lead.ad?.gclid ? [`Click ID: ${lead.ad.gclid}`] : []),
+          ]
+        : []),
     ]
     const note = await ghlFetch(`/contacts/${contactId}/notes`, token, {
       body: noteLines.join('\n'),

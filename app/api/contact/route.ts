@@ -16,6 +16,10 @@ const FIELD_LABELS: Record<string, string> = {
   location: 'Project city / ZIP',
   'project-address': 'Project location',
   message: 'Project details',
+  utm_campaign: 'Ad campaign',
+  utm_term: 'Search keyword',
+  utm_source: 'Traffic source',
+  gclid: 'Google Ads click ID',
 }
 
 const FIELD_ORDER = [
@@ -30,6 +34,10 @@ const FIELD_ORDER = [
   'location',
   'project-address',
   'message',
+  'utm_campaign',
+  'utm_term',
+  'utm_source',
+  'gclid',
 ]
 
 const TO_EMAIL = process.env.CONTACT_TO_EMAIL ?? site.email
@@ -147,6 +155,13 @@ export async function POST(request: Request) {
             timeline: get('timeline'),
             message: get('message'),
             source,
+            ad: {
+              gclid: get('gclid') || get('gbraid') || get('wbraid'),
+              source: get('utm_source'),
+              medium: get('utm_medium'),
+              campaign: get('utm_campaign'),
+              term: get('utm_term'),
+            },
           })
     if (!ghl.success && ghl.error !== 'not_configured') {
       console.error('[contact] GHL sync failed; still sending lead email:', ghl.error)

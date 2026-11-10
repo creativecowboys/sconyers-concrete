@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { trackEvent } from '@/lib/analytics'
+import { trackAdsConversion, trackEvent } from '@/lib/analytics'
+import { readAttribution } from '@/lib/attribution'
 
-type Variant = 'home' | 'page' | 'landing'
+type Variant = 'home' | 'page' | 'landing' | 'ad'
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
 type Props = {
@@ -15,6 +16,8 @@ type Props = {
   locationPlaceholder?: string
   /** Opt the form element into the scroll-reveal animation. */
   reveal?: boolean
+  /** Ad pages: preselect the Project Type that matches the ad group. */
+  defaultService?: string
 }
 
 const HOME_SERVICES = [
@@ -64,6 +67,7 @@ export default function ContactForm({
   submitLabel,
   locationPlaceholder = 'Douglasville, 30135',
   reveal = false,
+  defaultService = '',
 }: Props) {
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<string | null>(null)
@@ -74,7 +78,11 @@ export default function ContactForm({
     setError(null)
 
     const formData = new FormData(event.currentTarget)
-    const payload = Object.fromEntries(formData.entries())
+    // The ad click (gclid, campaign, search term) rides along with the lead.
+    const payload: Record<string, unknown> = {
+      ...readAttribution(),
+      ...Object.fromEntries(formData.entries()),
+    }
 
     try {
       const res = await fetch('/api/contact', {
@@ -98,6 +106,10 @@ export default function ContactForm({
       // without sending anything, so that one is not a lead.
       if (!String(payload.company_website ?? '').trim()) {
         trackEvent('generate_lead', { form_source: source })
+        trackAdsConversion('lead', {
+          email: String(payload.email ?? ''),
+          phone: String(payload.phone ?? ''),
+        })
       }
 
       setStatus('sent')
@@ -152,6 +164,8 @@ export default function ContactForm({
         <PageFields />
       ) : variant === 'landing' ? (
         <LandingFields locationPlaceholder={locationPlaceholder} />
+      ) : variant === 'ad' ? (
+        <AdFields locationPlaceholder={locationPlaceholder} defaultService={defaultService} />
       ) : (
         <HomeFields />
       )}
@@ -353,6 +367,67 @@ function LandingFields({ locationPlaceholder }: { locationPlaceholder: string })
           name="message"
           rows={4}
           placeholder="Describe your project details — size, dimensions, reinforcement specs..."
+        />
+      </div>
+    </>
+  )
+}
+
+/**
+ * The Google Ads pages: the fewest fields that still qualify a commercial lead.
+ * Project type arrives preselected from the ad group; details are optional.
+ */
+function AdFields({
+  locationPlaceholder,
+  defaultService,
+}: {
+  locationPlaceholder: string
+  defaultService: string
+}) {
+  return (
+    <>
+      <div className="form-row">
+        <div className="form-group">
+          <label htmlFor="name">Your Name</label>
+          <input type="text" id="name" name="name" required autoComplete="name" placeholder="John Smith" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="company">Company</label>
+          <input type="text" id="company" name="company" autoComplete="organization" placeholder="ABC Construction, LLC" />
+        </div>
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label htmlFor="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" required autoComplete="tel" placeholder="(706) 000-0000" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="email">Email</label>
+          <input type="email" id="email" name="email" required autoComplete="email" placeholder="you@company.com" />
+        </div>
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label htmlFor="service">Project Type</label>
+          <select id="service" name="service" defaultValue={defaultService}>
+            <option value="">Select a service...</option>
+            {LANDING_SERVICES.map((s) => (
+              <option key={s}>{s}</option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label htmlFor="location">Project City / ZIP</label>
+          <input type="text" id="location" name="location" required placeholder={locationPlaceholder} />
+        </div>
+      </div>
+      <div className="form-group">
+        <label htmlFor="message">Project Details (optional)</label>
+        <textarea
+          id="message"
+          name="message"
+          rows={3}
+          placeholder="Square footage, slab thickness, bid date — whatever you have."
         />
       </div>
     </>
