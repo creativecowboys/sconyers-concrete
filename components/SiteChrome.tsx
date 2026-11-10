@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation'
 
 /**
- * Hides the marketing header/footer on the admin.
+ * Hides the marketing header/footer on the admin and the Google Ads pages.
  *
  * The admin lives under the same root layout as the public site (moving pages
  * into a route group would have collided with the copy work in flight), so the
@@ -13,6 +13,8 @@ import { usePathname } from 'next/navigation'
  */
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  if (pathname?.startsWith('/admin')) return null
+  // The Google Ads pages (/go/...) carry their own slim header and footer:
+  // no menu to wander off through, just the phone number and the form.
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/go/')) return null
   return <>{children}</>
 }

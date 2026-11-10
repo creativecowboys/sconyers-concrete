@@ -1,9 +1,18 @@
 'use client'
 
 import { GoogleAnalytics } from '@next/third-parties/google'
+import Script from 'next/script'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
-import { GA_ID, installStaffOptOut, trackEvent } from '@/lib/analytics'
+import {
+  ADS_ID,
+  GA_ID,
+  TAG_ID,
+  installStaffOptOut,
+  trackAdsConversion,
+  trackEvent,
+} from '@/lib/analytics'
+import { captureAttribution } from '@/lib/attribution'
 import { contactLinkKind, isStaffPath, linkLocation, phoneLine } from '@/lib/analytics-rules'
 import { site } from '@/lib/site'
 
@@ -21,12 +30,21 @@ installStaffOptOut()
  *
  * Form submissions are reported by `components/ContactForm.tsx` itself, after
  * /api/contact says the lead went through.
+ *
+ * Google Ads: when NEXT_PUBLIC_GOOGLE_ADS_ID is set the same gtag.js also
+ * carries the Ads tag, and a `tel:` tap counts as the "call" conversion. The
+ * ad click's gclid/utm tags are saved for the session either way, so leads
+ * carry them (see lib/attribution.ts).
  */
 export default function Analytics() {
   const pathname = usePathname()
 
   useEffect(() => {
-    if (!GA_ID) return
+    captureAttribution(window.location.search)
+  }, [pathname])
+
+  useEffect(() => {
+    if (!TAG_ID) return
 
     function onClick(event: MouseEvent) {
       const target = event.target
@@ -42,7 +60,9 @@ export default function Analytics() {
         page_path: window.location.pathname,
       }
       if (kind === 'tel') {
-        trackEvent('click_to_call', { ...where, phone_line: phoneLine(href, site.phoneHref) })
+        const line = phoneLine(href, site.phoneHref)
+        trackEvent('click_to_call', { ...where, phone_line: line })
+        if (line === 'main') trackAdsConversion('call')
       } else {
         trackEvent('click_email', where)
       }
@@ -53,6 +73,17 @@ export default function Analytics() {
     return () => document.removeEventListener('click', onClick, true)
   }, [])
 
-  if (!GA_ID || isStaffPath(pathname)) return null
-  return <GoogleAnalytics gaId={GA_ID} />
+  if (!TAG_ID || isStaffPath(pathname)) return null
+  return (
+    <>
+      <GoogleAnalytics gaId={TAG_ID} />
+      {/* GA4 is the primary id above; this adds the Ads tag to the same gtag.
+          afterInteractive scripts run in render order, so gtag exists here. */}
+      {GA_ID && ADS_ID && (
+        <Script id="_ads-config">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('config','${ADS_ID}',{allow_enhanced_conversions:true});`}
+        </Script>
+      )}
+    </>
+  )
 }

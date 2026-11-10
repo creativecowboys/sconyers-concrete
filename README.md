@@ -35,6 +35,9 @@ Copy `.env.example` to `.env.local` and fill in:
 | `CONTACT_TO_EMAIL` | no | Lead destination. Defaults to `chip.sconyers@sconyersconcrete.com`. |
 | `CONTACT_FROM_EMAIL` | no | From address. **Its domain must be verified in Resend.** |
 | `NEXT_PUBLIC_GA_ID` | no | Google Analytics 4 measurement ID (`G-…`). Production only — see [Analytics](#analytics). |
+| `NEXT_PUBLIC_GOOGLE_ADS_ID` | no | Google Ads tag (`AW-…`). Production only. Loads the Ads tag on the same gtag. |
+| `NEXT_PUBLIC_GOOGLE_ADS_LEAD_LABEL` | no | Conversion label for "Website estimate request" — fires after `/api/contact` succeeds, with hashed email/phone for enhanced conversions. |
+| `NEXT_PUBLIC_GOOGLE_ADS_CALL_LABEL` | no | Conversion label for "Website phone tap" — fires on any tap of the main number. |
 
 Set the same variables in the Vercel project settings.
 
@@ -111,3 +114,7 @@ Shared NAP data lives in `lib/site.ts` — change it there, not in components.
 - **Email:** chip.sconyers@sconyersconcrete.com
 - **Address:** 2290 Strawn Rd, Winston, GA 30187
 - **Service area:** Greater Atlanta / West Georgia
+
+## Google Ads landing pages
+
+`/go/<slug>` and `/go/<slug>/<city>` (`lib/ads/pages.ts`, `components/ads/AdLandingPage.tsx`) are the paid-search pages: no site menu, form above the fold, noindex, not in the sitemap. Campaign files and the setup checklist live in the Dropbox client folder under `Google Ads/`. Any visit with a `gclid` or `utm_*` tags saves them for the session (`lib/attribution.ts`), and the next form send carries them into the lead email and the GHL note (tagged `google-ads`).
