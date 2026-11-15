@@ -32,7 +32,7 @@ Copy `.env.example` to `.env.local` and fill in:
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `RESEND_API_KEY` | yes | Sends estimate requests. Without it the forms return a "call us" error. |
-| `CONTACT_TO_EMAIL` | no | Lead destination. Defaults to `chip.sconyers@sconyersconcrete.com`. |
+| `CONTACT_TO_EMAIL` | no | Lead recipients, comma-separated. Defaults to Chip (`chip.sconyers@sconyersconcrete.com`) and Brice (`brice.wiley@sconyersconcrete.com`). |
 | `CONTACT_BCC_EMAIL` | no | Silent copy of every lead, comma-separated (Creative Cowboys sets `howdy@creativecowboys.co` so we see leads too). Unset = no copy. |
 | `CONTACT_FROM_EMAIL` | no | From address. **Its domain must be verified in Resend.** |
 | `NEXT_PUBLIC_GA_ID` | no | Google Analytics 4 measurement ID (`G-…`). Production only — see [Analytics](#analytics). |

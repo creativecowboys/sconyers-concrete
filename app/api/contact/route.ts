@@ -40,7 +40,12 @@ const FIELD_ORDER = [
   'gclid',
 ]
 
-const TO_EMAIL = process.env.CONTACT_TO_EMAIL ?? site.email
+// Who gets each lead: Chip (estimating) and Brice (sales — new business goes to him, Dave Nov 15
+// 2026). CONTACT_TO_EMAIL (comma-separated) replaces this list when set.
+const TO_EMAILS = (process.env.CONTACT_TO_EMAIL ?? `${site.email},brice.wiley@sconyersconcrete.com`)
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
 // Optional silent copy of every lead (comma-separated). Set CONTACT_BCC_EMAIL in Vercel
 // Production to copy Creative Cowboys (howdy@creativecowboys.co, Dave Nov 15 2026) so we can
 // see leads too. Unset = no copy. Howdy's inbox routine files these copies and never replies:
@@ -179,7 +184,7 @@ export async function POST(request: Request) {
     const resend = new Resend(apiKey)
     const { error } = await resend.emails.send({
       from: FROM_EMAIL,
-      to: TO_EMAIL,
+      to: TO_EMAILS,
       replyTo: email,
       ...(BCC_EMAILS.length ? { bcc: BCC_EMAILS } : {}),
       subject: `${pitchSubjectPrefix(pitch)}New estimate request — ${name} (${source})`,
