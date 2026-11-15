@@ -14,11 +14,20 @@
  * Required env vars (set in .env.local locally and in Vercel project settings):
  *   GHL_API_TOKEN         - Private Integration token (Settings > Private Integrations)
  *   GHL_LOCATION_ID       - Sconyers sub-account location ID
- *   GHL_PIPELINE_ID       - Pipeline to create opportunities in
- *   GHL_PIPELINE_STAGE_ID - Stage new opportunities land in (e.g. "New Lead")
+ *   GHL_PIPELINE_ID       - Optional. Pipeline to create opportunities in
+ *   GHL_PIPELINE_STAGE_ID - Optional. Stage new opportunities land in
  *
- * Until all four are set this module no-ops and returns { success: false,
- * error: 'not_configured' } — the form keeps working and email keeps sending.
+ * GHL's screens never show stage ids, so when the pipeline/stage ids are not set
+ * the pipeline is found by name (GHL_PIPELINE_NAME, default "Website Leads") and
+ * the stage by name (GHL_PIPELINE_STAGE_NAME, default "New Lead", else the first
+ * stage) through GET /opportunities/pipelines — the token needs the
+ * opportunities.readonly scope for that. Sconyers' sub-account is
+ * 1QYHjVGqFxCJC8XvAopP and its "Website Leads" pipeline is CbQGLYfkjWks1pR5bbKT
+ * (New Lead / Contacted / Estimate Sent / Closed), checked Nov 15, 2026.
+ *
+ * Until the token and location are set this module no-ops and returns
+ * { success: false, error: 'not_configured' } — the form keeps working and
+ * email keeps sending.
  *
  * NOTE: unlike Met Lane, this does not write contact custom fields. Custom field
  * ids are per-sub-account and must be referenced by id (the v2 /contacts/upsert
@@ -85,6 +94,50 @@ async function ghlFetch(
   return { ok: res.ok, status: res.status, json }
 }
 
+const PIPELINE_NAME = process.env.GHL_PIPELINE_NAME ?? 'Website Leads'
+const STAGE_NAME = process.env.GHL_PIPELINE_STAGE_NAME ?? 'New Lead'
+const norm = (s: unknown) => String(s ?? '').trim().toLowerCase()
+
+type Target = { pipelineId: string; pipelineStageId: string }
+let cachedTarget: Target | null = null
+
+/** The pipeline + stage a new lead goes into: env ids when set, otherwise looked up by name. */
+async function resolveTarget(token: string, locationId: string): Promise<Target> {
+  const pipelineId = process.env.GHL_PIPELINE_ID
+  const pipelineStageId = process.env.GHL_PIPELINE_STAGE_ID
+  if (pipelineId && pipelineStageId) return { pipelineId, pipelineStageId }
+  if (cachedTarget) return cachedTarget
+
+  const res = await fetch(
+    `${GHL_API_BASE}/opportunities/pipelines?locationId=${encodeURIComponent(locationId)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Version: GHL_API_VERSION,
+        Accept: 'application/json',
+      },
+    }
+  )
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(`GHL pipelines lookup failed (${res.status}): ${JSON.stringify(json)}`)
+  }
+  const pipelines: { id: string; name?: string; stages?: { id: string; name?: string }[] }[] =
+    json?.pipelines ?? []
+  const pipe =
+    pipelines.find((p) => pipelineId && p.id === pipelineId) ??
+    pipelines.find((p) => norm(p.name) === norm(PIPELINE_NAME))
+  if (!pipe) throw new Error(`GHL pipeline "${pipelineId ?? PIPELINE_NAME}" not found`)
+  const stages = pipe.stages ?? []
+  const stage =
+    stages.find((s) => pipelineStageId && s.id === pipelineStageId) ??
+    stages.find((s) => norm(s.name) === norm(STAGE_NAME)) ??
+    stages[0]
+  if (!stage) throw new Error(`GHL pipeline "${pipe.name}" has no stages`)
+  cachedTarget = { pipelineId: pipe.id, pipelineStageId: stage.id }
+  return cachedTarget
+}
+
 /**
  * Creates (or reuses) a GHL opportunity from a website lead.
  * Never throws — a GHL outage must not break form email delivery.
@@ -95,10 +148,8 @@ export async function createGhlOpportunity(
   try {
     const token = process.env.GHL_API_TOKEN
     const locationId = process.env.GHL_LOCATION_ID
-    const pipelineId = process.env.GHL_PIPELINE_ID
-    const pipelineStageId = process.env.GHL_PIPELINE_STAGE_ID
 
-    if (!token || !locationId || !pipelineId || !pipelineStageId) {
+    if (!token || !locationId) {
       // Expected until GHL is configured — debug, not error, so it doesn't
       // cry wolf in the Vercel logs on every submission.
       console.debug('[ghl] not configured; skipping opportunity creation')
@@ -142,6 +193,7 @@ export async function createGhlOpportunity(
       .join(' — ')
 
     let opportunityId: string | undefined
+    const { pipelineId, pipelineStageId } = await resolveTarget(token, locationId)
     const opp = await ghlFetch('/opportunities/', token, {
       locationId,
       pipelineId,
