@@ -3,7 +3,13 @@
 // Used by /api/contact only.
 
 import { head } from '@vercel/blob'
-import { formatBytes, parseAttachments, planLinkPath } from '@/lib/plans'
+import {
+  PLAN_MAX_BYTES,
+  formatBytes,
+  parseAttachments,
+  planContentTypeForPathname,
+  planLinkPath,
+} from '@/lib/plans'
 import { signPlanPath } from '@/lib/plans-link'
 
 export type PlanAttachment = {
@@ -64,6 +70,15 @@ export async function resolveAttachments(
     const item = items[i]
     if (check.status !== 'fulfilled') {
       console.error('[plans] attachment not found or not checkable:', item.pathname, check.reason)
+      missing++
+      return
+    }
+    // The upload token already limits both, but never link a file that slipped past it.
+    if (
+      check.value.size > PLAN_MAX_BYTES ||
+      check.value.contentType !== planContentTypeForPathname(item.pathname)
+    ) {
+      console.error('[plans] attachment outside the limits, left out:', item.pathname, check.value.size, check.value.contentType)
       missing++
       return
     }

@@ -1,19 +1,28 @@
+import { del, head } from '@vercel/blob'
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'
 import {
   PLAN_MAX_BYTES,
   planClientPayloadOk,
   planContentTypeForPathname,
 } from '@/lib/plans'
+import { site } from '@/lib/site'
 
 /**
  * Hands the estimate form a one-file upload token for the private plans store.
  * The browser then uploads straight to Vercel Blob (a function only takes
  * 4.5 MB of request body). The token itself is the guard: one path under
  * plans/, the one content type that path's extension allows, 50 MB at most,
- * a random suffix on the name, no overwrite, valid for an hour.
+ * a random suffix on the name, no overwrite, valid for an hour, single
+ * request only (no multipart, see below).
  *
- * No upload-completed callback: /api/contact checks the files itself when the
- * form is sent, so nothing here depends on Vercel calling back in.
+ * Gap found in testing (Nov 15 2026): Vercel Blob does not apply the size
+ * limit to multipart uploads, and a hand-made client can ask for a normal
+ * token and then upload multipart anyway. So in production every token also
+ * carries an upload-completed callback to this route, and anything over the
+ * limit (or of the wrong type) is deleted the moment it lands. /api/contact
+ * re-checks size and type too, so such a file is never linked in an email.
+ * Previews are behind Vercel login, so Vercel could not call back there; they
+ * skip the callback.
  */
 
 const WINDOW_MS = 10 * 60 * 1000
@@ -55,18 +64,27 @@ function sameOrigin(request: Request): boolean {
   }
 }
 
+/** Removes an upload that got past the token's limits (see the note at the top). */
+async function removeIfOutsideLimits({ blob }: { blob: { url: string; pathname: string; contentType: string } }) {
+  const allowedType = planContentTypeForPathname(blob.pathname)
+  let size: number
+  try {
+    size = (await head(blob.url)).size
+  } catch (err) {
+    console.error('[plans] upload-completed: could not check', blob.pathname, err)
+    return
+  }
+  if (allowedType && blob.contentType === allowedType && size <= PLAN_MAX_BYTES) return
+  console.warn('[plans] deleting an upload outside the limits:', blob.pathname, size, blob.contentType)
+  await del(blob.url)
+}
+
 class Refused extends Error {}
 
 export async function POST(request: Request) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     console.error('[plans] BLOB_READ_WRITE_TOKEN is not set; plan uploads are off.')
     return Response.json({ error: 'Uploads are not available right now.' }, { status: 503 })
-  }
-  if (!sameOrigin(request)) {
-    return Response.json({ error: 'Not allowed.' }, { status: 403 })
-  }
-  if (rateLimited(clientIp(request))) {
-    return Response.json({ error: 'Too many uploads. Try again in a few minutes.' }, { status: 429 })
   }
 
   let body: HandleUploadBody
@@ -75,27 +93,56 @@ export async function POST(request: Request) {
   } catch {
     return Response.json({ error: 'Invalid request body.' }, { status: 400 })
   }
-  // Only token requests. We never register an upload-completed callback.
+
+  // Vercel calling back after an upload. handleUpload checks Vercel's signature.
+  if (body?.type === 'blob.upload-completed') {
+    try {
+      await handleUpload({
+        body,
+        request,
+        onBeforeGenerateToken: async () => {
+          throw new Refused('Not a token request.')
+        },
+        onUploadCompleted: removeIfOutsideLimits,
+      })
+      return Response.json({ ok: true })
+    } catch (err) {
+      console.error('[plans] upload-completed callback refused:', err)
+      return Response.json({ error: 'Invalid request.' }, { status: 400 })
+    }
+  }
+
   if (body?.type !== 'blob.generate-client-token') {
     return Response.json({ error: 'Invalid request.' }, { status: 400 })
   }
+  if (!sameOrigin(request)) {
+    return Response.json({ error: 'Not allowed.' }, { status: 403 })
+  }
+  if (rateLimited(clientIp(request))) {
+    return Response.json({ error: 'Too many uploads. Try again in a few minutes.' }, { status: 429 })
+  }
 
+  const production = process.env.VERCEL_ENV === 'production'
   try {
     const result = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async (pathname, clientPayload) => {
+      onBeforeGenerateToken: async (pathname, clientPayload, multipart) => {
         const contentType = planContentTypeForPathname(pathname)
         if (!contentType) throw new Refused('That file type can’t be attached.')
         if (!planClientPayloadOk(clientPayload)) throw new Refused('Too many files.')
+        // The size limit does not hold for multipart, so the form never asks for it.
+        if (multipart) throw new Refused('Upload could not start.')
         return {
           allowedContentTypes: [contentType],
           maximumSizeInBytes: PLAN_MAX_BYTES,
           addRandomSuffix: true,
           allowOverwrite: false,
           validUntil: Date.now() + 60 * 60 * 1000,
+          ...(production ? { callbackUrl: `${site.url}/api/plans/upload` } : {}),
         }
       },
+      ...(production ? { onUploadCompleted: removeIfOutsideLimits } : {}),
     })
     return Response.json(result)
   } catch (err) {

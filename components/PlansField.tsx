@@ -44,8 +44,6 @@ export type PlanUploads = {
   settle: () => Promise<{ attached: PlanAttachmentRef[]; failed: number }>
 }
 
-const MULTIPART_FROM = 10 * 1024 * 1024
-
 export function usePlanUploads(): PlanUploads {
   const [items, setItems] = useState<PlanItem[]>([])
   const [notices, setNotices] = useState<string[]>([])
@@ -128,7 +126,6 @@ export function usePlanUploads(): PlanUploads {
               handleUploadUrl: '/api/plans/upload',
               contentType,
               clientPayload: JSON.stringify({ files: total }),
-              multipart: file.size > MULTIPART_FROM,
               abortSignal: controller.signal,
               onUploadProgress: ({ percentage }) =>
                 update(item.id, { progress: Math.min(99, Math.round(percentage)) }),
