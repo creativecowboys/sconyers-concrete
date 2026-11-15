@@ -886,6 +886,127 @@ blockquote cite {
 .form-group textarea { resize: vertical; min-height: 100px; }
 .form-group:last-child { margin-bottom: 0; }
 
+/* ── ATTACH PLANS (components/PlansField.tsx) ──
+   One compact row (button + hint) until files are picked, so the ad page's
+   submit button moves as little as possible. */
+.plans-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.9rem;
+}
+.form-group input.plans-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  opacity: 0;
+}
+.form-group .plans-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  margin: 0;
+  padding: 0.55rem 1rem;
+  border: 1px dashed rgba(255, 255, 255, 0.28);
+  border-radius: 3px;
+  background: var(--concrete-surface);
+  color: var(--warm-white);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.form-group .plans-pick svg { color: var(--accent-light); flex: none; }
+.form-group .plans-pick:hover { border-color: var(--accent); }
+.plans-input:focus-visible + .plans-pick {
+  outline: 2px solid var(--accent-light);
+  outline-offset: 2px;
+}
+.form-group .plans-pick[aria-disabled='true'] { opacity: 0.5; cursor: not-allowed; }
+.plans-optional { color: var(--gray-light); font-weight: 500; letter-spacing: 0.06em; }
+.plans-hint { font-size: 0.8rem; color: var(--gray); line-height: 1.4; }
+.plans-list { list-style: none; margin: 0.75rem 0 0; display: grid; gap: 0.5rem; }
+.plans-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0.3rem 0.5rem 0.85rem;
+  background: var(--concrete-surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.plans-name {
+  grid-column: 1;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: var(--warm-white);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.plans-meta { grid-column: 1; font-size: 0.75rem; line-height: 1.35; color: var(--gray-light); }
+.plans-item.is-error { border-color: rgba(204, 20, 20, 0.55); }
+.plans-item.is-error .plans-meta { color: var(--accent-light); }
+.plans-remove {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--gray-light);
+  cursor: pointer;
+}
+.plans-remove:hover,
+.plans-remove:focus-visible { color: var(--warm-white); background: rgba(255, 255, 255, 0.06); }
+.plans-remove:focus-visible { outline: 2px solid var(--accent-light); outline-offset: -2px; }
+.plans-remove[disabled] { opacity: 0.4; cursor: not-allowed; }
+.plans-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.plans-bar span { display: block; height: 100%; background: var(--accent); transition: width 0.2s; }
+.plans-notice {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  background: rgba(204, 20, 20, 0.12);
+  color: var(--warm-white);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+.plans-notice p + p { margin-top: 0.3rem; }
+.plans-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* ── FOOTER ── */
 .footer {
   background: var(--concrete-mid);

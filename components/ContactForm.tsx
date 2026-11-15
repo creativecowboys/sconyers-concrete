@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { trackAdsConversion, trackEvent } from '@/lib/analytics'
 import { readAttribution } from '@/lib/attribution'
+import { site } from '@/lib/site'
+import PlansField, { usePlanUploads } from '@/components/PlansField'
 
 type Variant = 'home' | 'page' | 'landing' | 'ad'
 type Status = 'idle' | 'sending' | 'sent' | 'error'
@@ -71,17 +73,25 @@ export default function ContactForm({
 }: Props) {
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<string | null>(null)
+  const plans = usePlanUploads()
+  const [plansFailed, setPlansFailed] = useState(0)
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setStatus('sending')
     setError(null)
 
+    // Read the fields before waiting on anything. The file picker has no
+    // name, so it is not part of this.
     const formData = new FormData(event.currentTarget)
+    // Plans still uploading are waited for; one that failed is left out.
+    const { attached, failed } = await plans.settle()
     // The ad click (gclid, campaign, search term) rides along with the lead.
     const payload: Record<string, unknown> = {
       ...readAttribution(),
       ...Object.fromEntries(formData.entries()),
+      ...(attached.length ? { attachments: attached } : {}),
+      ...(failed ? { attachmentsFailed: failed } : {}),
     }
 
     try {
@@ -112,6 +122,7 @@ export default function ContactForm({
         })
       }
 
+      setPlansFailed(failed)
       setStatus('sent')
     } catch {
       setError(
@@ -140,6 +151,16 @@ export default function ContactForm({
           </a>
           .
         </p>
+        {plansFailed > 0 && (
+          <p style={{ color: 'var(--gray-light)', fontSize: '0.95rem', marginTop: '0.75rem' }}>
+            {plansFailed === 1 ? 'One of your files' : `${plansFailed} of your files`} didn&apos;t
+            upload. Email your plans to{' '}
+            <a href={`mailto:${site.email}`} style={{ color: 'var(--accent)' }}>
+              {site.email}
+            </a>{' '}
+            and we&apos;ll add them to your request.
+          </p>
+        )}
       </div>
     )
   }
@@ -170,8 +191,14 @@ export default function ContactForm({
         <HomeFields />
       )}
 
+      <PlansField uploads={plans} disabled={sending} />
+
       <button type="submit" className="btn btn-primary btn-full" disabled={sending}>
-        {sending ? 'Sending…' : submitLabel ?? 'Send Message & Request Estimate'}
+        {sending
+          ? plans.busy
+            ? `Uploading plans… ${plans.progress}%`
+            : 'Sending…'
+          : submitLabel ?? 'Send Message & Request Estimate'}
       </button>
 
       {variant === 'page' && (
