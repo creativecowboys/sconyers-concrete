@@ -41,6 +41,14 @@ const FIELD_ORDER = [
 ]
 
 const TO_EMAIL = process.env.CONTACT_TO_EMAIL ?? site.email
+// Optional silent copy of every lead (comma-separated). Set CONTACT_BCC_EMAIL in Vercel
+// Production to copy Creative Cowboys (howdy@creativecowboys.co, Dave Nov 15 2026) so we can
+// see leads too. Unset = no copy. Howdy's inbox routine files these copies and never replies:
+// the Reply-To is the lead, so a reply would land in the prospect's inbox.
+const BCC_EMAILS = (process.env.CONTACT_BCC_EMAIL ?? '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
 // Must be @send.sconyersconcrete.com — that subdomain is what's verified in
 // Resend (DKIM + SPF + MX), NOT the root domain. Sending from the root would be
 // rejected. Verified 2026-07-28.
@@ -173,9 +181,11 @@ export async function POST(request: Request) {
       from: FROM_EMAIL,
       to: TO_EMAIL,
       replyTo: email,
+      ...(BCC_EMAILS.length ? { bcc: BCC_EMAILS } : {}),
       subject: `${pitchSubjectPrefix(pitch)}New estimate request — ${name} (${source})`,
       text,
       html,
+      headers: { 'X-Website-Lead': 'sconyersconcrete.com' },
     })
 
     if (error) {
