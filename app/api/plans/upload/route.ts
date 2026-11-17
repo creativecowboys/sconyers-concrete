@@ -4,25 +4,25 @@ import {
   PLAN_MAX_BYTES,
   planClientPayloadOk,
   planContentTypeForPathname,
+  planTokenOptions,
 } from '@/lib/plans'
 import { site } from '@/lib/site'
 
 /**
  * Hands the estimate form a one-file upload token for the private plans store.
  * The browser then uploads straight to Vercel Blob (a function only takes
- * 4.5 MB of request body). The token itself is the guard: one path under
- * plans/, the one content type that path's extension allows, 50 MB at most,
- * a random suffix on the name, no overwrite, valid for an hour, single
- * request only (no multipart, see below).
+ * 4.5 MB of request body). The token (lib/plans.ts planTokenOptions) is the
+ * first guard: one path under plans/, the one content type that path's
+ * extension allows, 500 MB, a random suffix on the name, no overwrite, valid
+ * for 3 hours, and in production a 365-day TTL.
  *
- * Gap found in testing (Nov 15 2026): Vercel Blob does not apply the size
- * limit to multipart uploads, and a hand-made client can ask for a normal
- * token and then upload multipart anyway. So in production every token also
- * carries an upload-completed callback to this route, and anything over the
- * limit (or of the wrong type) is deleted the moment it lands. /api/contact
- * re-checks size and type too, so such a file is never linked in an email.
- * Previews are behind Vercel login, so Vercel could not call back there; they
- * skip the callback.
+ * Vercel Blob does not apply the size limit to multipart uploads (tested Nov
+ * 15 2026), and files this big need multipart. So the size is held at three
+ * other places: the browser checks before uploading, /api/contact re-checks
+ * size and type before it lists a file, and in production every token carries
+ * an upload-completed callback to this route that deletes anything over the
+ * limit or of the wrong type the moment it lands. Previews are behind Vercel
+ * login, so Vercel could not call back there; they skip the callback.
  */
 
 const WINDOW_MS = 10 * 60 * 1000
@@ -127,20 +127,15 @@ export async function POST(request: Request) {
     const result = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async (pathname, clientPayload, multipart) => {
+      onBeforeGenerateToken: async (pathname, clientPayload) => {
         const contentType = planContentTypeForPathname(pathname)
         if (!contentType) throw new Refused('That file type can’t be attached.')
         if (!planClientPayloadOk(clientPayload)) throw new Refused('Too many files.')
-        // The size limit does not hold for multipart, so the form never asks for it.
-        if (multipart) throw new Refused('Upload could not start.')
-        return {
-          allowedContentTypes: [contentType],
-          maximumSizeInBytes: PLAN_MAX_BYTES,
-          addRandomSuffix: true,
-          allowOverwrite: false,
-          validUntil: Date.now() + 60 * 60 * 1000,
-          ...(production ? { callbackUrl: `${site.url}/api/plans/upload` } : {}),
-        }
+        return planTokenOptions(contentType, {
+          now: Date.now(),
+          production,
+          callbackUrl: `${site.url}/api/plans/upload`,
+        })
       },
       ...(production ? { onUploadCompleted: removeIfOutsideLimits } : {}),
     })
