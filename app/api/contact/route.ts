@@ -2,6 +2,8 @@ import { Resend } from 'resend'
 import { site } from '@/lib/site'
 import { createGhlOpportunity } from '@/lib/ghl'
 import { pitchNote, pitchSubjectPrefix, screenPitch } from '@/lib/pitch'
+import { parseFailedCount } from '@/lib/plans'
+import { resolveAttachments, type PlanAttachment } from '@/lib/plans-server'
 
 /** Field name -> label, in the order they should appear in the email. */
 const FIELD_LABELS: Record<string, string> = {
@@ -122,11 +124,36 @@ export async function POST(request: Request) {
     console.warn(`[contact] pitch screen: ${pitch.verdict} (${pitch.reasons.join('; ')})`)
   }
 
+  // Optional plan files (see lib/plans.ts). They were uploaded straight to the
+  // private Blob store; here they are checked and turned into signed links. A
+  // file that cannot be found is left out and the lead still goes out.
+  const plans: { files: PlanAttachment[]; missing: number } =
+    body.attachments === undefined && body.attachmentsFailed === undefined
+      ? { files: [], missing: 0 }
+      : await resolveAttachments(
+          body.attachments,
+          process.env.VERCEL_ENV === 'production' ? site.url : new URL(request.url).origin
+        )
+  const plansMissing = plans.missing + parseFailedCount(body.attachmentsFailed)
+  const plansMissingLine = plansMissing
+    ? `${plansMissing} more file${plansMissing === 1 ? '' : 's'} the sender tried to attach did not upload. Ask them to email the plans.`
+    : ''
+
   const text = [
     ...(note ? [note, ''] : []),
     `New estimate request from the ${source} page.`,
     '',
     ...rows.map((row) => `${row.label}: ${row.value}`),
+    ...(plans.files.length
+      ? [
+          '',
+          `Plans attached (${plans.files.length}):`,
+          ...plans.files.map(
+            (file) => `- ${file.name} (${file.sizeLabel})${file.url ? `: ${file.url}` : ''}`
+          ),
+        ]
+      : []),
+    ...(plansMissingLine ? ['', plansMissingLine] : []),
   ].join('\n')
 
   const html = `
@@ -147,7 +174,29 @@ export async function POST(request: Request) {
       </tr>`
         )
         .join('')}
-    </table>
+    </table>${
+      plans.files.length
+        ? `
+    <h3 style="font-family:Arial,sans-serif;margin:20px 0 6px;">Plans attached (${plans.files.length})</h3>
+    <ul style="font-family:Arial,sans-serif;margin:0;padding-left:20px;">
+      ${plans.files
+        .map(
+          (file) => `<li style="margin:4px 0;">${
+            file.url
+              ? `<a href="${escapeHtml(file.url)}">${escapeHtml(file.name)}</a>`
+              : escapeHtml(file.name)
+          } <span style="color:#888;">(${escapeHtml(file.sizeLabel)})</span></li>`
+        )
+        .join('')}
+    </ul>
+    <p style="font-family:Arial,sans-serif;color:#888;font-size:12px;">Links open the file from the website. Please don't forward them outside the company.</p>`
+        : ''
+    }${
+      plansMissingLine
+        ? `
+    <p style="font-family:Arial,sans-serif;background:#fef3c7;border:1px solid #f59e0b;color:#78350f;padding:10px 12px;">${escapeHtml(plansMissingLine)}</p>`
+        : ''
+    }
   `
 
   try {
@@ -168,6 +217,7 @@ export async function POST(request: Request) {
             timeline: get('timeline'),
             message: get('message'),
             source,
+            ...(plans.files.length ? { plans: plans.files } : {}),
             ad: {
               gclid: get('gclid') || get('gbraid') || get('wbraid'),
               source: get('utm_source'),
@@ -187,7 +237,9 @@ export async function POST(request: Request) {
       to: TO_EMAILS,
       replyTo: email,
       ...(BCC_EMAILS.length ? { bcc: BCC_EMAILS } : {}),
-      subject: `${pitchSubjectPrefix(pitch)}New estimate request — ${name} (${source})`,
+      subject: `${pitchSubjectPrefix(pitch)}New estimate request — ${name} (${source})${
+        plans.files.length ? ' — plans attached' : ''
+      }`,
       text,
       html,
       headers: { 'X-Website-Lead': 'sconyersconcrete.com' },

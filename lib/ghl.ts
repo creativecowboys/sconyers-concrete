@@ -54,6 +54,8 @@ export interface GhlLead {
   message?: string
   /** Which page the form was submitted from, e.g. "commercial-concrete-slabs-newnan-ga". */
   source?: string
+  /** Plan files the sender attached (see lib/plans.ts): listed in the note with their links. */
+  plans?: { name: string; sizeLabel: string; url: string | null }[]
   /** The ad click that brought them, when there was one (see lib/attribution.ts). */
   ad?: {
     gclid?: string
@@ -226,6 +228,15 @@ export async function createGhlOpportunity(
       ...(lead.service ? [`Service: ${lead.service}`] : []),
       ...(lead.timeline ? [`Timeline: ${lead.timeline}`] : []),
       ...(lead.message ? ['', 'Project details:', lead.message] : []),
+      ...(lead.plans?.length
+        ? [
+            '',
+            `Plans attached (${lead.plans.length}):`,
+            ...lead.plans.map(
+              (file) => `- ${file.name} (${file.sizeLabel})${file.url ? `: ${file.url}` : ''}`
+            ),
+          ]
+        : []),
       ...(isPaidGoogle(lead.ad)
         ? [
             '',
