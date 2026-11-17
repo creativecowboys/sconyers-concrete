@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import {
+  PLAN_HINT,
   PLAN_MAX_BYTES,
   PLAN_MAX_FILES,
+  PLAN_MULTIPART_FROM,
+  PLAN_TTL_DAYS,
   checkPlanFile,
   cleanFileName,
-  downloadFileName,
   formatBytes,
   isPlanPathname,
   parseAttachments,
@@ -16,6 +18,7 @@ import {
   planExtension,
   planLinkPath,
   planPathname,
+  planTokenOptions,
 } from '../lib/plans.ts'
 import { signPlanPath, verifyPlanSig } from '../lib/plans-link.ts'
 
@@ -68,13 +71,18 @@ test('checkPlanFile: wrong types are refused, whatever the browser claims', () =
   assert.equal(planExtension('photo', 'image/jpg'), 'jpg')
 })
 
-test('checkPlanFile: size limit is 50 MB per file, and empty files are refused', () => {
+test('checkPlanFile: size limit is 500 MB per file, and empty files are refused', () => {
+  assert.equal(PLAN_MAX_BYTES, 500 * MB)
   assert.equal(checkPlanFile({ name: 'a.pdf', size: PLAN_MAX_BYTES, type: '' }).ok, true)
+  assert.equal(checkPlanFile({ name: 'Full set.zip', size: 320 * MB, type: '' }).ok, true)
   const big = checkPlanFile({ name: 'a.pdf', size: PLAN_MAX_BYTES + 1, type: '' })
   assert.equal(!big.ok && big.reason, 'size')
-  assert.match(!big.ok ? big.message : '', /50 MB per file/)
-  const huge = checkPlanFile({ name: 'Full set.pdf', size: 72.4 * MB, type: '' })
-  assert.equal(!huge.ok && huge.message, '“Full set.pdf” is 72 MB. The limit is 50 MB per file.')
+  assert.match(!big.ok ? big.message : '', /500 MB per file/)
+  const huge = checkPlanFile({ name: 'Full set.pdf', size: 612.4 * MB, type: '' })
+  assert.equal(!huge.ok && huge.message, '“Full set.pdf” is 612 MB. The limit is 500 MB per file.')
+  assert.equal(PLAN_HINT, 'PDF, photos or ZIP · 5 files, up to 500 MB each')
+  // Big files go up in parts; small ones in one request.
+  assert.ok(PLAN_MULTIPART_FROM > 4.5 * MB && PLAN_MULTIPART_FROM < 100 * MB)
   const empty = checkPlanFile({ name: 'a.pdf', size: 0, type: '' })
   assert.equal(!empty.ok && empty.reason, 'empty')
 })
@@ -127,6 +135,25 @@ test('isPlanPathname / planContentTypeForPathname: only our folder, our types, n
   ]) {
     assert.equal(planContentTypeForPathname(bad), null, String(bad))
   }
+})
+
+test('planTokenOptions: one type, 500 MB, random name, 3 hours; TTL and callback in production only', () => {
+  const now = Date.UTC(2026, 10, 17, 12)
+  const prod = planTokenOptions('application/pdf', { now, production: true, callbackUrl: 'https://www.sconyersconcrete.com/api/plans/upload' })
+  assert.deepEqual(prod, {
+    allowedContentTypes: ['application/pdf'],
+    maximumSizeInBytes: 500 * MB,
+    addRandomSuffix: true,
+    allowOverwrite: false,
+    validUntil: now + 3 * 60 * 60 * 1000,
+    ttlDays: 365,
+    callbackUrl: 'https://www.sconyersconcrete.com/api/plans/upload',
+  })
+  assert.equal(PLAN_TTL_DAYS, 365)
+  const preview = planTokenOptions('image/jpeg', { now, production: false, callbackUrl: 'https://x.example/api/plans/upload' })
+  assert.equal('ttlDays' in preview, false)
+  assert.equal('callbackUrl' in preview, false)
+  assert.deepEqual(preview.allowedContentTypes, ['image/jpeg'])
 })
 
 test('planClientPayloadOk: 1 to 5 files per form', () => {
@@ -184,6 +211,4 @@ test('signed links: round trip, and a wrong signature or path does not open', ()
   assert.equal(pathnameFromLinkSegments(segments), pathname)
   assert.equal(pathnameFromLinkSegments(['..', 'x.pdf']), null)
   assert.equal(pathnameFromLinkSegments(['2026-11-15', 'x.svg']), null)
-  assert.equal(downloadFileName(pathname), 'Foundation-Plan.pdf')
-  assert.equal(downloadFileName('plans/2026-11-15/short-name.pdf'), 'short-name.pdf')
 })

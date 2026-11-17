@@ -5,6 +5,7 @@ import {
   PLAN_ACCEPT,
   PLAN_HINT,
   PLAN_MAX_FILES,
+  PLAN_MULTIPART_FROM,
   checkPlanFile,
   cleanFileName,
   formatBytes,
@@ -44,13 +45,23 @@ export type PlanUploads = {
   settle: () => Promise<{ attached: PlanAttachmentRef[]; failed: number }>
 }
 
+/**
+ * An upload that sends no bytes for this long is given up on. The Blob SDK
+ * retries a dropped connection 10 times with growing waits (about 17 minutes
+ * in all), and Send must not hang that long: the lead goes without the file.
+ * A slow but working connection keeps reporting bytes, so it never trips this.
+ */
+const STALL_MS = 60 * 1000
+
 export function usePlanUploads(): PlanUploads {
   const [items, setItems] = useState<PlanItem[]>([])
   const [notices, setNotices] = useState<string[]>([])
   const [announcement, setAnnouncement] = useState('')
   // Mirrors of state for code that runs outside render (upload callbacks, settle).
   const itemsRef = useRef<PlanItem[]>([])
-  const tasks = useRef(new Map<string, { controller: AbortController; done: Promise<void> }>())
+  const tasks = useRef(
+    new Map<string, { controller: AbortController; done: Promise<void>; lastBytes: number; lastActive: number; stalled: boolean }>()
+  )
   const nextId = useRef(0)
 
   const commit = useCallback((next: PlanItem[]) => {
@@ -72,6 +83,20 @@ export function usePlanUploads(): PlanUploads {
     return () => {
       for (const task of running.values()) task.controller.abort()
     }
+  }, [])
+
+  // Give up on an upload that has stopped moving (see STALL_MS).
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = Date.now()
+      for (const task of tasks.current.values()) {
+        if (!task.stalled && now - task.lastActive > STALL_MS) {
+          task.stalled = true
+          task.controller.abort()
+        }
+      }
+    }, 5000)
+    return () => clearInterval(timer)
   }, [])
 
   const addFiles = useCallback(
@@ -117,23 +142,40 @@ export function usePlanUploads(): PlanUploads {
 
       for (const { item, file, ext, contentType } of added) {
         const controller = new AbortController()
-        const done = (async () => {
+        const task = { controller, done: Promise.resolve(), lastBytes: 0, lastActive: Date.now(), stalled: false }
+        // Settles the moment the upload is cancelled or given up on, even while
+        // the SDK is still sitting in one of its retry waits.
+        const stopped = new Promise<never>((_, reject) =>
+          controller.signal.addEventListener('abort', () => reject(new Error('stopped')), { once: true })
+        )
+        stopped.catch(() => {})
+        task.done = (async () => {
           try {
             // Loaded on first use, so pages that never attach anything never download it.
             const { upload } = await import('@vercel/blob/client')
-            const blob = await upload(planPathname(file.name, ext, localDateStamp(new Date())), file, {
-              access: 'private',
-              handleUploadUrl: '/api/plans/upload',
-              contentType,
-              clientPayload: JSON.stringify({ files: total }),
-              abortSignal: controller.signal,
-              onUploadProgress: ({ percentage }) =>
-                update(item.id, { progress: Math.min(99, Math.round(percentage)) }),
-            })
+            const blob = await Promise.race([
+              upload(planPathname(file.name, ext, localDateStamp(new Date())), file, {
+                access: 'private',
+                handleUploadUrl: '/api/plans/upload',
+                contentType,
+                clientPayload: JSON.stringify({ files: total }),
+                multipart: file.size > PLAN_MULTIPART_FROM,
+                abortSignal: controller.signal,
+                onUploadProgress: ({ loaded, percentage }) => {
+                  if (loaded !== task.lastBytes) {
+                    task.lastBytes = loaded
+                    task.lastActive = Date.now()
+                  }
+                  update(item.id, { progress: Math.min(99, Math.round(percentage)) })
+                },
+              }),
+              stopped,
+            ])
             update(item.id, { status: 'done', progress: 100, pathname: blob.pathname })
             setAnnouncement(`${item.name} attached.`)
           } catch (err) {
-            if (controller.signal.aborted) return
+            // Removed by the visitor: nothing to report.
+            if (controller.signal.aborted && !task.stalled) return
             console.warn('[plans] upload failed', err)
             update(item.id, { status: 'error' })
             setAnnouncement(`${item.name} did not upload.`)
@@ -141,7 +183,7 @@ export function usePlanUploads(): PlanUploads {
             tasks.current.delete(item.id)
           }
         })()
-        tasks.current.set(item.id, { controller, done })
+        tasks.current.set(item.id, task)
       }
     },
     [commit, update]

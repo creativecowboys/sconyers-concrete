@@ -4,16 +4,27 @@
 // function only takes 4.5 MB of request body, and a plan set is bigger than
 // that). /api/plans/upload hands the browser a one-file upload token,
 // /api/contact lists the uploaded files in the lead email and the GoHighLevel
-// note, and /api/plans/file/... streams a file back to whoever holds the signed
-// link from that email.
+// note, and /api/plans/file/... sends whoever holds the signed link from that
+// email on to a short-lived download address for the file.
 //
 // Pure: no imports, so the same rules run in the browser, on the server and
 // under `node --test`.
 
 /** Most files one estimate request can carry. */
 export const PLAN_MAX_FILES = 5
-/** Largest single file, in bytes (50 MB). */
-export const PLAN_MAX_BYTES = 50 * 1024 * 1024
+/** Largest single file, in bytes (500 MB, Dave Nov 17 2026). */
+export const PLAN_MAX_BYTES = 500 * 1024 * 1024
+/** Shown to people: "500 MB". */
+const PLAN_MAX_LABEL = `${PLAN_MAX_BYTES / (1024 * 1024)} MB`
+/**
+ * Files above this go up in 8 MB parts (6 at a time, each part retried on its
+ * own), which is what keeps a few hundred MB from a phone reliable.
+ */
+export const PLAN_MULTIPART_FROM = 16 * 1024 * 1024
+/** Production plan files are deleted by Vercel Blob this many days after upload (Dave, Nov 17 2026). */
+export const PLAN_TTL_DAYS = 365
+/** How long an upload token lasts: long enough for 500 MB on a slow phone connection. */
+export const PLAN_TOKEN_HOURS = 3
 /** Every plan file lives under this folder in the Blob store. */
 export const PLAN_PREFIX = 'plans/'
 
@@ -52,7 +63,7 @@ export const PLAN_ACCEPT = [
 ].join(',')
 
 /** One line under the button, so people know before they pick. */
-export const PLAN_HINT = `PDF, photos or ZIP · ${PLAN_MAX_FILES} files, 50 MB each`
+export const PLAN_HINT = `PDF, photos or ZIP · ${PLAN_MAX_FILES} files, up to ${PLAN_MAX_LABEL} each`
 
 /** Lower-case extension of a file name, without the dot ('' when there is none). */
 export function fileExtension(name: string): string {
@@ -107,7 +118,7 @@ export function checkPlanFile(file: { name: string; size: number; type?: string 
     return {
       ok: false,
       reason: 'size',
-      message: `“${name}” is ${formatBytes(file.size)}. The limit is 50 MB per file.`,
+      message: `“${name}” is ${formatBytes(file.size)}. The limit is ${PLAN_MAX_LABEL} per file.`,
     }
   }
   return { ok: true, ext, contentType: PLAN_TYPES[ext] }
@@ -155,6 +166,28 @@ const PATHNAME_RE = new RegExp(
 /** True for a path this feature could have written. Both before and after Blob's suffix. */
 export function isPlanPathname(pathname: unknown): pathname is string {
   return typeof pathname === 'string' && !pathname.includes('..') && PATHNAME_RE.test(pathname)
+}
+
+/**
+ * The upload token for one plan file. Vercel Blob enforces the type and, for
+ * a single-request upload, the size; it does NOT enforce the size on a
+ * multipart upload, which is why production also passes a callback that
+ * deletes anything over the limit (see app/api/plans/upload/route.ts) and
+ * /api/contact re-checks every file before listing it. Production files also
+ * get a TTL so the store deletes them after PLAN_TTL_DAYS.
+ */
+export function planTokenOptions(
+  contentType: string,
+  { now, production, callbackUrl }: { now: number; production: boolean; callbackUrl?: string }
+) {
+  return {
+    allowedContentTypes: [contentType],
+    maximumSizeInBytes: PLAN_MAX_BYTES,
+    addRandomSuffix: true,
+    allowOverwrite: false,
+    validUntil: now + PLAN_TOKEN_HOURS * 60 * 60 * 1000,
+    ...(production ? { ttlDays: PLAN_TTL_DAYS, ...(callbackUrl ? { callbackUrl } : {}) } : {}),
+  }
 }
 
 /** The content type a plan path must be uploaded with, or null when the path is not ours. */
@@ -219,13 +252,4 @@ export function planLinkPath(pathname: string, sig: string): string {
 export function pathnameFromLinkSegments(segments: string[]): string | null {
   const pathname = PLAN_PREFIX + segments.join('/')
   return isPlanPathname(pathname) ? pathname : null
-}
-
-/**
- * The file name to offer when the file is saved: the stored name without the
- * random suffix Vercel Blob added.
- */
-export function downloadFileName(pathname: string): string {
-  const file = pathname.split('/').pop() ?? 'plans'
-  return file.replace(/-[A-Za-z0-9]{20,40}(\.[A-Za-z0-9]+)$/, '$1')
 }
